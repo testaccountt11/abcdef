@@ -2,8 +2,21 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let errorText = '';
+    // Try to parse as JSON first
+    try {
+      const errorData = await res.json();
+      errorText = errorData.message || JSON.stringify(errorData);
+    } catch (e) {
+      // If not JSON, get as text
+      errorText = await res.text() || res.statusText;
+    }
+    
+    // Create error with more context
+    const error = new Error(errorText);
+    (error as any).status = res.status;
+    (error as any).statusText = res.statusText;
+    throw error;
   }
 }
 

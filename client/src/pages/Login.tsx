@@ -43,16 +43,10 @@ export default function Login() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      // First authenticate with Firebase
-      const result = await loginWithEmail(values.email, values.password);
-      const user = result.user;
-      
-      // Then authenticate with our backend to get our user profile
-      const response = await apiRequest('POST', '/api/login/firebase', {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
+      // Direct authentication with our backend 
+      const response = await apiRequest('POST', '/api/login/direct', {
+        email: values.email,
+        password: values.password
       });
       
       const data = await response.json();
@@ -66,6 +60,7 @@ export default function Login() {
         setLocation('/dashboard');
       }
     } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
         description: error.message || "Invalid email or password",

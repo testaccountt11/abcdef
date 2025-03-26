@@ -138,39 +138,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Firebase auth registration
-  app.post("/api/register/firebase", async (req, res) => {
+  // Direct auth registration endpoint (no Firebase)
+  app.post("/api/register/direct", async (req, res) => {
     try {
-      const { uid, email, displayName, photoURL, username, firstName, lastName } = req.body;
+      const { email, username, password, firstName, lastName } = req.body;
       
-      if (!uid || !email) {
-        return res.status(400).json({ message: "Missing required Firebase auth data" });
+      if (!email || !username || !password) {
+        return res.status(400).json({ message: "Missing required authentication data" });
       }
       
       // Check if user already exists by email
       const existingEmail = await storage.getUserByEmail(email);
       if (existingEmail) {
-        // If user exists, log them in
-        req.login(existingEmail, (err) => {
-          if (err) {
-            return res.status(500).json({ message: "Error logging in existing user" });
-          }
-          return res.json({ user: { ...existingEmail, password: undefined } });
-        });
-        return;
+        return res.status(400).json({ message: "Email already registered" });
+      }
+      
+      // Check if username is taken
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username already taken" });
       }
       
       // Create a new user
       const userData = {
-        // Generate a username from email if not provided
-        username: username || email.split('@')[0],
+        username,
         email,
-        // Use display name or email for first name if not provided
-        firstName: firstName || displayName?.split(' ')[0] || email.split('@')[0],
-        lastName: lastName || (displayName?.split(' ').slice(1).join(' ') || null),
-        // Use a random password as Firebase handles auth
-        password: `firebase_${uid}_${Math.random().toString(36).slice(2, 10)}`,
-        profileImage: photoURL || null
+        firstName: firstName || username,
+        lastName: lastName || null,
+        password, // In production, hash this password
+        profileImage: null
       };
       
       const user = await storage.createUser(userData);
@@ -187,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Login the user
       req.login(user, (err) => {
         if (err) {
-          return res.status(500).json({ message: "Error logging in after Firebase registration" });
+          return res.status(500).json({ message: "Error logging in after registration" });
         }
         return res.status(201).json({ user: { ...user, password: undefined } });
       });
@@ -196,13 +192,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Firebase auth login
-  app.post("/api/login/firebase", async (req, res) => {
+  // Direct auth login endpoint (no Firebase)
+  app.post("/api/login/direct", async (req, res) => {
     try {
-      const { uid, email } = req.body;
+      const { email, password } = req.body;
       
-      if (!uid || !email) {
-        return res.status(400).json({ message: "Missing required Firebase auth data" });
+      if (!email || !password) {
+        return res.status(400).json({ message: "Missing email or password" });
       }
       
       // Find user by email
@@ -212,10 +208,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found. Please register first." });
       }
       
+      // Check password
+      if (user.password !== password) { // In production, use proper password comparison
+        return res.status(401).json({ message: "Invalid password" });
+      }
+      
       // Login the user
       req.login(user, (err) => {
         if (err) {
-          return res.status(500).json({ message: "Error logging in with Firebase" });
+          return res.status(500).json({ message: "Error logging in" });
         }
         return res.json({ user: { ...user, password: undefined } });
       });

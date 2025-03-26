@@ -59,17 +59,11 @@ export default function Register() {
       
       console.log("Attempting to register with email:", userData.email);
       
-      // Register with Firebase
-      const result = await registerWithEmail(userData.email, userData.password);
-      const firebaseUser = result.user;
-      
-      console.log("Firebase registration successful:", firebaseUser.uid);
-      
-      // Register with our backend
-      const response = await apiRequest('POST', '/api/register/firebase', {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
+      // Register directly with our backend
+      const response = await apiRequest('POST', '/api/register/direct', {
+        email: userData.email,
         username: userData.username,
+        password: userData.password,
         firstName: userData.firstName,
         lastName: userData.lastName || null
       });
@@ -85,32 +79,26 @@ export default function Register() {
         setLocation('/dashboard');
       }
     } catch (error: any) {
-      console.error("Registration error:", error.code, error.message);
+      console.error("Registration error:", error);
       
-      // Show more detailed error message for debugging
+      // Show detailed error message
       toast({
-        title: `Error: ${error.code || 'Unknown'}`,
-        description: error.message || "Failed to create account",
+        title: "Registration Failed",
+        description: error.message || "Failed to create account. Please try again.",
         variant: "destructive",
       });
       
-      // Provide helpful messages for common Firebase errors
-      if (error.code === 'auth/email-already-in-use') {
+      // Handle known error messages
+      if (error.message?.includes("Email already registered")) {
         toast({
           title: "Email In Use",
           description: "This email is already associated with an account. Try signing in instead.",
           variant: "destructive",
         });
-      } else if (error.code === 'auth/weak-password') {
+      } else if (error.message?.includes("Username already taken")) {
         toast({
-          title: "Weak Password",
-          description: "Please use a stronger password with at least 6 characters.",
-          variant: "destructive",
-        });
-      } else if (error.code === 'auth/invalid-email') {
-        toast({
-          title: "Invalid Email",
-          description: "Please provide a valid email address.",
+          title: "Username Taken",
+          description: "This username is already taken. Please choose another one.",
           variant: "destructive",
         });
       }
