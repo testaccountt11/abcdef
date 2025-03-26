@@ -281,7 +281,14 @@ export class MemStorage implements IStorage {
   
   async createCourse(insertCourse: InsertCourse): Promise<Course> {
     const id = this.currentIds.courses++;
-    const course: Course = { ...insertCourse, id };
+    const course: Course = { 
+      ...insertCourse, 
+      id,
+      imageUrl: insertCourse.imageUrl || null,
+      isPartnerCourse: insertCourse.isPartnerCourse || null,
+      contactInfo: insertCourse.contactInfo || null,
+      progress: insertCourse.progress || null
+    };
     this.courses.set(id, course);
     return course;
   }
@@ -302,14 +309,19 @@ export class MemStorage implements IStorage {
   
   async createEnrollment(insertEnrollment: InsertEnrollment): Promise<Enrollment> {
     const id = this.currentIds.enrollments++;
-    const enrollment: Enrollment = { ...insertEnrollment, id };
+    const enrollment: Enrollment = { 
+      ...insertEnrollment, 
+      id,
+      progress: insertEnrollment.progress || 0,
+      completed: insertEnrollment.completed || false
+    };
     this.enrollments.set(`${enrollment.userId}-${enrollment.courseId}`, enrollment);
     
     // Update user stats
     const userStats = await this.getUserStats(enrollment.userId);
     if (userStats) {
       await this.updateUserStats(enrollment.userId, {
-        coursesInProgress: userStats.coursesInProgress + 1
+        coursesInProgress: (userStats.coursesInProgress || 0) + 1
       });
     }
     
@@ -335,8 +347,8 @@ export class MemStorage implements IStorage {
       const userStats = await this.getUserStats(userId);
       if (userStats) {
         await this.updateUserStats(userId, {
-          coursesInProgress: Math.max(0, userStats.coursesInProgress - 1),
-          certificatesEarned: userStats.certificatesEarned + 1
+          coursesInProgress: Math.max(0, (userStats.coursesInProgress || 0) - 1),
+          certificatesEarned: (userStats.certificatesEarned || 0) + 1
         });
       }
     }
@@ -355,7 +367,13 @@ export class MemStorage implements IStorage {
   
   async createOpportunity(insertOpportunity: InsertOpportunity): Promise<Opportunity> {
     const id = this.currentIds.opportunities++;
-    const opportunity: Opportunity = { ...insertOpportunity, id };
+    const opportunity: Opportunity = { 
+      ...insertOpportunity, 
+      id,
+      logoUrl: insertOpportunity.logoUrl || null,
+      duration: insertOpportunity.duration || null,
+      deadline: insertOpportunity.deadline || null
+    };
     this.opportunities.set(id, opportunity);
     return opportunity;
   }
@@ -371,7 +389,13 @@ export class MemStorage implements IStorage {
   
   async createMentor(insertMentor: InsertMentor): Promise<Mentor> {
     const id = this.currentIds.mentors++;
-    const mentor: Mentor = { ...insertMentor, id };
+    const mentor: Mentor = { 
+      ...insertMentor, 
+      id,
+      profileImage: insertMentor.profileImage || null,
+      contactInfo: insertMentor.contactInfo || null,
+      skills: insertMentor.skills || null
+    };
     this.mentors.set(id, mentor);
     return mentor;
   }
@@ -387,7 +411,13 @@ export class MemStorage implements IStorage {
   
   async createArticle(insertArticle: InsertArticle): Promise<Article> {
     const id = this.currentIds.articles++;
-    const article: Article = { ...insertArticle, id };
+    const article: Article = { 
+      ...insertArticle, 
+      id,
+      imageUrl: insertArticle.imageUrl || null,
+      authorImage: insertArticle.authorImage || null,
+      readTime: insertArticle.readTime || null
+    };
     this.articles.set(id, article);
     return article;
   }
@@ -404,14 +434,18 @@ export class MemStorage implements IStorage {
   
   async createCertificate(insertCertificate: InsertCertificate): Promise<Certificate> {
     const id = this.currentIds.certificates++;
-    const certificate: Certificate = { ...insertCertificate, id };
+    const certificate: Certificate = { 
+      ...insertCertificate, 
+      id,
+      certificateUrl: insertCertificate.certificateUrl || null
+    };
     this.certificates.set(id, certificate);
     
     // Update user stats
     const userStats = await this.getUserStats(certificate.userId);
     if (userStats) {
       await this.updateUserStats(certificate.userId, {
-        certificatesEarned: userStats.certificatesEarned + 1
+        certificatesEarned: (userStats.certificatesEarned || 0) + 1
       });
     }
     
@@ -425,7 +459,14 @@ export class MemStorage implements IStorage {
   
   async createUserStats(insertStats: InsertStats): Promise<Stats> {
     const id = this.currentIds.stats++;
-    const stats: Stats = { ...insertStats, id };
+    const stats: Stats = { 
+      ...insertStats, 
+      id,
+      coursesInProgress: insertStats.coursesInProgress || 0,
+      certificatesEarned: insertStats.certificatesEarned || 0,
+      mentorSessions: insertStats.mentorSessions || 0,
+      opportunitiesSaved: insertStats.opportunitiesSaved || 0
+    };
     this.stats.set(stats.userId, stats);
     return stats;
   }
