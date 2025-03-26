@@ -13,35 +13,39 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import Landing from "@/pages/Landing"; // Import the Landing component
+
 
 function Router() {
   const [location, setLocation] = useLocation();
-  
+
   // Redirect to login if not on login or register page
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch('/api/user');
-        
+
         if (!response.ok && 
             !location.startsWith('/login') && 
-            !location.startsWith('/register')) {
+            !location.startsWith('/register') &&
+            !location.startsWith('/')) { //Added check for landing page
           setLocation('/login');
         }
       } catch (error) {
         if (!location.startsWith('/login') && 
-            !location.startsWith('/register')) {
+            !location.startsWith('/register') &&
+            !location.startsWith('/')) { //Added check for landing page
           setLocation('/login');
         }
       }
     };
-    
+
     checkAuth();
   }, [location, setLocation]);
-  
+
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
+      <Route path="/" component={Landing} /> {/*Added route for landing page*/}
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/courses" component={Courses} />
       <Route path="/opportunities" component={Opportunities} />
