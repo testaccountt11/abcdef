@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -27,144 +26,95 @@ export default function Landing() {
     { icon: "👨‍🏫", title: "Менторы", desc: "Получай советы от лучших преподавателей" }
   ];
 
-  const steps = [
-    { number: 1, title: "Регистрация", desc: "Создай аккаунт и укажи цели" },
-    { number: 2, title: "Выбор пути", desc: "Курсы, стажировки, менторы – всё в одном месте!" },
-    { number: 3, title: "Развитие", desc: "Проходи обучение, собирай сертификаты и добивайся успеха!" }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
+    <div className="min-h-screen">
+      <nav className="fixed top-0 w-full z-50 glass-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <motion.div 
-              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400"
+              className="text-3xl font-bold text-gradient"
               whileHover={{ scale: 1.05 }}
             >
               Portfol.IO
             </motion.div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" className="text-white hover:text-blue-400">О нас</Button>
-              <Button variant="ghost" className="text-white hover:text-blue-400">Курсы</Button>
-              <Button variant="ghost" className="text-white hover:text-blue-400">Менторы</Button>
+            <div className="flex items-center gap-6">
+              <Button variant="ghost" className="text-white/80 hover:text-white">О нас</Button>
+              <Button variant="ghost" className="text-white/80 hover:text-white">Курсы</Button>
+              <Button variant="ghost" className="text-white/80 hover:text-white">Менторы</Button>
               <Button 
                 onClick={() => setLocation("/login")}
-                className="bg-white/10 hover:bg-white/20 text-white"
+                className="glow bg-white/10 hover:bg-white/20"
               >
                 Войти
-              </Button>
-              <Button 
-                onClick={() => setLocation("/register")}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-              >
-                Регистрация
               </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <motion.section 
-        className="pt-32 pb-20 px-6 relative"
-        initial="initial"
-        animate="animate"
-        variants={staggerChildren}
-      >
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-        <div className="container mx-auto text-center relative">
+      <main className="pt-32 px-6">
+        <motion.section 
+          className="container mx-auto text-center"
+          initial="initial"
+          animate="animate"
+          variants={staggerChildren}
+        >
           <motion.h1 
-            className="text-4xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+            className="text-5xl md:text-7xl font-bold mb-6 text-gradient"
             variants={fadeIn}
           >
             Создай своё успешное будущее
           </motion.h1>
           <motion.p 
-            className="text-xl text-blue-200 mb-8 max-w-2xl mx-auto"
+            className="text-xl text-white/60 mb-12 max-w-2xl mx-auto"
             variants={fadeIn}
           >
-            Платформа нового поколения для развития твоего потенциала через курсы, стажировки и менторство
+            Платформа для студентов, помогающая найти курсы, стажировки и менторов для поступления в лучшие вузы
           </motion.p>
           <motion.div 
-            className="flex justify-center gap-4"
+            className="flex flex-wrap justify-center gap-4"
             variants={fadeIn}
           >
             <Button 
+              className="glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-lg py-6 px-8"
               onClick={() => setLocation("/register")}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-8 py-6 text-lg"
             >
-              Начать бесплатно
+              Попробовать бесплатно
             </Button>
             <Button 
-              variant="outline"
-              className="border-blue-400 text-blue-400 hover:bg-blue-400/10 px-8 py-6 text-lg"
+              variant="outline" 
+              className="border-white/10 hover:bg-white/5 text-lg py-6 px-8"
             >
               Узнать больше
             </Button>
           </motion.div>
-        </div>
-      </motion.section>
+        </motion.section>
 
-      {/* Features */}
-      <motion.section 
-        className="py-20 px-6"
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true }}
-        variants={staggerChildren}
-      >
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.section 
+          className="container mx-auto py-32"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerChildren}
+        >
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, i) => (
               <motion.div
                 key={i}
-                className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all"
+                className="glass-card rounded-2xl p-8 hover:bg-white/5 transition-colors"
                 variants={fadeIn}
-                whileHover={{ scale: 1.05, y: -10 }}
+                whileHover={{ y: -10 }}
               >
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                <div className="text-5xl mb-6">{feature.icon}</div>
+                <h3 className="text-xl font-bold mb-4 text-gradient">
                   {feature.title}
                 </h3>
-                <p className="text-blue-200">{feature.desc}</p>
+                <p className="text-white/60">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
-        </div>
-      </motion.section>
-
-      {/* How it works */}
-      <motion.section 
-        className="py-20 px-6 relative"
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true }}
-        variants={staggerChildren}
-      >
-        <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Как это работает?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10"
-                variants={fadeIn}
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                  {step.number}
-                </div>
-                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                <p className="text-blue-200">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
+        </motion.section>
+      </main>
     </div>
   );
 }
