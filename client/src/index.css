@@ -3,46 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-gradient {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-}
-
-.glass-dark {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-}
-
-.glass-light {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.glow {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.glow:hover {
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-}
-
 :root {
   --background: 224 71% 4%;
   --foreground: 213 31% 91%;
