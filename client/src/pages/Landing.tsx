@@ -34,52 +34,73 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Header */}
-      <nav className="fixed w-full bg-white/80 backdrop-blur-sm z-50 transition-all duration-300">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">P.IO</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <motion.div 
+              className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400"
+              whileHover={{ scale: 1.05 }}
+            >
+              Portfol.IO
+            </motion.div>
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" className="text-white hover:text-blue-400">О нас</Button>
+              <Button variant="ghost" className="text-white hover:text-blue-400">Курсы</Button>
+              <Button variant="ghost" className="text-white hover:text-blue-400">Менторы</Button>
+              <Button 
+                onClick={() => setLocation("/login")}
+                className="bg-white/10 hover:bg-white/20 text-white"
+              >
+                Войти
+              </Button>
+              <Button 
+                onClick={() => setLocation("/register")}
+                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+              >
+                Регистрация
+              </Button>
             </div>
-            <span className="text-xl font-bold">Portfol.IO</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <Button variant="ghost">О нас</Button>
-            <Button variant="ghost">Курсы</Button>
-            <Button variant="ghost">Стажировки</Button>
-            <Button variant="ghost">Менторы</Button>
-            <Button onClick={() => setLocation("/login")}>Войти</Button>
-            <Button variant="default" onClick={() => setLocation("/register")}>Регистрация</Button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
       <motion.section 
-        className="pt-32 pb-20 px-6"
+        className="pt-32 pb-20 px-6 relative"
         initial="initial"
         animate="animate"
         variants={staggerChildren}
       >
-        <div className="container mx-auto text-center">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+        <div className="container mx-auto text-center relative">
           <motion.h1 
-            className="text-4xl md:text-6xl font-bold mb-6"
+            className="text-4xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
             variants={fadeIn}
           >
-            Создай своё успешное будущее с Portfol.IO!
+            Создай своё успешное будущее
           </motion.h1>
           <motion.p 
-            className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
+            className="text-xl text-blue-200 mb-8 max-w-2xl mx-auto"
             variants={fadeIn}
           >
-            Платформа для студентов, помогающая найти курсы, стажировки и менторов для поступления в лучшие вузы.
+            Платформа нового поколения для развития твоего потенциала через курсы, стажировки и менторство
           </motion.p>
-          <motion.div className="space-x-4" variants={fadeIn}>
-            <Button size="lg" onClick={() => setLocation("/register")}>
-              Попробовать бесплатно
+          <motion.div 
+            className="flex justify-center gap-4"
+            variants={fadeIn}
+          >
+            <Button 
+              onClick={() => setLocation("/register")}
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-8 py-6 text-lg"
+            >
+              Начать бесплатно
             </Button>
-            <Button size="lg" variant="outline">
+            <Button 
+              variant="outline"
+              className="border-blue-400 text-blue-400 hover:bg-blue-400/10 px-8 py-6 text-lg"
+            >
               Узнать больше
             </Button>
           </motion.div>
@@ -88,25 +109,26 @@ export default function Landing() {
 
       {/* Features */}
       <motion.section 
-        className="py-20 px-6 bg-blue-50"
+        className="py-20 px-6"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true }}
         variants={staggerChildren}
       >
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Почему Portfol.IO?</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, i) => (
               <motion.div
                 key={i}
-                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all"
+                className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 hover:bg-white/10 transition-all"
                 variants={fadeIn}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -10 }}
               >
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.desc}</p>
+                <div className="text-5xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                  {feature.title}
+                </h3>
+                <p className="text-blue-200">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -115,70 +137,34 @@ export default function Landing() {
 
       {/* How it works */}
       <motion.section 
-        className="py-20 px-6"
+        className="py-20 px-6 relative"
         initial="initial"
         whileInView="animate"
         viewport={{ once: true }}
         variants={staggerChildren}
       >
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Как это работает?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            Как это работает?
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, i) => (
               <motion.div
                 key={i}
-                className="relative"
+                className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10"
                 variants={fadeIn}
+                whileHover={{ scale: 1.05 }}
               >
-                <div className="text-6xl font-bold text-blue-100 absolute -top-8 left-0">
+                <div className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
                   {step.number}
                 </div>
-                <div className="bg-white rounded-xl p-6 relative z-10">
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-gray-600">{step.desc}</p>
-                </div>
+                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                <p className="text-blue-200">{step.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-6">
-        <div className="container mx-auto grid md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="font-bold text-xl mb-4">Portfol.IO</h3>
-            <p className="text-gray-400">Построй своё успешное будущее с нами</p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Ссылки</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>О нас</li>
-              <li>Курсы</li>
-              <li>Стажировки</li>
-              <li>Менторы</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Контакты</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>Email: info@portfol.io</li>
-              <li>Telegram: @portfolio</li>
-              <li>Instagram: @portfol.io</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Правовая информация</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>Условия использования</li>
-              <li>Политика конфиденциальности</li>
-            </ul>
-          </div>
-        </div>
-        <div className="container mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
-          © 2024 Portfol.IO – Все права защищены.
-        </div>
-      </footer>
     </div>
   );
 }
