@@ -46,13 +46,19 @@ export default function Register() {
 
   const handleGoogleSignUp = async () => {
     try {
+      // Log Firebase config without sensitive data for debugging
+      console.log("Firebase Project ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
+      
       const result = await signInWithGoogle();
       const user = result.user;
+      
+      console.log("Google sign-in successful", user.email);
       
       // Create user in our backend
       const response = await apiRequest('POST', '/api/register/firebase', {
         uid: user.uid,
         email: user.email,
+        username: user.displayName?.toLowerCase().replace(/\s+/g, '_') || `user_${Date.now()}`,
         displayName: user.displayName,
         photoURL: user.photoURL
       });
@@ -68,11 +74,29 @@ export default function Register() {
         setLocation('/dashboard');
       }
     } catch (error: any) {
+      console.error("Google sign-in error:", error.code, error.message);
+      
+      // Show more detailed error message for debugging
       toast({
-        title: "Error",
+        title: `Error: ${error.code || 'Unknown'}`,
         description: error.message || "Failed to sign up with Google",
         variant: "destructive",
       });
+      
+      // Provide helpful messages for common Firebase errors
+      if (error.code === 'auth/configuration-not-found') {
+        toast({
+          title: "Firebase Configuration Error",
+          description: "Google sign-in is not properly configured in Firebase console. Please make sure Google authentication is enabled.",
+          variant: "destructive",
+        });
+      } else if (error.code === 'auth/popup-blocked') {
+        toast({
+          title: "Popup Blocked",
+          description: "Please allow popups for this site to sign in with Google.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -81,9 +105,13 @@ export default function Register() {
       // Remove confirmPassword from the data
       const { confirmPassword, ...userData } = values;
       
+      console.log("Attempting to register with email:", userData.email);
+      
       // Register with Firebase
       const result = await registerWithEmail(userData.email, userData.password);
       const firebaseUser = result.user;
+      
+      console.log("Firebase registration successful:", firebaseUser.uid);
       
       // Register with our backend
       const response = await apiRequest('POST', '/api/register/firebase', {
@@ -105,11 +133,35 @@ export default function Register() {
         setLocation('/dashboard');
       }
     } catch (error: any) {
+      console.error("Registration error:", error.code, error.message);
+      
+      // Show more detailed error message for debugging
       toast({
-        title: "Error",
+        title: `Error: ${error.code || 'Unknown'}`,
         description: error.message || "Failed to create account",
         variant: "destructive",
       });
+      
+      // Provide helpful messages for common Firebase errors
+      if (error.code === 'auth/email-already-in-use') {
+        toast({
+          title: "Email In Use",
+          description: "This email is already associated with an account. Try signing in instead.",
+          variant: "destructive",
+        });
+      } else if (error.code === 'auth/weak-password') {
+        toast({
+          title: "Weak Password",
+          description: "Please use a stronger password with at least 6 characters.",
+          variant: "destructive",
+        });
+      } else if (error.code === 'auth/invalid-email') {
+        toast({
+          title: "Invalid Email",
+          description: "Please provide a valid email address.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
