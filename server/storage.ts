@@ -6,7 +6,11 @@ import {
   mentors, type Mentor, type InsertMentor,
   articles, type Article, type InsertArticle,
   certificates, type Certificate, type InsertCertificate,
-  stats, type Stats, type InsertStats
+  stats, type Stats, type InsertStats,
+  achievements, type Achievement, type InsertAchievement,
+  userAchievements, type UserAchievement, type InsertUserAchievement,
+  badges, type Badge, type InsertBadge,
+  userBadges, type UserBadge, type InsertUserBadge
 } from "@shared/schema";
 
 export interface IStorage {
@@ -52,6 +56,27 @@ export interface IStorage {
   getUserStats(userId: number): Promise<Stats | undefined>;
   createUserStats(stats: InsertStats): Promise<Stats>;
   updateUserStats(userId: number, stats: Partial<InsertStats>): Promise<Stats | undefined>;
+  
+  // Achievements
+  getAchievements(): Promise<Achievement[]>;
+  getAchievement(id: number): Promise<Achievement | undefined>;
+  getAchievementByName(name: string): Promise<Achievement | undefined>;
+  createAchievement(achievement: InsertAchievement): Promise<Achievement>;
+  getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]>;
+  getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined>;
+  createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement>;
+  updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined>;
+  completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined>;
+  
+  // Badges
+  getBadges(): Promise<Badge[]>;
+  getBadge(id: number): Promise<Badge | undefined>;
+  getBadgeByName(name: string): Promise<Badge | undefined>;
+  createBadge(badge: InsertBadge): Promise<Badge>;
+  getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge })[]>;
+  awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge>;
+  updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined>;
+  checkAndAwardBadges(userId: number): Promise<Badge[]>; // Check if user qualifies for new badges
 }
 
 export class MemStorage implements IStorage {
@@ -63,6 +88,10 @@ export class MemStorage implements IStorage {
   private articles: Map<number, Article>;
   private certificates: Map<number, Certificate>;
   private stats: Map<number, Stats>; // key = userId
+  private achievements: Map<number, Achievement>;
+  private userAchievements: Map<string, UserAchievement>; // key = userId-achievementId
+  private badges: Map<number, Badge>;
+  private userBadges: Map<string, UserBadge>; // key = userId-badgeId
   
   private currentIds: {
     users: number;
@@ -73,6 +102,10 @@ export class MemStorage implements IStorage {
     articles: number;
     certificates: number;
     stats: number;
+    achievements: number;
+    userAchievements: number;
+    badges: number;
+    userBadges: number;
   };
 
   constructor() {
@@ -84,6 +117,10 @@ export class MemStorage implements IStorage {
     this.articles = new Map();
     this.certificates = new Map();
     this.stats = new Map();
+    this.achievements = new Map();
+    this.userAchievements = new Map();
+    this.badges = new Map();
+    this.userBadges = new Map();
     
     this.currentIds = {
       users: 1,
@@ -93,7 +130,11 @@ export class MemStorage implements IStorage {
       mentors: 1,
       articles: 1,
       certificates: 1,
-      stats: 1
+      stats: 1,
+      achievements: 1,
+      userAchievements: 1,
+      badges: 1,
+      userBadges: 1
     };
     
     // Initialize with sample data
@@ -228,6 +269,142 @@ export class MemStorage implements IStorage {
     ];
     
     sampleArticles.forEach(article => this.createArticle(article));
+    
+    // Sample achievements
+    const sampleAchievements: InsertAchievement[] = [
+      {
+        name: "Course Explorer",
+        description: "Enroll in your first course",
+        iconUrl: "https://assets.portfol.io/icons/achievements/course-explorer.svg",
+        category: "course",
+        requirement: "Enroll in 1 course",
+        requiredValue: 1,
+        points: 10,
+        isHidden: false
+      },
+      {
+        name: "Knowledge Seeker",
+        description: "Complete your first course",
+        iconUrl: "https://assets.portfol.io/icons/achievements/knowledge-seeker.svg",
+        category: "course",
+        requirement: "Complete 1 course",
+        requiredValue: 1,
+        points: 20,
+        isHidden: false
+      },
+      {
+        name: "Portfolio Builder",
+        description: "Add your first certificate to your profile",
+        iconUrl: "https://assets.portfol.io/icons/achievements/portfolio-builder.svg",
+        category: "certificate",
+        requirement: "Add 1 certificate",
+        requiredValue: 1,
+        points: 15,
+        isHidden: false
+      },
+      {
+        name: "Mentorship Connection",
+        description: "Connect with your first mentor",
+        iconUrl: "https://assets.portfol.io/icons/achievements/mentorship.svg",
+        category: "mentor",
+        requirement: "Connect with 1 mentor",
+        requiredValue: 1,
+        points: 15,
+        isHidden: false
+      },
+      {
+        name: "Opportunity Hunter",
+        description: "Save your first opportunity",
+        iconUrl: "https://assets.portfol.io/icons/achievements/opportunity-hunter.svg",
+        category: "opportunity",
+        requirement: "Save 1 opportunity",
+        requiredValue: 1,
+        points: 10,
+        isHidden: false
+      },
+      {
+        name: "Learning Enthusiast",
+        description: "Complete 5 courses",
+        iconUrl: "https://assets.portfol.io/icons/achievements/learning-enthusiast.svg",
+        category: "course",
+        requirement: "Complete 5 courses",
+        requiredValue: 5,
+        points: 50,
+        isHidden: false
+      },
+      {
+        name: "Certificate Collector",
+        description: "Earn 10 certificates",
+        iconUrl: "https://assets.portfol.io/icons/achievements/certificate-collector.svg",
+        category: "certificate",
+        requirement: "Earn 10 certificates",
+        requiredValue: 10,
+        points: 100,
+        isHidden: false
+      }
+    ];
+    
+    sampleAchievements.forEach(achievement => this.createAchievement(achievement));
+    
+    // Sample badges
+    const sampleBadges: InsertBadge[] = [
+      {
+        name: "Beginner",
+        description: "You've started your educational journey",
+        iconUrl: "https://assets.portfol.io/icons/badges/beginner.svg",
+        category: "level",
+        level: 1,
+        requiredPoints: 30,
+        isRare: false
+      },
+      {
+        name: "Intermediate",
+        description: "You're making good progress in your studies",
+        iconUrl: "https://assets.portfol.io/icons/badges/intermediate.svg",
+        category: "level",
+        level: 2,
+        requiredPoints: 100,
+        isRare: false
+      },
+      {
+        name: "Advanced",
+        description: "You've demonstrated significant educational achievements",
+        iconUrl: "https://assets.portfol.io/icons/badges/advanced.svg",
+        category: "level",
+        level: 3,
+        requiredPoints: 250,
+        isRare: false
+      },
+      {
+        name: "Expert",
+        description: "You've mastered a wide range of educational content",
+        iconUrl: "https://assets.portfol.io/icons/badges/expert.svg",
+        category: "level",
+        level: 4,
+        requiredPoints: 500,
+        isRare: true
+      },
+      {
+        name: "Course Master",
+        description: "Special badge for completing 10+ courses",
+        iconUrl: "https://assets.portfol.io/icons/badges/course-master.svg",
+        category: "special",
+        level: 5,
+        requiredPoints: 150,
+        isRare: true
+      },
+      {
+        name: "Portfolio Champion",
+        description: "Special badge for building an exceptional portfolio",
+        iconUrl: "https://assets.portfol.io/icons/badges/portfolio-champion.svg",
+        category: "special",
+        level: 5,
+        requiredPoints: 200,
+        isRare: true
+      }
+    ];
+    
+    sampleBadges.forEach(badge => this.createBadge(badge));
   }
 
   // User methods
@@ -489,6 +666,240 @@ export class MemStorage implements IStorage {
     this.stats.set(userId, updatedStats);
     
     return updatedStats;
+  }
+  
+  // Achievement methods
+  async getAchievements(): Promise<Achievement[]> {
+    return Array.from(this.achievements.values());
+  }
+  
+  async getAchievement(id: number): Promise<Achievement | undefined> {
+    return this.achievements.get(id);
+  }
+  
+  async getAchievementByName(name: string): Promise<Achievement | undefined> {
+    return Array.from(this.achievements.values()).find(
+      (achievement) => achievement.name === name,
+    );
+  }
+  
+  async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
+    const id = this.currentIds.achievements++;
+    const achievement: Achievement = { 
+      ...insertAchievement, 
+      id,
+      createdAt: new Date()
+    };
+    this.achievements.set(id, achievement);
+    return achievement;
+  }
+  
+  async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
+    const userAchievements = Array.from(this.userAchievements.values())
+      .filter(ua => ua.userId === userId);
+    
+    return userAchievements.map(ua => {
+      const achievement = this.achievements.get(ua.achievementId);
+      if (!achievement) return null;
+      return { ...ua, achievement };
+    }).filter(Boolean) as (UserAchievement & { achievement: Achievement })[];
+  }
+  
+  async getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined> {
+    return this.userAchievements.get(`${userId}-${achievementId}`);
+  }
+  
+  async createUserAchievement(insertUserAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const id = this.currentIds.userAchievements++;
+    const userAchievement: UserAchievement = { 
+      ...insertUserAchievement, 
+      id,
+      earnedAt: insertUserAchievement.isComplete ? new Date() : null,
+      progress: insertUserAchievement.progress || 0,
+      isComplete: insertUserAchievement.isComplete || false,
+      completedValue: insertUserAchievement.completedValue || 0
+    };
+    
+    const key = `${userAchievement.userId}-${userAchievement.achievementId}`;
+    this.userAchievements.set(key, userAchievement);
+    
+    // Check for badge qualification if achievement is complete
+    if (userAchievement.isComplete) {
+      await this.checkAndAwardBadges(userAchievement.userId);
+    }
+    
+    return userAchievement;
+  }
+  
+  async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined> {
+    const key = `${userId}-${achievementId}`;
+    const userAchievement = this.userAchievements.get(key);
+    
+    if (!userAchievement) return undefined;
+    
+    const achievement = await this.getAchievement(achievementId);
+    if (!achievement) return undefined;
+    
+    // If progress meets the required value, mark as complete
+    const isComplete = progress >= achievement.requiredValue;
+    
+    const updatedUserAchievement: UserAchievement = {
+      ...userAchievement,
+      progress,
+      isComplete,
+      earnedAt: isComplete && !userAchievement.isComplete ? new Date() : userAchievement.earnedAt,
+      completedValue: isComplete ? progress : userAchievement.completedValue
+    };
+    
+    this.userAchievements.set(key, updatedUserAchievement);
+    
+    // Check for badge qualification if achievement is newly completed
+    if (isComplete && !userAchievement.isComplete) {
+      await this.checkAndAwardBadges(userId);
+    }
+    
+    return updatedUserAchievement;
+  }
+  
+  async completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
+    const key = `${userId}-${achievementId}`;
+    const userAchievement = this.userAchievements.get(key);
+    
+    if (!userAchievement) {
+      // If the user doesn't have this achievement tracked yet, create it
+      const achievement = await this.getAchievement(achievementId);
+      if (!achievement) return undefined;
+      
+      return this.createUserAchievement({
+        userId,
+        achievementId,
+        progress: completedValue,
+        isComplete: true,
+        completedValue
+      });
+    }
+    
+    const updatedUserAchievement: UserAchievement = {
+      ...userAchievement,
+      progress: completedValue,
+      isComplete: true,
+      earnedAt: new Date(),
+      completedValue
+    };
+    
+    this.userAchievements.set(key, updatedUserAchievement);
+    
+    // Check for badge qualification
+    await this.checkAndAwardBadges(userId);
+    
+    return updatedUserAchievement;
+  }
+  
+  // Badge methods
+  async getBadges(): Promise<Badge[]> {
+    return Array.from(this.badges.values());
+  }
+  
+  async getBadge(id: number): Promise<Badge | undefined> {
+    return this.badges.get(id);
+  }
+  
+  async getBadgeByName(name: string): Promise<Badge | undefined> {
+    return Array.from(this.badges.values()).find(
+      (badge) => badge.name === name,
+    );
+  }
+  
+  async createBadge(insertBadge: InsertBadge): Promise<Badge> {
+    const id = this.currentIds.badges++;
+    const badge: Badge = { 
+      ...insertBadge, 
+      id,
+      createdAt: new Date()
+    };
+    this.badges.set(id, badge);
+    return badge;
+  }
+  
+  async getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge })[]> {
+    const userBadges = Array.from(this.userBadges.values())
+      .filter(ub => ub.userId === userId);
+    
+    return userBadges.map(ub => {
+      const badge = this.badges.get(ub.badgeId);
+      if (!badge) return null;
+      return { ...ub, badge };
+    }).filter(Boolean) as (UserBadge & { badge: Badge })[];
+  }
+  
+  async awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge> {
+    // Check if user already has this badge
+    const existingKey = `${userId}-${badgeId}`;
+    const existingUserBadge = this.userBadges.get(existingKey);
+    
+    if (existingUserBadge) {
+      return existingUserBadge;
+    }
+    
+    const id = this.currentIds.userBadges++;
+    const userBadge: UserBadge = {
+      id,
+      userId,
+      badgeId,
+      earnedAt: new Date(),
+      displayOnProfile: true
+    };
+    
+    this.userBadges.set(existingKey, userBadge);
+    
+    return userBadge;
+  }
+  
+  async updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined> {
+    const key = `${userId}-${badgeId}`;
+    const userBadge = this.userBadges.get(key);
+    
+    if (!userBadge) return undefined;
+    
+    const updatedUserBadge: UserBadge = {
+      ...userBadge,
+      displayOnProfile
+    };
+    
+    this.userBadges.set(key, updatedUserBadge);
+    
+    return updatedUserBadge;
+  }
+  
+  async checkAndAwardBadges(userId: number): Promise<Badge[]> {
+    // Calculate user's total points from completed achievements
+    const userAchievements = await this.getUserAchievements(userId);
+    const completedAchievements = userAchievements.filter(ua => ua.isComplete);
+    
+    let totalPoints = 0;
+    completedAchievements.forEach(ua => {
+      totalPoints += ua.achievement.points;
+    });
+    
+    // Get all badges the user doesn't have yet
+    const userBadges = await this.getUserBadges(userId);
+    const userBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
+    
+    const allBadges = await this.getBadges();
+    const eligibleBadges = allBadges.filter(badge => 
+      !userBadgeIds.has(badge.id) && 
+      totalPoints >= badge.requiredPoints
+    );
+    
+    // Award new badges
+    const newlyAwardedBadges: Badge[] = [];
+    
+    for (const badge of eligibleBadges) {
+      await this.awardBadgeToUser(userId, badge.id);
+      newlyAwardedBadges.push(badge);
+    }
+    
+    return newlyAwardedBadges;
   }
 }
 

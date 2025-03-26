@@ -194,11 +194,131 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
   }),
 }));
 
+// Achievements schema
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  description: text("description").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  category: text("category").notNull(), // "course", "certificate", "mentor", "profile", etc.
+  requirement: text("requirement").notNull(), // Description of how to earn
+  requiredValue: integer("required_value").default(1), // Threshold to earn achievement
+  points: integer("points").default(10),
+  isHidden: boolean("is_hidden").default(false), // Some achievements can be hidden/secret
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAchievementSchema = createInsertSchema(achievements).pick({
+  name: true,
+  description: true,
+  iconUrl: true,
+  category: true,
+  requirement: true,
+  requiredValue: true,
+  points: true,
+  isHidden: true,
+});
+
+// User achievements junction table
+export const userAchievements = pgTable("user_achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  achievementId: integer("achievement_id").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  progress: integer("progress").default(0), // For tracking partial progress
+  isComplete: boolean("is_complete").default(false),
+  completedValue: integer("completed_value").default(0), // The actual value when completed
+});
+
+export const insertUserAchievementSchema = createInsertSchema(userAchievements).pick({
+  userId: true,
+  achievementId: true,
+  progress: true,
+  isComplete: true,
+  completedValue: true,
+});
+
+// Badges schema (special achievements or level indicators)
+export const badges = pgTable("badges", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  description: text("description").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  category: text("category").notNull(), // "beginner", "intermediate", "expert", "special"
+  level: integer("level").default(1),
+  requiredPoints: integer("required_points").default(100), // Points needed to earn
+  isRare: boolean("is_rare").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBadgeSchema = createInsertSchema(badges).pick({
+  name: true,
+  description: true,
+  iconUrl: true,
+  category: true,
+  level: true,
+  requiredPoints: true,
+  isRare: true,
+});
+
+// User badges junction table
+export const userBadges = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  badgeId: integer("badge_id").notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+  displayOnProfile: boolean("display_on_profile").default(true),
+});
+
+export const insertUserBadgeSchema = createInsertSchema(userBadges).pick({
+  userId: true,
+  badgeId: true,
+  displayOnProfile: true,
+});
+
 export const statsRelations = relations(stats, ({ one }) => ({
   user: one(users, {
     fields: [stats.userId],
     references: [users.id],
   }),
+}));
+
+export const achievementsRelations = relations(achievements, ({ many }) => ({
+  userAchievements: many(userAchievements),
+}));
+
+export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+  user: one(users, {
+    fields: [userAchievements.userId],
+    references: [users.id],
+  }),
+  achievement: one(achievements, {
+    fields: [userAchievements.achievementId],
+    references: [achievements.id],
+  }),
+}));
+
+export const badgesRelations = relations(badges, ({ many }) => ({
+  userBadges: many(userBadges),
+}));
+
+export const userBadgesRelations = relations(userBadges, ({ one }) => ({
+  user: one(users, {
+    fields: [userBadges.userId],
+    references: [users.id],
+  }),
+  badge: one(badges, {
+    fields: [userBadges.badgeId],
+    references: [badges.id],
+  }),
+}));
+
+export const usersRelationsWithAchievements = relations(users, ({ many, one }) => ({
+  enrollments: many(enrollments),
+  certificates: many(certificates),
+  stats: one(stats),
+  achievements: many(userAchievements),
+  badges: many(userBadges),
 }));
 
 // Export all types
@@ -225,3 +345,15 @@ export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
 
 export type Stats = typeof stats.$inferSelect;
 export type InsertStats = z.infer<typeof insertStatsSchema>;
+
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+
+export type Badge = typeof badges.$inferSelect;
+export type InsertBadge = z.infer<typeof insertBadgeSchema>;
+
+export type UserBadge = typeof userBadges.$inferSelect;
+export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
