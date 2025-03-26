@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -20,79 +20,165 @@ const staggerChildren = {
 export default function Landing() {
   const [, setLocation] = useLocation();
 
+  const features = [
+    { icon: "📝", title: "Персональные планы", desc: "AI поможет создать стратегию обучения и развития" },
+    { icon: "🎓", title: "Лучшие курсы", desc: "Подобранные возможности для портфолио" },
+    { icon: "🏆", title: "Олимпиады", desc: "Участвуй и выигрывай стипендии" },
+    { icon: "👨‍🏫", title: "Менторы", desc: "Получай советы от лучших преподавателей" }
+  ];
+
+  const steps = [
+    { number: 1, title: "Регистрация", desc: "Создай аккаунт и укажи цели" },
+    { number: 2, title: "Выбор пути", desc: "Курсы, стажировки, менторы – всё в одном месте!" },
+    { number: 3, title: "Развитие", desc: "Проходи обучение, собирай сертификаты и добивайся успеха!" }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-50 to-primary-100 overflow-x-hidden">
-      <nav className="py-4 px-6 backdrop-blur-sm bg-white/30 fixed w-full z-50">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-md bg-primary-600 flex items-center justify-center text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
-                <path d="M16 6H3v12h13V6z" />
-                <path d="M8 2v4" />
-                <path d="M16 2v4" />
-                <path d="M8 12h4" />
-              </svg>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Header */}
+      <nav className="fixed w-full bg-white/80 backdrop-blur-sm z-50 transition-all duration-300">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold">P.IO</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900 ml-2">Portfol.IO</span>
+            <span className="text-xl font-bold">Portfol.IO</span>
           </div>
-          <div className="space-x-4">
-            <Button variant="ghost" onClick={() => setLocation("/login")}>Войти</Button>
-            <Button onClick={() => setLocation("/register")}>Начать</Button>
+          <div className="hidden md:flex items-center space-x-8">
+            <Button variant="ghost">О нас</Button>
+            <Button variant="ghost">Курсы</Button>
+            <Button variant="ghost">Стажировки</Button>
+            <Button variant="ghost">Менторы</Button>
+            <Button onClick={() => setLocation("/login")}>Войти</Button>
+            <Button variant="default" onClick={() => setLocation("/register")}>Регистрация</Button>
           </div>
         </div>
       </nav>
 
-      <main className="container mx-auto px-6 pt-32">
-        <motion.div initial="initial" animate="animate" variants={staggerChildren} className="text-center mb-32">
-          <motion.h1 variants={fadeIn} className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Построй своё успешное будущее с Portfol.IO!
+      {/* Hero Section */}
+      <motion.section 
+        className="pt-32 pb-20 px-6"
+        initial="initial"
+        animate="animate"
+        variants={staggerChildren}
+      >
+        <div className="container mx-auto text-center">
+          <motion.h1 
+            className="text-4xl md:text-6xl font-bold mb-6"
+            variants={fadeIn}
+          >
+            Создай своё успешное будущее с Portfol.IO!
           </motion.h1>
-          <motion.p variants={fadeIn} className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            Платформа для студентов и молодых специалистов, где вы можете отслеживать свое обучение, 
-            находить стажировки и выстраивать свою карьеру.
+          <motion.p 
+            className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
+            variants={fadeIn}
+          >
+            Платформа для студентов, помогающая найти курсы, стажировки и менторов для поступления в лучшие вузы.
           </motion.p>
-          <motion.div variants={fadeIn} className="flex justify-center gap-4">
-            <Button size="lg" onClick={() => setLocation("/register")} className="text-lg px-8 py-6">
-              Начать бесплатно
+          <motion.div className="space-x-4" variants={fadeIn}>
+            <Button size="lg" onClick={() => setLocation("/register")}>
+              Попробовать бесплатно
             </Button>
-            <Button size="lg" variant="outline" onClick={() => setLocation("/courses")} className="text-lg px-8 py-6">
-              Смотреть курсы
+            <Button size="lg" variant="outline">
+              Узнать больше
             </Button>
           </motion.div>
-        </motion.div>
+        </div>
+      </motion.section>
 
-        <motion.div variants={staggerChildren} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          {[
-            { icon: "🎓", title: "Курсы", desc: "Доступ к качественным курсам от нас и партнеров" },
-            { icon: "💼", title: "Стажировки", desc: "Возможности для практики и карьерного роста" },
-            { icon: "🏆", title: "Олимпиады", desc: "Участвуйте в конкурсах и олимпиадах" },
-            { icon: "🧑‍🏫", title: "Менторство", desc: "Поддержка от опытных специалистов" },
-            { icon: "📚", title: "Подготовка", desc: "Советы по экзаменам и поступлению" },
-            { icon: "🌟", title: "Портфолио", desc: "Создайте впечатляющее цифровое портфолио" }
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              variants={fadeIn}
-              className="p-6 backdrop-blur-md bg-white/30 rounded-xl shadow-lg hover:shadow-xl transition-all"
-            >
-              <div className="text-4xl mb-4">{feature.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div variants={fadeIn} initial="initial" animate="animate" className="text-center mb-32">
-          <h2 className="text-3xl font-bold mb-12">Наши партнеры</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-20 bg-white/30 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                <div className="text-gray-400">Логотип {i}</div>
-              </div>
+      {/* Features */}
+      <motion.section 
+        className="py-20 px-6 bg-blue-50"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+        variants={staggerChildren}
+      >
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Почему Portfol.IO?</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, i) => (
+              <motion.div
+                key={i}
+                className="bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:shadow-lg transition-all"
+                variants={fadeIn}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.desc}</p>
+              </motion.div>
             ))}
           </div>
-        </motion.div>
-      </main>
+        </div>
+      </motion.section>
+
+      {/* How it works */}
+      <motion.section 
+        className="py-20 px-6"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+        variants={staggerChildren}
+      >
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Как это работает?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step, i) => (
+              <motion.div
+                key={i}
+                className="relative"
+                variants={fadeIn}
+              >
+                <div className="text-6xl font-bold text-blue-100 absolute -top-8 left-0">
+                  {step.number}
+                </div>
+                <div className="bg-white rounded-xl p-6 relative z-10">
+                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                  <p className="text-gray-600">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 px-6">
+        <div className="container mx-auto grid md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="font-bold text-xl mb-4">Portfol.IO</h3>
+            <p className="text-gray-400">Построй своё успешное будущее с нами</p>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4">Ссылки</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>О нас</li>
+              <li>Курсы</li>
+              <li>Стажировки</li>
+              <li>Менторы</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4">Контакты</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>Email: info@portfol.io</li>
+              <li>Telegram: @portfolio</li>
+              <li>Instagram: @portfol.io</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-4">Правовая информация</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>Условия использования</li>
+              <li>Политика конфиденциальности</li>
+            </ul>
+          </div>
+        </div>
+        <div className="container mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+          © 2024 Portfol.IO – Все права защищены.
+        </div>
+      </footer>
     </div>
   );
 }
