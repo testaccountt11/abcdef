@@ -20,99 +20,84 @@ export default function Landing() {
   const [, setLocation] = useLocation();
 
   const features = [
-    { icon: "📝", title: "Персональные планы", desc: "AI поможет создать стратегию обучения и развития" },
-    { icon: "🎓", title: "Лучшие курсы", desc: "Подобранные возможности для портфолио" },
+    { icon: "🎯", title: "Личный путь", desc: "AI создаст индивидуальный план развития" },
+    { icon: "🎓", title: "Топ курсы", desc: "Лучшие возможности для портфолио" },
     { icon: "🏆", title: "Олимпиады", desc: "Участвуй и выигрывай стипендии" },
-    { icon: "👨‍🏫", title: "Менторы", desc: "Получай советы от лучших преподавателей" }
+    { icon: "👥", title: "Менторство", desc: "Поддержка от профессионалов" }
   ];
 
   return (
     <div className="min-h-screen">
-      <nav className="fixed top-0 w-full z-50 glass-card">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <motion.div 
-              className="text-3xl font-bold text-gradient"
-              whileHover={{ scale: 1.05 }}
-            >
-              Portfol.IO
-            </motion.div>
-            <div className="flex items-center gap-6">
-              <Button variant="ghost" className="text-white/80 hover:text-white">О нас</Button>
-              <Button variant="ghost" className="text-white/80 hover:text-white">Курсы</Button>
-              <Button variant="ghost" className="text-white/80 hover:text-white">Менторы</Button>
-              <Button 
-                onClick={() => setLocation("/login")}
-                className="glow bg-white/10 hover:bg-white/20"
-              >
-                Войти
-              </Button>
+      <nav className="fixed w-full z-50 top-0 px-6 py-4">
+        <div className="glass max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center space-x-8">
+            <h1 className="text-2xl font-bold text-gradient">Portfol.IO</h1>
+            <div className="hidden md:flex space-x-6">
+              {["О нас", "Курсы", "Стажировки", "Менторы"].map(item => (
+                <a key={item} className="text-sm text-white/70 hover:text-white transition-colors">{item}</a>
+              ))}
             </div>
           </div>
+          <Button onClick={() => setLocation("/login")} className="glow glass">
+            Войти
+          </Button>
         </div>
       </nav>
 
       <main className="pt-32 px-6">
         <motion.section 
-          className="container mx-auto text-center"
+          className="max-w-7xl mx-auto text-center"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold mb-6 text-gradient"
+            className="text-5xl md:text-7xl font-bold mb-6 text-gradient leading-tight"
             variants={fadeIn}
           >
-            Создай своё успешное будущее
+            Построй свое будущее<br />с Portfol.IO
           </motion.h1>
           <motion.p 
             className="text-xl text-white/60 mb-12 max-w-2xl mx-auto"
             variants={fadeIn}
           >
-            Платформа для студентов, помогающая найти курсы, стажировки и менторов для поступления в лучшие вузы
+            Платформа нового поколения для развития твоей карьеры. Курсы, стажировки и менторство в одном месте.
           </motion.p>
+
           <motion.div 
-            className="flex flex-wrap justify-center gap-4"
+            className="flex flex-wrap justify-center gap-4 mb-20"
             variants={fadeIn}
           >
             <Button 
-              className="glow bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-lg py-6 px-8"
+              className="glow bg-gradient-to-r from-[#4A90E2] to-[#87CEEB] text-lg py-6 px-8"
               onClick={() => setLocation("/register")}
             >
-              Попробовать бесплатно
+              Начать бесплатно
             </Button>
             <Button 
-              variant="outline" 
-              className="border-white/10 hover:bg-white/5 text-lg py-6 px-8"
+              className="glow glass text-lg py-6 px-8"
+              variant="outline"
             >
               Узнать больше
             </Button>
           </motion.div>
-        </motion.section>
 
-        <motion.section 
-          className="container mx-auto py-32"
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          variants={staggerChildren}
-        >
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div 
+            className="hero-grid"
+            variants={fadeIn}
+          >
             {features.map((feature, i) => (
-              <motion.div
+              <motion.div 
                 key={i}
-                className="glass-card rounded-2xl p-8 hover:bg-white/5 transition-colors"
-                variants={fadeIn}
-                whileHover={{ y: -10 }}
+                className="glass p-6 text-center animate-float"
+                style={{ animationDelay: `${i * 0.2}s` }}
               >
-                <div className="text-5xl mb-6">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-4 text-gradient">
-                  {feature.title}
-                </h3>
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-white/60">{feature.desc}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </motion.section>
       </main>
     </div>
