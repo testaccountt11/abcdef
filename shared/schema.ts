@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -163,6 +164,42 @@ export const insertStatsSchema = createInsertSchema(stats).pick({
   mentorSessions: true,
   opportunitiesSaved: true,
 });
+
+// Define relations between tables
+export const usersRelations = relations(users, ({ many, one }) => ({
+  enrollments: many(enrollments),
+  certificates: many(certificates),
+  stats: one(stats),
+}));
+
+export const coursesRelations = relations(courses, ({ many }) => ({
+  enrollments: many(enrollments),
+}));
+
+export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
+  user: one(users, {
+    fields: [enrollments.userId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [enrollments.courseId],
+    references: [courses.id],
+  }),
+}));
+
+export const certificatesRelations = relations(certificates, ({ one }) => ({
+  user: one(users, {
+    fields: [certificates.userId],
+    references: [users.id],
+  }),
+}));
+
+export const statsRelations = relations(stats, ({ one }) => ({
+  user: one(users, {
+    fields: [stats.userId],
+    references: [users.id],
+  }),
+}));
 
 // Export all types
 export type User = typeof users.$inferSelect;
