@@ -45,59 +45,11 @@ export default function Register() {
   });
 
   const handleGoogleSignUp = async () => {
-    try {
-      // Log Firebase config without sensitive data for debugging
-      console.log("Firebase Project ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
-      
-      const result = await signInWithGoogle();
-      const user = result.user;
-      
-      console.log("Google sign-in successful", user.email);
-      
-      // Create user in our backend
-      const response = await apiRequest('POST', '/api/register/firebase', {
-        uid: user.uid,
-        email: user.email,
-        username: user.displayName?.toLowerCase().replace(/\s+/g, '_') || `user_${Date.now()}`,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      });
-      
-      const data = await response.json();
-      
-      if (data.user) {
-        login(data.user);
-        toast({
-          title: "Success",
-          description: "Account created with Google successfully",
-        });
-        setLocation('/dashboard');
-      }
-    } catch (error: any) {
-      console.error("Google sign-in error:", error.code, error.message);
-      
-      // Show more detailed error message for debugging
-      toast({
-        title: `Error: ${error.code || 'Unknown'}`,
-        description: error.message || "Failed to sign up with Google",
-        variant: "destructive",
-      });
-      
-      // Provide helpful messages for common Firebase errors
-      if (error.code === 'auth/configuration-not-found') {
-        toast({
-          title: "Firebase Configuration Error",
-          description: "Google sign-in is not properly configured in Firebase console. Please make sure Google authentication is enabled.",
-          variant: "destructive",
-        });
-      } else if (error.code === 'auth/popup-blocked') {
-        toast({
-          title: "Popup Blocked",
-          description: "Please allow popups for this site to sign in with Google.",
-          variant: "destructive",
-        });
-      }
-    }
+    toast({
+      title: "Google Sign-Up Unavailable",
+      description: "Please use email/password registration for now. Google Sign-Up will be available soon.",
+      variant: "destructive",
+    });
   };
 
   const onSubmit = async (values: RegisterFormValues) => {

@@ -34,52 +34,11 @@ export default function Login() {
   });
 
   const handleGoogleLogin = async () => {
-    try {
-      // Log Firebase config without sensitive data for debugging
-      console.log("Firebase Project ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
-      
-      const result = await signInWithGoogle();
-      const user = result.user;
-      
-      console.log("Google sign-in successful", user.email);
-      
-      // Create or sync user with our backend
-      const response = await apiRequest('POST', '/api/login/firebase', {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      });
-      
-      const data = await response.json();
-      
-      if (data.user) {
-        login(data.user);
-        toast({
-          title: "Success",
-          description: "Logged in with Google successfully",
-        });
-        setLocation('/dashboard');
-      }
-    } catch (error: any) {
-      console.error("Google sign-in error:", error.code, error.message);
-      
-      // Show more detailed error message for debugging
-      toast({
-        title: `Error: ${error.code}`,
-        description: error.message || "Failed to login with Google",
-        variant: "destructive",
-      });
-      
-      // Provide helpful messages for common Firebase errors
-      if (error.code === 'auth/configuration-not-found') {
-        toast({
-          title: "Firebase Configuration Error",
-          description: "Google sign-in is not properly configured in Firebase console. Please make sure Google authentication is enabled.",
-          variant: "destructive",
-        });
-      }
-    }
+    toast({
+      title: "Google Sign-In Unavailable",
+      description: "Please use email/password login for now. Google Sign-In will be available soon.",
+      variant: "destructive",
+    });
   };
 
   const onSubmit = async (values: LoginFormValues) => {

@@ -37,6 +37,9 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId
 // Initialize Firebase only once
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
+
+// Configure Firebase auth - explicitly enabling only email/password
+// Google authentication will be added later when Firebase is properly configured
 const googleProvider = new GoogleAuthProvider();
 
 // Use this for better mobile experience
