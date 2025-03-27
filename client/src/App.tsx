@@ -9,6 +9,7 @@ import Opportunities from "@/pages/Opportunities";
 import Mentors from "@/pages/Mentors";
 import Advice from "@/pages/Advice";
 import MyCertificates from "@/pages/MyCertificates";
+import Achievements from "@/pages/Achievements";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/mentors" component={Mentors} />
       <Route path="/advice" component={Advice} />
       <Route path="/certificates" component={MyCertificates} />
+      <Route path="/achievements" component={Achievements} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route component={NotFound} />

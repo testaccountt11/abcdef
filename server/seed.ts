@@ -7,7 +7,11 @@ import {
   articles, 
   enrollments,
   certificates,
-  stats
+  stats,
+  achievements,
+  badges,
+  userAchievements,
+  userBadges
 } from '../shared/schema';
 
 async function seed() {
@@ -15,6 +19,10 @@ async function seed() {
 
   try {
     // Clear existing data to avoid duplicates
+    await db.delete(userBadges);
+    await db.delete(userAchievements);
+    await db.delete(badges);
+    await db.delete(achievements);
     await db.delete(stats);
     await db.delete(certificates);
     await db.delete(enrollments);
@@ -187,6 +195,162 @@ async function seed() {
       certificatesEarned: 0,
       mentorSessions: 0,
       opportunitiesSaved: 0
+    });
+    
+    // Insert achievements
+    const achievementsData = [
+      {
+        name: "Course Explorer",
+        description: "Enroll in your first course",
+        iconUrl: "https://ui-avatars.com/api/?name=CE&background=0D8ABC&color=fff",
+        category: "course",
+        requirement: "Enroll in 1 course",
+        requiredValue: 1,
+        points: 10,
+        isHidden: false
+      },
+      {
+        name: "Knowledge Seeker",
+        description: "Complete your first course",
+        iconUrl: "https://ui-avatars.com/api/?name=KS&background=28A745&color=fff",
+        category: "course",
+        requirement: "Complete 1 course",
+        requiredValue: 1,
+        points: 20,
+        isHidden: false
+      },
+      {
+        name: "Portfolio Builder",
+        description: "Add your first certificate to your profile",
+        iconUrl: "https://ui-avatars.com/api/?name=PB&background=FFC107&color=fff",
+        category: "certificate",
+        requirement: "Add 1 certificate",
+        requiredValue: 1,
+        points: 15,
+        isHidden: false
+      },
+      {
+        name: "Mentorship Connection",
+        description: "Connect with your first mentor",
+        iconUrl: "https://ui-avatars.com/api/?name=MC&background=6F42C1&color=fff",
+        category: "mentor",
+        requirement: "Connect with 1 mentor",
+        requiredValue: 1,
+        points: 15,
+        isHidden: false
+      },
+      {
+        name: "Opportunity Hunter",
+        description: "Save your first opportunity",
+        iconUrl: "https://ui-avatars.com/api/?name=OH&background=DC3545&color=fff",
+        category: "opportunity",
+        requirement: "Save 1 opportunity",
+        requiredValue: 1,
+        points: 10,
+        isHidden: false
+      },
+      {
+        name: "Learning Enthusiast",
+        description: "Complete 5 courses",
+        iconUrl: "https://ui-avatars.com/api/?name=LE&background=17A2B8&color=fff",
+        category: "course",
+        requirement: "Complete 5 courses",
+        requiredValue: 5,
+        points: 50,
+        isHidden: false
+      },
+      {
+        name: "Certificate Collector",
+        description: "Earn 10 certificates",
+        iconUrl: "https://ui-avatars.com/api/?name=CC&background=FD7E14&color=fff",
+        category: "certificate",
+        requirement: "Earn 10 certificates",
+        requiredValue: 10,
+        points: 100,
+        isHidden: false
+      }
+    ];
+    
+    const insertedAchievements = await db.insert(achievements).values(achievementsData).returning();
+    console.log('Created achievements:', insertedAchievements.map(a => a.id));
+    
+    // Award "Course Explorer" achievement to the user as they are enrolled in a course
+    await db.insert(userAchievements).values({
+      userId: user.id,
+      achievementId: insertedAchievements[0].id, // Course Explorer
+      progress: 1,
+      isComplete: true,
+      completedValue: 1,
+      earnedAt: new Date()
+    });
+    
+    // Insert badges
+    const badgesData = [
+      {
+        name: "Beginner",
+        description: "You've started your educational journey",
+        iconUrl: "https://ui-avatars.com/api/?name=B&background=20C997&color=fff",
+        category: "level",
+        level: 1,
+        requiredPoints: 30,
+        isRare: false
+      },
+      {
+        name: "Intermediate",
+        description: "You're making good progress in your studies",
+        iconUrl: "https://ui-avatars.com/api/?name=I&background=6610F2&color=fff",
+        category: "level",
+        level: 2,
+        requiredPoints: 100,
+        isRare: false
+      },
+      {
+        name: "Advanced",
+        description: "You've demonstrated significant educational achievements",
+        iconUrl: "https://ui-avatars.com/api/?name=A&background=E83E8C&color=fff",
+        category: "level",
+        level: 3,
+        requiredPoints: 250,
+        isRare: false
+      },
+      {
+        name: "Expert",
+        description: "You've mastered a wide range of educational content",
+        iconUrl: "https://ui-avatars.com/api/?name=E&background=007BFF&color=fff",
+        category: "level",
+        level: 4,
+        requiredPoints: 500,
+        isRare: true
+      },
+      {
+        name: "Course Master",
+        description: "Special badge for completing 10+ courses",
+        iconUrl: "https://ui-avatars.com/api/?name=CM&background=343A40&color=fff",
+        category: "special",
+        level: 5,
+        requiredPoints: 150,
+        isRare: true
+      },
+      {
+        name: "Portfolio Champion",
+        description: "Special badge for building an exceptional portfolio",
+        iconUrl: "https://ui-avatars.com/api/?name=PC&background=F8F9FA&color=000",
+        category: "special",
+        level: 5,
+        requiredPoints: 200,
+        isRare: true
+      }
+    ];
+    
+    const insertedBadges = await db.insert(badges).values(badgesData).returning();
+    console.log('Created badges:', insertedBadges.map(b => b.id));
+    
+    // Award "Beginner" badge to the user as they've earned Course Explorer (10 points)
+    await db.insert(userBadges).values({
+      userId: user.id,
+      badgeId: insertedBadges[0].id, // Beginner badge
+      earnedAt: new Date(),
+      displayOnProfile: true
     });
 
     console.log('Database seeded successfully!');

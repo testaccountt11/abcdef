@@ -7,6 +7,10 @@ import {
   Article, InsertArticle, 
   Certificate, InsertCertificate, 
   Stats, InsertStats,
+  Achievement, InsertAchievement,
+  UserAchievement, InsertUserAchievement,
+  Badge, InsertBadge,
+  UserBadge, InsertUserBadge,
   users,
   courses,
   enrollments,
@@ -14,7 +18,11 @@ import {
   mentors,
   articles,
   certificates,
-  stats
+  stats,
+  achievements,
+  userAchievements,
+  badges,
+  userBadges
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -198,5 +206,248 @@ export class PgStorage implements IStorage {
       .returning();
     
     return result[0];
+  }
+  
+  // Achievement methods
+  async getAchievements(): Promise<Achievement[]> {
+    return await db.select().from(achievements);
+  }
+  
+  async getAchievement(id: number): Promise<Achievement | undefined> {
+    const result = await db.select().from(achievements).where(eq(achievements.id, id)).limit(1);
+    return result[0];
+  }
+  
+  async getAchievementByName(name: string): Promise<Achievement | undefined> {
+    const result = await db.select().from(achievements).where(eq(achievements.name, name)).limit(1);
+    return result[0];
+  }
+  
+  async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
+    const result = await db.insert(achievements).values(achievement).returning();
+    return result[0];
+  }
+  
+  async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
+    const result = await db
+      .select()
+      .from(userAchievements)
+      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.userId, userId));
+    
+    return result.map(r => ({
+      ...r.user_achievements,
+      achievement: r.achievements
+    }));
+  }
+  
+  async getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined> {
+    const result = await db
+      .select()
+      .from(userAchievements)
+      .where(
+        and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementId, achievementId)
+        )
+      )
+      .limit(1);
+    
+    return result[0];
+  }
+  
+  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const result = await db.insert(userAchievements).values(userAchievement).returning();
+    
+    // Check for badge qualification if achievement is complete
+    if (userAchievement.isComplete) {
+      await this.checkAndAwardBadges(userAchievement.userId);
+    }
+    
+    return result[0];
+  }
+  
+  async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined> {
+    const userAchievement = await this.getUserAchievementProgress(userId, achievementId);
+    if (!userAchievement) return undefined;
+    
+    const achievement = await this.getAchievement(achievementId);
+    if (!achievement) return undefined;
+    
+    // If progress meets the required value, mark as complete
+    const isComplete = progress >= (achievement.requiredValue ?? 1);
+    const wasComplete = userAchievement.isComplete;
+    
+    const result = await db
+      .update(userAchievements)
+      .set({ 
+        progress,
+        isComplete,
+        earnedAt: isComplete && !wasComplete ? new Date() : userAchievement.earnedAt,
+        completedValue: isComplete ? progress : userAchievement.completedValue
+      })
+      .where(
+        and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementId, achievementId)
+        )
+      )
+      .returning();
+    
+    // Check for badge qualification if achievement is newly completed
+    if (isComplete && !wasComplete) {
+      await this.checkAndAwardBadges(userId);
+    }
+    
+    return result[0];
+  }
+  
+  async completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
+    const userAchievement = await this.getUserAchievementProgress(userId, achievementId);
+    
+    if (!userAchievement) {
+      // If the user doesn't have this achievement tracked yet, create it
+      const achievement = await this.getAchievement(achievementId);
+      if (!achievement) return undefined;
+      
+      return this.createUserAchievement({
+        userId,
+        achievementId,
+        progress: completedValue,
+        isComplete: true,
+        completedValue
+      });
+    }
+    
+    const result = await db
+      .update(userAchievements)
+      .set({
+        progress: completedValue,
+        isComplete: true,
+        earnedAt: new Date(),
+        completedValue
+      })
+      .where(
+        and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementId, achievementId)
+        )
+      )
+      .returning();
+    
+    // Check for badge qualification
+    await this.checkAndAwardBadges(userId);
+    
+    return result[0];
+  }
+  
+  // Badge methods
+  async getBadges(): Promise<Badge[]> {
+    return await db.select().from(badges);
+  }
+  
+  async getBadge(id: number): Promise<Badge | undefined> {
+    const result = await db.select().from(badges).where(eq(badges.id, id)).limit(1);
+    return result[0];
+  }
+  
+  async getBadgeByName(name: string): Promise<Badge | undefined> {
+    const result = await db.select().from(badges).where(eq(badges.name, name)).limit(1);
+    return result[0];
+  }
+  
+  async createBadge(badge: InsertBadge): Promise<Badge> {
+    const result = await db.insert(badges).values(badge).returning();
+    return result[0];
+  }
+  
+  async getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge })[]> {
+    const result = await db
+      .select()
+      .from(userBadges)
+      .innerJoin(badges, eq(userBadges.badgeId, badges.id))
+      .where(eq(userBadges.userId, userId));
+    
+    return result.map(r => ({
+      ...r.user_badges,
+      badge: r.badges
+    }));
+  }
+  
+  async awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge> {
+    // Check if user already has this badge
+    const existing = await db
+      .select()
+      .from(userBadges)
+      .where(
+        and(
+          eq(userBadges.userId, userId),
+          eq(userBadges.badgeId, badgeId)
+        )
+      )
+      .limit(1);
+    
+    if (existing.length > 0) {
+      return existing[0];
+    }
+    
+    const result = await db
+      .insert(userBadges)
+      .values({
+        userId,
+        badgeId,
+        earnedAt: new Date(),
+        displayOnProfile: true
+      })
+      .returning();
+    
+    return result[0];
+  }
+  
+  async updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined> {
+    const result = await db
+      .update(userBadges)
+      .set({ displayOnProfile })
+      .where(
+        and(
+          eq(userBadges.userId, userId),
+          eq(userBadges.badgeId, badgeId)
+        )
+      )
+      .returning();
+    
+    return result[0];
+  }
+  
+  async checkAndAwardBadges(userId: number): Promise<Badge[]> {
+    // Calculate user's total points from completed achievements
+    const userAchievements = await this.getUserAchievements(userId);
+    const completedAchievements = userAchievements.filter(ua => ua.isComplete);
+    
+    let totalPoints = 0;
+    completedAchievements.forEach(ua => {
+      totalPoints += ua.achievement.points ?? 0;
+    });
+    
+    // Get all badges the user doesn't have yet
+    const userBadges = await this.getUserBadges(userId);
+    const userBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
+    
+    // Find badges the user qualifies for
+    const allBadges = await this.getBadges();
+    const eligibleBadges = allBadges.filter(badge => 
+      !userBadgeIds.has(badge.id) && 
+      totalPoints >= (badge.requiredPoints ?? 0)
+    );
+    
+    // Award new badges
+    const newlyAwardedBadges: Badge[] = [];
+    
+    for (const badge of eligibleBadges) {
+      await this.awardBadgeToUser(userId, badge.id);
+      newlyAwardedBadges.push(badge);
+    }
+    
+    return newlyAwardedBadges;
   }
 }

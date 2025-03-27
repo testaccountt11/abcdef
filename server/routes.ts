@@ -287,9 +287,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enrollment routes
   app.post("/api/enrollments", isAuthenticated, async (req, res) => {
     try {
+      const userId = (req.user as any).id;
       const enrollmentData = validateRequest(insertEnrollmentSchema, {
         ...req.body,
-        userId: (req.user as any).id
+        userId
       });
       
       // Check if already enrolled
@@ -303,6 +304,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const enrollment = await storage.createEnrollment(enrollmentData);
+      
+      // Award "Course Explorer" achievement if this is the first enrollment
+      try {
+        const userCourses = await storage.getUserCourses(userId);
+        
+        if (userCourses.length === 1) {
+          // This is the first course enrollment, award the achievement
+          const courseExplorerAchievement = await storage.getAchievementByName("Course Explorer");
+          
+          if (courseExplorerAchievement) {
+            // Check if user already has this achievement
+            const userAchievement = await storage.getUserAchievementProgress(userId, courseExplorerAchievement.id);
+            
+            if (!userAchievement) {
+              await storage.completeUserAchievement(userId, courseExplorerAchievement.id, 1);
+            }
+          }
+        }
+        
+        // Update user stats
+        const stats = await storage.getUserStats(userId);
+        if (stats) {
+          await storage.updateUserStats(userId, {
+            coursesInProgress: stats.coursesInProgress + 1
+          });
+        }
+      } catch (achievementError) {
+        console.error("Error awarding achievement:", achievementError);
+        // Don't fail the enrollment if achievement awarding fails
+      }
+      
       res.status(201).json(enrollment);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -319,6 +351,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Progress must be a number between 0 and 100" });
       }
       
+      // Get current enrollment to check if this is a completion
+      const existingEnrollment = await storage.getEnrollment(userId, courseId);
+      const wasComplete = existingEnrollment && existingEnrollment.progress === 100;
+      
       const updatedEnrollment = await storage.updateEnrollmentProgress(
         userId,
         courseId,
@@ -327,6 +363,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!updatedEnrollment) {
         return res.status(404).json({ message: "Enrollment not found" });
+      }
+      
+      // If course is now complete (100%) and wasn't before
+      if (progress === 100 && !wasComplete) {
+        try {
+          // Award Knowledge Seeker achievement for first course completion
+          const userCourses = await storage.getUserCourses(userId);
+          const completedCourses = [];
+          
+          for (const course of userCourses) {
+            const enrollment = await storage.getEnrollment(userId, course.id);
+            if (enrollment && enrollment.progress === 100) {
+              completedCourses.push(course);
+            }
+          }
+          
+          // If this is the first completed course
+          if (completedCourses.length === 1) {
+            const knowledgeSeekerAchievement = await storage.getAchievementByName("Knowledge Seeker");
+            
+            if (knowledgeSeekerAchievement) {
+              const userAchievement = await storage.getUserAchievementProgress(userId, knowledgeSeekerAchievement.id);
+              
+              if (!userAchievement) {
+                await storage.completeUserAchievement(userId, knowledgeSeekerAchievement.id, 1);
+              }
+            }
+          }
+          
+          // Check if user qualified for Learning Enthusiast (5 courses)
+          if (completedCourses.length === 5) {
+            const learningEnthusiastAchievement = await storage.getAchievementByName("Learning Enthusiast");
+            
+            if (learningEnthusiastAchievement) {
+              const userAchievement = await storage.getUserAchievementProgress(userId, learningEnthusiastAchievement.id);
+              
+              if (!userAchievement) {
+                await storage.completeUserAchievement(userId, learningEnthusiastAchievement.id, 5);
+              }
+            }
+          }
+          
+          // Update user stats - decrease coursesInProgress, potentially increase certificatesEarned
+          const stats = await storage.getUserStats(userId);
+          if (stats) {
+            await storage.updateUserStats(userId, {
+              coursesInProgress: Math.max(0, (stats.coursesInProgress || 0) - 1),
+              certificatesEarned: (stats.certificatesEarned || 0) + 1
+            });
+            
+            // Automatically create a certificate for completed course
+            const course = await storage.getCourse(courseId);
+            if (course) {
+              await storage.createCertificate({
+                userId,
+                title: `Certificate of Completion: ${course.title}`,
+                issuer: "Portfol.IO",
+                issueDate: new Date().toISOString(),
+                expiryDate: null,
+                credentialId: `CERT-${userId}-${courseId}-${Date.now()}`,
+                credentialUrl: null,
+                courseId
+              });
+            }
+          }
+        } catch (achievementError) {
+          console.error("Error handling course completion:", achievementError);
+          // Don't fail the progress update if achievements/certificates fail
+        }
       }
       
       res.json(updatedEnrollment);
@@ -444,12 +549,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/certificates", isAuthenticated, async (req, res) => {
     try {
+      const userId = (req.user as any).id;
       const certificateData = validateRequest(insertCertificateSchema, {
         ...req.body,
-        userId: (req.user as any).id
+        userId
       });
       
       const certificate = await storage.createCertificate(certificateData);
+      
+      // Award "Portfolio Builder" achievement if this is the first certificate
+      try {
+        const userCertificates = await storage.getUserCertificates(userId);
+        
+        if (userCertificates.length === 1) {
+          // This is the first certificate, award the achievement
+          const portfolioBuilderAchievement = await storage.getAchievementByName("Portfolio Builder");
+          
+          if (portfolioBuilderAchievement) {
+            // Check if user already has this achievement
+            const userAchievement = await storage.getUserAchievementProgress(userId, portfolioBuilderAchievement.id);
+            
+            if (!userAchievement) {
+              await storage.completeUserAchievement(userId, portfolioBuilderAchievement.id, 1);
+            }
+          }
+        }
+      } catch (achievementError) {
+        console.error("Error awarding achievement:", achievementError);
+        // Don't fail the certificate creation if achievement awarding fails
+      }
+      
       res.status(201).json(certificate);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -476,6 +605,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Achievement routes
+  app.get("/api/achievements", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const achievements = await storage.getUserAchievements(userId);
+      res.json(achievements);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.get("/api/achievements/all", isAuthenticated, async (req, res) => {
+    try {
+      const achievements = await storage.getAchievements();
+      res.json(achievements);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Badge routes
+  app.get("/api/badges", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const badges = await storage.getUserBadges(userId);
+      res.json(badges);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.get("/api/badges/all", isAuthenticated, async (req, res) => {
+    try {
+      const badges = await storage.getBadges();
+      res.json(badges);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Update badge display preference
+  app.patch("/api/badges/:badgeId/display", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const badgeId = parseInt(req.params.badgeId);
+      const { displayOnProfile } = req.body;
+      
+      if (typeof displayOnProfile !== 'boolean') {
+        return res.status(400).json({ message: "displayOnProfile must be a boolean" });
+      }
+      
+      const badge = await storage.updateUserBadgeDisplay(userId, badgeId, displayOnProfile);
+      
+      if (!badge) {
+        return res.status(404).json({ message: "Badge not found" });
+      }
+      
+      res.json(badge);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
