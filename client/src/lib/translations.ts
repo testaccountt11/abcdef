@@ -64,7 +64,25 @@ export type TranslationKey =
   | 'dashboard.language'
   | 'dashboard.welcomeBack'
   | 'dashboard.profile'
-  | 'dashboard.logout';
+  | 'dashboard.logout'
+  | 'dashboard.welcome'
+  | 'dashboard.portfolioDesc'
+  | 'dashboard.coursesInProgress'
+  | 'dashboard.certificatesEarned'
+  | 'dashboard.mentorSessions'
+  | 'dashboard.opportunitiesSaved'
+  | 'dashboard.continueLearning'
+  | 'dashboard.viewAllCourses'
+  | 'dashboard.noCourses'
+  | 'dashboard.recommendedOpportunities'
+  | 'dashboard.viewAllOpportunities'
+  | 'dashboard.noOpportunities'
+  | 'dashboard.featuredMentors'
+  | 'dashboard.viewAllMentors'
+  | 'dashboard.noMentors'
+  | 'dashboard.recentAdvice'
+  | 'dashboard.viewAllArticles'
+  | 'dashboard.noArticles';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -133,7 +151,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.language': 'Language',
     'dashboard.welcomeBack': 'Welcome back',
     'dashboard.profile': 'Profile',
-    'dashboard.logout': 'Logout'
+    'dashboard.logout': 'Logout',
+    'dashboard.welcome': 'Welcome',
+    'dashboard.portfolioDesc': 'Build your educational portfolio and unlock new opportunities',
+    'dashboard.coursesInProgress': 'Courses in progress',
+    'dashboard.certificatesEarned': 'Certificates earned',
+    'dashboard.mentorSessions': 'Mentor sessions',
+    'dashboard.opportunitiesSaved': 'Opportunities saved',
+    'dashboard.continueLearning': 'Continue Learning',
+    'dashboard.viewAllCourses': 'View all courses',
+    'dashboard.noCourses': 'No courses in progress',
+    'dashboard.recommendedOpportunities': 'Recommended Opportunities',
+    'dashboard.viewAllOpportunities': 'View all opportunities',
+    'dashboard.noOpportunities': 'No opportunities available',
+    'dashboard.featuredMentors': 'Featured Mentors',
+    'dashboard.viewAllMentors': 'View all mentors',
+    'dashboard.noMentors': 'No mentors available',
+    'dashboard.recentAdvice': 'Recent Advice',
+    'dashboard.viewAllArticles': 'View all articles',
+    'dashboard.noArticles': 'No articles available'
   },
   ru: {
     'nav.about': 'О нас',
@@ -201,7 +237,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.language': 'Язык',
     'dashboard.welcomeBack': 'С возвращением',
     'dashboard.profile': 'Профиль',
-    'dashboard.logout': 'Выйти'
+    'dashboard.logout': 'Выйти',
+    'dashboard.welcome': 'Добро пожаловать',
+    'dashboard.portfolioDesc': 'Создайте своё образовательное портфолио и откройте новые возможности',
+    'dashboard.coursesInProgress': 'Курсы в процессе',
+    'dashboard.certificatesEarned': 'Полученные сертификаты',
+    'dashboard.mentorSessions': 'Сессии с менторами',
+    'dashboard.opportunitiesSaved': 'Сохраненные возможности',
+    'dashboard.continueLearning': 'Продолжить обучение',
+    'dashboard.viewAllCourses': 'Посмотреть все курсы',
+    'dashboard.noCourses': 'Нет курсов в процессе',
+    'dashboard.recommendedOpportunities': 'Рекомендуемые возможности',
+    'dashboard.viewAllOpportunities': 'Посмотреть все возможности',
+    'dashboard.noOpportunities': 'Нет доступных возможностей',
+    'dashboard.featuredMentors': 'Рекомендуемые менторы',
+    'dashboard.viewAllMentors': 'Посмотреть всех менторов',
+    'dashboard.noMentors': 'Нет доступных менторов',
+    'dashboard.recentAdvice': 'Последние советы',
+    'dashboard.viewAllArticles': 'Посмотреть все статьи',
+    'dashboard.noArticles': 'Нет доступных статей'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -269,7 +323,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.language': 'Тіл',
     'dashboard.welcomeBack': 'Қайта оралуыңызбен',
     'dashboard.profile': 'Профиль',
-    'dashboard.logout': 'Шығу'
+    'dashboard.logout': 'Шығу',
+    'dashboard.welcome': 'Қош келдіңіз',
+    'dashboard.portfolioDesc': 'Өзіңіздің білім портфолиоңызды құрыңыз және жаңа мүмкіндіктерді ашыңыз',
+    'dashboard.coursesInProgress': 'Оқу үстіндегі курстар',
+    'dashboard.certificatesEarned': 'Алынған сертификаттар',
+    'dashboard.mentorSessions': 'Ментор сессиялары',
+    'dashboard.opportunitiesSaved': 'Сақталған мүмкіндіктер',
+    'dashboard.continueLearning': 'Оқуды жалғастыру',
+    'dashboard.viewAllCourses': 'Барлық курстарды көру',
+    'dashboard.noCourses': 'Оқу үстіндегі курстар жоқ',
+    'dashboard.recommendedOpportunities': 'Ұсынылған мүмкіндіктер',
+    'dashboard.viewAllOpportunities': 'Барлық мүмкіндіктерді көру',
+    'dashboard.noOpportunities': 'Қолжетімді мүмкіндіктер жоқ',
+    'dashboard.featuredMentors': 'Ұсынылған менторлар',
+    'dashboard.viewAllMentors': 'Барлық менторларды көру',
+    'dashboard.noMentors': 'Қолжетімді менторлар жоқ',
+    'dashboard.recentAdvice': 'Соңғы кеңестер',
+    'dashboard.viewAllArticles': 'Барлық мақалаларды көру',
+    'dashboard.noArticles': 'Қолжетімді мақалалар жоқ'
   }
 };
 

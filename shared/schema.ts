@@ -112,21 +112,25 @@ export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   content: text("content").notNull(),
+  summary: text("summary").notNull(),
   category: text("category").notNull(),
   imageUrl: text("image_url"),
   authorName: text("author_name").notNull(),
   authorImage: text("author_image"),
   readTime: text("read_time"),
+  publishDate: text("publish_date"),
 });
 
 export const insertArticleSchema = createInsertSchema(articles).pick({
   title: true,
   content: true,
+  summary: true,
   category: true,
   imageUrl: true,
   authorName: true,
   authorImage: true,
   readTime: true,
+  publishDate: true,
 });
 
 // Certificate schema

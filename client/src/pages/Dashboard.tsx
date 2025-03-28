@@ -4,72 +4,77 @@ import StatCard from "@/components/dashboard/StatCard";
 import CourseCard from "@/components/dashboard/CourseCard";
 import OpportunityCard from "@/components/dashboard/OpportunityCard";
 import MentorCard from "@/components/dashboard/MentorCard";
-import AdviceCard from "@/components/dashboard/AdviceCard";
+import ArticleCard from "@/components/dashboard/ArticleCard";
 import { ArrowRightIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiRequestError } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { getTranslation } from "@/lib/translations";
+import { Link } from "wouter";
+import { Course, Opportunity, Mentor, Article, Stats } from "@shared/schema";
+import { ApiError } from "@/lib/queryClient";
 
 export default function Dashboard() {
   const { user } = useAuthContext();
   const { toast } = useToast();
+  const { language } = useTheme();
 
   // Fetch user stats
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery<Stats>({
     queryKey: ['/api/stats'],
-    onError: (error: ApiRequestError) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to load stats",
+        description: error instanceof ApiError ? error.message : "Failed to load stats",
         variant: "destructive",
       });
     },
   });
 
   // Fetch user courses
-  const { data: courses, isLoading: isLoadingCourses } = useQuery({
+  const { data: courses, isLoading: isLoadingCourses } = useQuery<Course[]>({
     queryKey: ['/api/user/courses'],
-    onError: (error: ApiRequestError) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to load courses",
+        description: error instanceof ApiError ? error.message : "Failed to load courses",
         variant: "destructive",
       });
     },
   });
 
   // Fetch opportunities
-  const { data: opportunities, isLoading: isLoadingOpportunities } = useQuery({
+  const { data: opportunities, isLoading: isLoadingOpportunities } = useQuery<Opportunity[]>({
     queryKey: ['/api/opportunities'],
-    onError: (error: ApiRequestError) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to load opportunities",
+        description: error instanceof ApiError ? error.message : "Failed to load opportunities",
         variant: "destructive",
       });
     },
   });
 
   // Fetch mentors
-  const { data: mentors, isLoading: isLoadingMentors } = useQuery({
+  const { data: mentors, isLoading: isLoadingMentors } = useQuery<Mentor[]>({
     queryKey: ['/api/mentors'],
-    onError: (error: ApiRequestError) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to load mentors",
+        description: error instanceof ApiError ? error.message : "Failed to load mentors",
         variant: "destructive",
       });
     },
   });
 
   // Fetch articles
-  const { data: articles, isLoading: isLoadingArticles } = useQuery({
+  const { data: articles, isLoading: isLoadingArticles } = useQuery<Article[]>({
     queryKey: ['/api/articles'],
-    onError: (error: ApiRequestError) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to load articles",
+        description: error instanceof ApiError ? error.message : "Failed to load articles",
         variant: "destructive",
       });
     },
@@ -80,17 +85,17 @@ export default function Dashboard() {
       <div className="p-6">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome, {user?.firstName || user?.username || 'Student'}!
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            {getTranslation('dashboard.welcome', language)}, {user?.firstName || user?.username || 'Student'}!
           </h1>
-          <p className="text-gray-600">Build your educational portfolio and unlock new opportunities</p>
+          <p className="text-gray-600 dark:text-gray-400">{getTranslation('dashboard.portfolioDesc', language)}</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {isLoadingStats ? (
             Array(4).fill(0).map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow p-4 border border-gray-100">
+              <div key={i} className="bg-white rounded-lg shadow p-4 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <Skeleton className="h-8 w-8 rounded-md mb-2" />
                 <Skeleton className="h-4 w-24 mb-2" />
                 <Skeleton className="h-6 w-12" />
@@ -99,25 +104,25 @@ export default function Dashboard() {
           ) : (
             <>
               <StatCard 
-                title="Courses in progress" 
+                title={getTranslation('dashboard.coursesInProgress', language)} 
                 value={stats?.coursesInProgress || 0} 
                 icon="book-mark-line" 
                 color="primary" 
               />
               <StatCard 
-                title="Certificates earned" 
+                title={getTranslation('dashboard.certificatesEarned', language)} 
                 value={stats?.certificatesEarned || 0} 
                 icon="award-line" 
                 color="secondary" 
               />
               <StatCard 
-                title="Mentor sessions" 
+                title={getTranslation('dashboard.mentorSessions', language)} 
                 value={stats?.mentorSessions || 0} 
                 icon="group-line" 
                 color="accent" 
               />
               <StatCard 
-                title="Opportunities saved" 
+                title={getTranslation('dashboard.opportunitiesSaved', language)} 
                 value={stats?.opportunitiesSaved || 0} 
                 icon="briefcase-line" 
                 color="purple" 
@@ -129,16 +134,16 @@ export default function Dashboard() {
         {/* Continue Learning Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Continue Learning</h2>
-            <a href="/courses" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center">
-              View all courses <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </a>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.continueLearning', language)}</h2>
+            <Link href="/courses" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
+              {getTranslation('dashboard.viewAllCourses', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingCourses ? (
               Array(3).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                   <Skeleton className="h-40 w-full" />
                   <div className="p-4">
                     <Skeleton className="h-6 w-3/4 mb-2" />
@@ -154,7 +159,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500">No courses in progress</p>
+                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noCourses', language)}</p>
               </div>
             )}
           </div>
@@ -163,17 +168,17 @@ export default function Dashboard() {
         {/* Recommended Opportunities Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Recommended Opportunities</h2>
-            <a href="/opportunities" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center">
-              View all opportunities <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </a>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.recommendedOpportunities', language)}</h2>
+            <Link href="/opportunities" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
+              {getTranslation('dashboard.viewAllOpportunities', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoadingOpportunities ? (
               Array(3).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
-                  <div className="p-4 border-b border-gray-100">
+                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+                  <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                     <Skeleton className="h-4 w-24 mb-2" />
                     <Skeleton className="h-6 w-3/4 mb-1" />
                     <Skeleton className="h-4 w-1/2" />
@@ -194,7 +199,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500">No opportunities available</p>
+                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noOpportunities', language)}</p>
               </div>
             )}
           </div>
@@ -203,16 +208,16 @@ export default function Dashboard() {
         {/* Featured Mentors Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Featured Mentors</h2>
-            <a href="/mentors" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center">
-              View all mentors <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </a>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.featuredMentors', language)}</h2>
+            <Link href="/mentors" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
+              {getTranslation('dashboard.viewAllMentors', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {isLoadingMentors ? (
               Array(4).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                   <div className="p-4 text-center">
                     <Skeleton className="h-24 w-24 rounded-full mx-auto mb-3" />
                     <Skeleton className="h-6 w-3/4 mx-auto mb-1" />
@@ -232,7 +237,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-4 text-center py-8">
-                <p className="text-gray-500">No mentors available</p>
+                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noMentors', language)}</p>
               </div>
             )}
           </div>
@@ -241,16 +246,16 @@ export default function Dashboard() {
         {/* Recent Advice Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Recent Advice</h2>
-            <a href="/advice" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center">
-              View all articles <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </a>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.recentAdvice', language)}</h2>
+            <Link href="/advice" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
+              {getTranslation('dashboard.viewAllArticles', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {isLoadingArticles ? (
               Array(2).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                   <div className="md:flex">
                     <Skeleton className="md:w-1/3 h-40" />
                     <div className="p-4 md:w-2/3">
@@ -267,11 +272,11 @@ export default function Dashboard() {
               ))
             ) : articles && articles.length > 0 ? (
               articles.slice(0, 2).map((article) => (
-                <AdviceCard key={article.id} article={article} />
+                <ArticleCard key={article.id} article={article} />
               ))
             ) : (
               <div className="col-span-2 text-center py-8">
-                <p className="text-gray-500">No articles available</p>
+                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noArticles', language)}</p>
               </div>
             )}
           </div>
