@@ -1,8 +1,9 @@
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Globe } from "lucide-react";
 import { getTranslation, Language } from "@/lib/translations";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function SettingsPanel() {
   const { theme, toggleTheme, language, setLanguage } = useTheme();
@@ -53,22 +54,44 @@ export default function SettingsPanel() {
           </TooltipProvider>
         </div>
         
-        <div className="flex flex-col space-y-2">
+        <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {language === 'en' ? 'Language' : language === 'ru' ? 'Язык' : 'Тіл'}
           </span>
-          <div className="flex flex-wrap gap-2">
-            {languages.map(([lang, label]) => (
-              <Button
-                key={lang}
-                variant={language === lang ? "default" : "outline"}
-                className="px-3 py-1 h-8 text-xs"
-                onClick={() => setLanguage(lang)}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
+          <DropdownMenu>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                    >
+                      <Globe className="h-4 w-4" />
+                      <span className="sr-only">
+                        {language === 'en' ? 'Change language' : language === 'ru' ? 'Сменить язык' : 'Тілді өзгерту'}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{language === 'en' ? 'Change language' : language === 'ru' ? 'Сменить язык' : 'Тілді өзгерту'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <DropdownMenuContent align="end">
+              {languages.map(([lang, label]) => (
+                <DropdownMenuItem
+                  key={lang}
+                  className={`cursor-pointer ${language === lang ? 'font-bold' : ''}`}
+                  onClick={() => setLanguage(lang)}
+                >
+                  {label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

@@ -46,12 +46,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }, [location, onClose]);
 
   const links = [
-    { path: "/dashboard", icon: "ri-dashboard-line", label: "Dashboard" },
-    { path: "/courses", icon: "ri-book-open-line", label: "Courses" },
-    { path: "/opportunities", icon: "ri-briefcase-line", label: "Opportunities" },
-    { path: "/mentors", icon: "ri-user-star-line", label: "Mentors" },
-    { path: "/advice", icon: "ri-article-line", label: "Advice" },
-    { path: "/certificates", icon: "ri-medal-line", label: "My Certificates" },
+    { path: "/dashboard", icon: "ri-dashboard-line", labelKey: "dashboard.home" },
+    { path: "/courses", icon: "ri-book-open-line", labelKey: "dashboard.courses" },
+    { path: "/opportunities", icon: "ri-briefcase-line", labelKey: "dashboard.opportunities" },
+    { path: "/mentors", icon: "ri-user-star-line", labelKey: "dashboard.mentors" },
+    { path: "/advice", icon: "ri-article-line", labelKey: "dashboard.advice" },
+    { path: "/achievements", icon: "ri-award-line", labelKey: "dashboard.achievements" },
+    { path: "/certificates", icon: "ri-medal-line", labelKey: "dashboard.certificates" },
   ];
 
   return (
@@ -94,7 +95,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               }`}
             >
               <i className={`${link.icon} mr-3 ${location === link.path ? "text-primary-500" : "text-gray-400"}`}></i>
-              {link.label}
+              {t(link.labelKey)}
             </a>
           ))}
         </nav>

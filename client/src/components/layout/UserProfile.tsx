@@ -4,11 +4,17 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Settings, LogOut, User } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { getTranslation } from "@/lib/translations";
 
 export default function UserProfile() {
   const { user, logout } = useAuthContext();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { language } = useTheme();
+  
+  // Function to get translated text
+  const t = (key: string) => getTranslation(key as any, language);
   
   if (!user) return null;
 
@@ -56,15 +62,15 @@ export default function UserProfile() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuItem className="cursor-pointer" onClick={() => setLocation('/profile')}>
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>{t('dashboard.profile')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer" onClick={() => setLocation('/settings')}>
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>{t('dashboard.settings')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer text-red-600" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Logout</span>
+            <span>{t('dashboard.logout')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

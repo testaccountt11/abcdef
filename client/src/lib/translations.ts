@@ -51,7 +51,20 @@ export type TranslationKey =
   | 'auth.lastName'
   | 'auth.username'
   | 'auth.haveAccount'
-  | 'auth.noAccount';
+  | 'auth.noAccount'
+  | 'dashboard.home'
+  | 'dashboard.courses'
+  | 'dashboard.opportunities'
+  | 'dashboard.mentors'
+  | 'dashboard.advice'
+  | 'dashboard.achievements'
+  | 'dashboard.certificates'
+  | 'dashboard.settings'
+  | 'dashboard.theme'
+  | 'dashboard.language'
+  | 'dashboard.welcomeBack'
+  | 'dashboard.profile'
+  | 'dashboard.logout';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -107,7 +120,20 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.lastName': 'Last Name',
     'auth.username': 'Username',
     'auth.haveAccount': 'Already have an account?',
-    'auth.noAccount': 'Don\'t have an account?'
+    'auth.noAccount': 'Don\'t have an account?',
+    'dashboard.home': 'Home',
+    'dashboard.courses': 'My Courses',
+    'dashboard.opportunities': 'Opportunities',
+    'dashboard.mentors': 'Mentors',
+    'dashboard.advice': 'Advice',
+    'dashboard.achievements': 'Achievements',
+    'dashboard.certificates': 'My Certificates',
+    'dashboard.settings': 'Settings',
+    'dashboard.theme': 'Theme',
+    'dashboard.language': 'Language',
+    'dashboard.welcomeBack': 'Welcome back',
+    'dashboard.profile': 'Profile',
+    'dashboard.logout': 'Logout'
   },
   ru: {
     'nav.about': 'О нас',
@@ -162,7 +188,20 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.lastName': 'Фамилия',
     'auth.username': 'Имя пользователя',
     'auth.haveAccount': 'Уже есть аккаунт?',
-    'auth.noAccount': 'Нет аккаунта?'
+    'auth.noAccount': 'Нет аккаунта?',
+    'dashboard.home': 'Главная',
+    'dashboard.courses': 'Мои курсы',
+    'dashboard.opportunities': 'Возможности',
+    'dashboard.mentors': 'Менторы',
+    'dashboard.advice': 'Советы',
+    'dashboard.achievements': 'Достижения',
+    'dashboard.certificates': 'Мои сертификаты',
+    'dashboard.settings': 'Настройки',
+    'dashboard.theme': 'Тема',
+    'dashboard.language': 'Язык',
+    'dashboard.welcomeBack': 'С возвращением',
+    'dashboard.profile': 'Профиль',
+    'dashboard.logout': 'Выйти'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -217,7 +256,20 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.lastName': 'Тегі',
     'auth.username': 'Пайдаланушы аты',
     'auth.haveAccount': 'Аккаунтыңыз бар ма?',
-    'auth.noAccount': 'Аккаунтыңыз жоқ па?'
+    'auth.noAccount': 'Аккаунтыңыз жоқ па?',
+    'dashboard.home': 'Басты бет',
+    'dashboard.courses': 'Менің курстарым',
+    'dashboard.opportunities': 'Мүмкіндіктер',
+    'dashboard.mentors': 'Менторлар',
+    'dashboard.advice': 'Кеңестер',
+    'dashboard.achievements': 'Жетістіктер',
+    'dashboard.certificates': 'Менің сертификаттарым',
+    'dashboard.settings': 'Параметрлер',
+    'dashboard.theme': 'Тақырып',
+    'dashboard.language': 'Тіл',
+    'dashboard.welcomeBack': 'Қайта оралуыңызбен',
+    'dashboard.profile': 'Профиль',
+    'dashboard.logout': 'Шығу'
   }
 };
 
