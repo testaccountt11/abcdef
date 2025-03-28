@@ -88,6 +88,12 @@ export type TranslationKey =
   | 'dashboard.available'
   | 'dashboard.enrollNow'
   | 'dashboard.viewDetails'
+  | 'dashboard.announcement.title'
+  | 'dashboard.announcement.details'
+  | 'dashboard.announcement.newCourse'
+  | 'dashboard.announcement.competition'
+  | 'dashboard.announcement.scholarship'
+  | 'dashboard.announcement.viewDetails'
   | 'profile.title'
   | 'profile.subtitle'
   | 'profile.notLoggedIn'
@@ -205,6 +211,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.available': 'Available',
     'dashboard.enrollNow': 'Enroll Now',
     'dashboard.viewDetails': 'View Details',
+    'dashboard.announcement.title': 'Announcements',
+    'dashboard.announcement.details': 'Click on any announcement to view details',
+    'dashboard.announcement.newCourse': 'New course available: "Advanced Data Science". Enroll now to get early access!',
+    'dashboard.announcement.competition': 'Upcoming competition: "AI Innovation Challenge". Registration opens next week.',
+    'dashboard.announcement.scholarship': 'New scholarship opportunity available for top performing students.',
+    'dashboard.announcement.viewDetails': 'View Details',
 
     // Profile page translations
     'profile.title': 'My Profile',
@@ -323,6 +335,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.available': 'Доступно',
     'dashboard.enrollNow': 'Записаться',
     'dashboard.viewDetails': 'Подробнее',
+    'dashboard.announcement.title': 'Объявления',
+    'dashboard.announcement.details': 'Нажмите на любое объявление, чтобы увидеть подробности',
+    'dashboard.announcement.newCourse': 'Доступен новый курс: "Продвинутая наука о данных". Запишитесь сейчас для получения раннего доступа!',
+    'dashboard.announcement.competition': 'Предстоящий конкурс: "AI Innovation Challenge". Регистрация открывается на следующей неделе.',
+    'dashboard.announcement.scholarship': 'Доступна новая возможность получения стипендии для лучших студентов.',
+    'dashboard.announcement.viewDetails': 'Посмотреть детали',
 
     // Переводы для страницы профиля
     'profile.title': 'Мой профиль',
@@ -441,6 +459,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.available': 'Қолжетімді',
     'dashboard.enrollNow': 'Тіркелу',
     'dashboard.viewDetails': 'Толығырақ',
+    'dashboard.announcement.title': 'Хабарландырулар',
+    'dashboard.announcement.details': 'Толық мәліметтерді көру үшін кез келген хабарландыруды басыңыз',
+    'dashboard.announcement.newCourse': 'Жаңа курс қолжетімді: "Деректер туралы ғылымның жоғары деңгейі". Ерте қол жеткізу үшін қазір тіркеліңіз!',
+    'dashboard.announcement.competition': 'Алдағы байқау: "AI Innovation Challenge". Тіркеу келесі аптада басталады.',
+    'dashboard.announcement.scholarship': 'Үздік студенттер үшін жаңа стипендия мүмкіндігі бар.',
+    'dashboard.announcement.viewDetails': 'Толық ақпаратты көру',
 
     // Профиль беті үшін аудармалар
     'profile.title': 'Менің профилім',
