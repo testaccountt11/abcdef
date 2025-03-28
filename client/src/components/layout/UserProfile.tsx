@@ -49,9 +49,9 @@ export default function UserProfile() {
               </p>
               <p className="text-xs font-medium text-gray-500">{user.email}</p>
             </div>
-            <button className="ml-auto text-gray-400 hover:text-gray-500">
+            <span className="ml-auto text-gray-400 hover:text-gray-500">
               <i className="ri-settings-3-line"></i>
-            </button>
+            </span>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
