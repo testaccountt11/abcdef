@@ -44,7 +44,7 @@ const featureCardVariants = {
 
 export default function Landing() {
   const [, setLocation] = useLocation();
-  const { t } = useTranslations();
+  const { t, language } = useTranslations();
   const featuresRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
@@ -57,84 +57,205 @@ export default function Landing() {
   const featureOpacity = useTransform(featuresProgress, [0, 0.5], [0.5, 1]);
   const featureScale = useTransform(featuresProgress, [0, 0.5], [0.95, 1]);
 
+  // All features with translations
   const features = [
     { 
       icon: <BrainIcon className="w-12 h-12 text-primary" />, 
-      title: "Персональные планы", 
-      desc: "AI поможет создать стратегию обучения и развития под ваши цели"
+      title: t('features.personalPath.title'), 
+      desc: t('features.personalPath.desc')
     },
     { 
       icon: <GraduationCapIcon className="w-12 h-12 text-primary" />, 
-      title: "Лучшие курсы и стажировки", 
-      desc: "Подобранные возможности для пополнения вашего портфолио" 
+      title: t('features.topCourses.title'), 
+      desc: t('features.topCourses.desc')
     },
     { 
       icon: <TrophyIcon className="w-12 h-12 text-primary" />, 
-      title: "Олимпиады и конкурсы", 
-      desc: "Участвуй и выигрывай стипендии для своего образования" 
+      title: t('features.competitions.title'), 
+      desc: t('features.competitions.desc')
     },
     { 
       icon: <Users2Icon className="w-12 h-12 text-primary" />, 
-      title: "Менторы и наставники", 
-      desc: "Получай советы от лучших преподавателей и профессионалов" 
+      title: t('features.mentorship.title'), 
+      desc: t('features.mentorship.desc')
     }
   ];
   
-  const steps = [
-    {
-      number: "01",
-      title: "Регистрация",
-      description: "Создай аккаунт и укажи свои цели, интересы и навыки",
-      icon: <UserPlusIcon className="w-10 h-10" />
-    },
-    {
-      number: "02",
-      title: "Выбор пути",
-      description: "Курсы, стажировки, менторы – всё в одном месте для твоего развития!",
-      icon: <Compass className="w-10 h-10" />
-    },
-    {
-      number: "03",
-      title: "Развитие портфолио",
-      description: "Проходи обучение, собирай сертификаты и добивайся успеха!",
-      icon: <Medal className="w-10 h-10" />
-    }
-  ];
+  // Steps with translations for each language
+  const stepsTranslations = {
+    en: [
+      {
+        number: "01",
+        title: "Registration",
+        description: "Create an account and specify your goals, interests and skills",
+        icon: <UserPlusIcon className="w-10 h-10" />
+      },
+      {
+        number: "02",
+        title: "Choose Your Path",
+        description: "Courses, internships, mentors – all in one place for your development!",
+        icon: <Compass className="w-10 h-10" />
+      },
+      {
+        number: "03",
+        title: "Portfolio Development",
+        description: "Complete courses, collect certificates and achieve success!",
+        icon: <Medal className="w-10 h-10" />
+      }
+    ],
+    ru: [
+      {
+        number: "01",
+        title: "Регистрация",
+        description: "Создай аккаунт и укажи свои цели, интересы и навыки",
+        icon: <UserPlusIcon className="w-10 h-10" />
+      },
+      {
+        number: "02",
+        title: "Выбор пути",
+        description: "Курсы, стажировки, менторы – всё в одном месте для твоего развития!",
+        icon: <Compass className="w-10 h-10" />
+      },
+      {
+        number: "03",
+        title: "Развитие портфолио",
+        description: "Проходи обучение, собирай сертификаты и добивайся успеха!",
+        icon: <Medal className="w-10 h-10" />
+      }
+    ],
+    kz: [
+      {
+        number: "01",
+        title: "Тіркелу",
+        description: "Аккаунт жасап, мақсаттарыңызды, қызығушылықтарыңызды және дағдыларыңызды көрсетіңіз",
+        icon: <UserPlusIcon className="w-10 h-10" />
+      },
+      {
+        number: "02",
+        title: "Жолыңызды таңдаңыз",
+        description: "Курстар, тәжірибелер, менторлар – бәрі бір жерде сіздің дамуыңыз үшін!",
+        icon: <Compass className="w-10 h-10" />
+      },
+      {
+        number: "03",
+        title: "Портфолионы дамыту",
+        description: "Оқытудан өтіңіз, сертификаттар жинаңыз және табысқа жетіңіз!",
+        icon: <Medal className="w-10 h-10" />
+      }
+    ]
+  };
   
-  const testimonials = [
-    {
-      name: "Асель К.",
-      role: "Выпускница школы",
-      quote: "Благодаря Portfol.IO я смогла подготовить конкурентное портфолио и поступить в топовый университет на бюджет!",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
-    },
-    {
-      name: "Данияр М.",
-      role: "Студент 2 курса",
-      quote: "Нашел стажировку своей мечты и улучшил свои навыки, следуя персональному плану развития.",
-      rating: 5,
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
-    },
-    {
-      name: "Камила Т.",
-      role: "Старшеклассница",
-      quote: "Менторы на платформе помогли мне понять, в каком направлении я хочу развиваться и как достичь цели.",
-      rating: 4,
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
-    }
-  ];
+  // Testimonials with translations for each language
+  const testimonialTranslations = {
+    en: [
+      {
+        name: "Assel K.",
+        role: "School Graduate",
+        quote: "Thanks to Portfol.IO, I was able to prepare a competitive portfolio and get into a top university with a scholarship!",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Daniyar M.",
+        role: "2nd Year Student",
+        quote: "I found my dream internship and improved my skills by following a personalized development plan.",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Kamila T.",
+        role: "High School Student",
+        quote: "The mentors on the platform helped me understand which direction I want to develop in and how to achieve my goals.",
+        rating: 4,
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      }
+    ],
+    ru: [
+      {
+        name: "Асель К.",
+        role: "Выпускница школы",
+        quote: "Благодаря Portfol.IO я смогла подготовить конкурентное портфолио и поступить в топовый университет на бюджет!",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Данияр М.",
+        role: "Студент 2 курса",
+        quote: "Нашел стажировку своей мечты и улучшил свои навыки, следуя персональному плану развития.",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Камила Т.",
+        role: "Старшеклассница",
+        quote: "Менторы на платформе помогли мне понять, в каком направлении я хочу развиваться и как достичь цели.",
+        rating: 4,
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      }
+    ],
+    kz: [
+      {
+        name: "Әсел Қ.",
+        role: "Мектеп түлегі",
+        quote: "Portfol.IO арқасында мен бәсекеге қабілетті портфолио дайындап, үздік университетке грантпен түстім!",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Данияр М.",
+        role: "2-ші курс студенті",
+        quote: "Мен арман тәжірибемді тауып, жеке даму жоспарын орындай отырып, өз дағдыларымды жақсарттым.",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      },
+      {
+        name: "Кәмила Т.",
+        role: "Жоғары сынып оқушысы",
+        quote: "Платформадағы менторлар маған қай бағытта дамығым келетінін және мақсаттарыма қалай жетуді түсінуге көмектесті.",
+        rating: 4,
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
+      }
+    ]
+  };
   
-  const partners = [
-    "Университет КИМЭП",
-    "Казахстанско-Британский университет",
-    "НИШ",
-    "Назарбаев Университет",
-    "МУИТ",
-    "Kaspi.kz",
-    "Kolesa Group",
-    "Яндекс"
-  ];
+  // Partner names with translations for each language
+  const partnerTranslations = {
+    en: [
+      "KIMEP University",
+      "Kazakh-British University",
+      "NIS",
+      "Nazarbayev University",
+      "IITU",
+      "Kaspi.kz",
+      "Kolesa Group",
+      "Yandex"
+    ],
+    ru: [
+      "Университет КИМЭП",
+      "Казахстанско-Британский университет",
+      "НИШ",
+      "Назарбаев Университет",
+      "МУИТ",
+      "Kaspi.kz",
+      "Kolesa Group",
+      "Яндекс"
+    ],
+    kz: [
+      "КИМЭП Университеті",
+      "Қазақстан-Британ университеті",
+      "НЗМ",
+      "Назарбаев Университеті",
+      "ХАТУ",
+      "Kaspi.kz",
+      "Kolesa Group",
+      "Яндекс"
+    ]
+  };
+
+  // Get localized content based on current language
+  const steps = stepsTranslations[language] || stepsTranslations.en;
+  const testimonials = testimonialTranslations[language] || testimonialTranslations.en;
+  const partners = partnerTranslations[language] || partnerTranslations.en;
 
   const handleScrollToFeatures = () => {
     if (featuresRef.current) {
@@ -158,13 +279,13 @@ export default function Landing() {
             className="text-5xl md:text-7xl font-bold mb-6 text-gradient leading-tight"
             variants={fadeIn}
           >
-            Портфолио, которое открывает двери в будущее
+            {t('hero.title')}
           </motion.h1>
           <motion.p 
             className="text-xl mb-12 max-w-2xl mx-auto text-foreground/70"
             variants={fadeIn}
           >
-            Собирай достижения, развивай навыки и строй успешную карьеру с помощью персонализированной платформы для школьников и студентов
+            {t('hero.subtitle')}
           </motion.p>
 
           <motion.div 
@@ -175,14 +296,14 @@ export default function Landing() {
               className="glow bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg py-6 px-8"
               onClick={() => setLocation("/register")}
             >
-              Начать бесплатно
+              {t('hero.start')}
             </Button>
             <Button 
               className="glow glass text-lg py-6 px-8"
               variant="outline"
               onClick={handleScrollToFeatures}
             >
-              Узнать больше
+              {t('hero.learnMore')}
             </Button>
           </motion.div>
         </motion.section>
@@ -194,9 +315,9 @@ export default function Landing() {
           style={{ opacity: featureOpacity, scale: featureScale }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Почему Portfol.IO?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('about.title')}</h2>
             <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-              Единая платформа для построения успешной академической и карьерной траектории
+              {t('about.subtitle')}
             </p>
           </div>
           
@@ -232,9 +353,15 @@ export default function Landing() {
         >
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Как это работает?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {language === 'en' ? 'How It Works' : 
+                 language === 'ru' ? 'Как это работает?' : 
+                 'Қалай жұмыс істейді?'}
+              </h2>
               <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                Всего три простых шага для начала вашего образовательного пути
+                {language === 'en' ? 'Just three simple steps to start your educational journey' : 
+                 language === 'ru' ? 'Всего три простых шага для начала вашего образовательного пути' : 
+                 'Білім жолыңызды бастау үшін үш қарапайым қадам'}
               </p>
             </div>
             
@@ -279,14 +406,21 @@ export default function Landing() {
           transition={{ duration: 0.6 }}
         >
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Отзывы пользователей</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('testimonials.title')}</h2>
             <div className="flex items-center justify-center gap-1 mb-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
               ))}
             </div>
             <p className="text-lg text-foreground/70">
-              <span className="font-bold">4.8/5</span> на основе <span className="font-bold">10,000+</span> отзывов студентов
+              <span className="font-bold">4.8/5</span> 
+              {language === 'en' ? ' based on ' : 
+               language === 'ru' ? ' на основе ' : 
+               ' негізінде '}
+              <span className="font-bold">10,000+</span> 
+              {language === 'en' ? ' student reviews' : 
+               language === 'ru' ? ' отзывов студентов' : 
+               ' студенттердің пікірлері'}
             </p>
           </div>
           
@@ -332,9 +466,11 @@ export default function Landing() {
         >
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Партнёры и поддержка</h2>
+              <h2 className="text-3xl font-bold mb-4">{t('partners.title')}</h2>
               <p className="text-xl text-foreground/70">
-                Portfol.IO уже поддерживают 20+ университетов и 50+ компаний!
+                {language === 'en' ? 'Portfol.IO is already supported by 20+ universities and 50+ companies!' : 
+                 language === 'ru' ? 'Portfol.IO уже поддерживают 20+ университетов и 50+ компаний!' : 
+                 'Portfol.IO-ды 20+ университеттер мен 50+ компаниялар қолдайды!'}
               </p>
             </div>
             
@@ -358,7 +494,9 @@ export default function Landing() {
                 variant="outline" 
                 className="border-primary/50 text-primary hover:bg-primary/10"
               >
-                Стать партнёром
+                {language === 'en' ? 'Become a Partner' : 
+                 language === 'ru' ? 'Стать партнёром' : 
+                 'Серіктес болу'}
               </Button>
             </div>
           </div>
@@ -378,17 +516,21 @@ export default function Landing() {
             transition={{ duration: 0.3 }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Готов начать? Зарегистрируйся бесплатно и построй свою карьеру!
+              {language === 'en' ? 'Ready to start? Register for free and build your career!' : 
+               language === 'ru' ? 'Готов начать? Зарегистрируйся бесплатно и построй свою карьеру!' : 
+               'Бастауға дайынсыз ба? Тегін тіркеліп, мансабыңызды құрыңыз!'}
             </h2>
             <p className="text-xl text-foreground/70 mb-8 max-w-2xl mx-auto">
-              Присоединяйся к тысячам студентов, которые уже используют Portfol.IO для достижения своих целей
+              {language === 'en' ? 'Join thousands of students who are already using Portfol.IO to achieve their goals' : 
+               language === 'ru' ? 'Присоединяйся к тысячам студентов, которые уже используют Portfol.IO для достижения своих целей' : 
+               'Мақсаттарына жету үшін Portfol.IO-ты қолданып жатқан мыңдаған студенттерге қосылыңыз'}
             </p>
             <Button 
               size="lg"
               className="bg-primary hover:bg-primary/90 text-white text-lg py-6 px-12 rounded-xl"
               onClick={() => setLocation("/register")}
             >
-              Начать бесплатно
+              {t('hero.start')}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </motion.div>
@@ -401,7 +543,9 @@ export default function Landing() {
               <div className="col-span-1 md:col-span-2">
                 <h3 className="text-2xl font-bold mb-4">Portfol.IO</h3>
                 <p className="text-foreground/70 mb-6 max-w-md">
-                  Инновационная образовательная платформа для построения успешного будущего через персональное портфолио и развитие навыков
+                  {language === 'en' ? 'Innovative educational platform for building a successful future through a personal portfolio and skills development' : 
+                   language === 'ru' ? 'Инновационная образовательная платформа для построения успешного будущего через персональное портфолио и развитие навыков' : 
+                   'Жеке портфолио мен дағдыларды дамыту арқылы табысты болашақ құруға арналған инновациялық білім беру платформасы'}
                 </p>
                 <div className="flex gap-4">
                   <a href="#" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
@@ -417,29 +561,64 @@ export default function Landing() {
               </div>
               
               <div>
-                <h4 className="font-bold text-lg mb-4">Быстрые ссылки</h4>
+                <h4 className="font-bold text-lg mb-4">
+                  {language === 'en' ? 'Quick Links' : 
+                   language === 'ru' ? 'Быстрые ссылки' : 
+                   'Жылдам сілтемелер'}
+                </h4>
                 <ul className="space-y-2">
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Главная</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">О нас</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Курсы</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Возможности</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Менторы</a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {language === 'en' ? 'Home' : 
+                     language === 'ru' ? 'Главная' : 
+                     'Басты бет'}
+                  </a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {t('nav.about')}
+                  </a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {t('nav.courses')}
+                  </a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {t('nav.internships')}
+                  </a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {t('nav.mentors')}
+                  </a></li>
                 </ul>
               </div>
               
               <div>
-                <h4 className="font-bold text-lg mb-4">Поддержка</h4>
+                <h4 className="font-bold text-lg mb-4">
+                  {language === 'en' ? 'Support' : 
+                   language === 'ru' ? 'Поддержка' : 
+                   'Қолдау'}
+                </h4>
                 <ul className="space-y-2">
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Контакты</a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {language === 'en' ? 'Contact Us' : 
+                     language === 'ru' ? 'Контакты' : 
+                     'Байланыс'}
+                  </a></li>
                   <li><a href="#" className="text-foreground/70 hover:text-primary">FAQ</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Политика конфиденциальности</a></li>
-                  <li><a href="#" className="text-foreground/70 hover:text-primary">Условия использования</a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {language === 'en' ? 'Privacy Policy' : 
+                     language === 'ru' ? 'Политика конфиденциальности' : 
+                     'Құпиялылық саясаты'}
+                  </a></li>
+                  <li><a href="#" className="text-foreground/70 hover:text-primary">
+                    {language === 'en' ? 'Terms of Use' : 
+                     language === 'ru' ? 'Условия использования' : 
+                     'Қолдану шарттары'}
+                  </a></li>
                 </ul>
               </div>
             </div>
             
             <div className="pt-8 border-t border-border/50 text-center text-foreground/60">
-              © 2025 Portfol.IO – Все права защищены.
+              © 2025 Portfol.IO – 
+              {language === 'en' ? 'All rights reserved.' : 
+               language === 'ru' ? 'Все права защищены.' : 
+               'Барлық құқықтар қорғалған.'}
             </div>
           </div>
         </footer>
