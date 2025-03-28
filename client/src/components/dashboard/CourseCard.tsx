@@ -31,10 +31,10 @@ export default function CourseCard({ course, onEnroll, showEnrollButton = false 
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
           <div className="absolute bottom-0 left-0 p-4">
             {courseProgress > 0 ? (
-              <Badge className="bg-primary-600">In Progress</Badge>
+              <Badge className="bg-primary-600">{getTranslation('dashboard.inProgress', language)}</Badge>
             ) : (
               <Badge className={isPartner ? "bg-secondary-600" : "bg-primary-600"}>
-                {isPartner ? "Partner Course" : "Available"}
+                {isPartner ? getTranslation('dashboard.partnerCourse', language) : getTranslation('dashboard.available', language)}
               </Badge>
             )}
           </div>
@@ -66,12 +66,12 @@ export default function CourseCard({ course, onEnroll, showEnrollButton = false 
           </Link>
         ) : showEnrollButton ? (
           <Button className="w-full" onClick={onEnroll}>
-            Enroll Now
+            {getTranslation('dashboard.enrollNow', language)}
           </Button>
         ) : (
           <Link href={`/courses/${course.id}`}>
             <Button className="w-full">
-              View Details
+              {getTranslation('dashboard.viewDetails', language)}
             </Button>
           </Link>
         )}

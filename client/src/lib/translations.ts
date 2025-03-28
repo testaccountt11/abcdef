@@ -82,7 +82,12 @@ export type TranslationKey =
   | 'dashboard.noMentors'
   | 'dashboard.recentAdvice'
   | 'dashboard.viewAllArticles'
-  | 'dashboard.noArticles';
+  | 'dashboard.noArticles'
+  | 'dashboard.inProgress'
+  | 'dashboard.partnerCourse'
+  | 'dashboard.available'
+  | 'dashboard.enrollNow'
+  | 'dashboard.viewDetails';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -169,7 +174,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.noMentors': 'No mentors available',
     'dashboard.recentAdvice': 'Recent Advice',
     'dashboard.viewAllArticles': 'View all articles',
-    'dashboard.noArticles': 'No articles available'
+    'dashboard.noArticles': 'No articles available',
+    'dashboard.inProgress': 'In Progress',
+    'dashboard.partnerCourse': 'Partner Course',
+    'dashboard.available': 'Available',
+    'dashboard.enrollNow': 'Enroll Now',
+    'dashboard.viewDetails': 'View Details'
   },
   ru: {
     'nav.about': 'О нас',
@@ -255,7 +265,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.noMentors': 'Нет доступных менторов',
     'dashboard.recentAdvice': 'Последние советы',
     'dashboard.viewAllArticles': 'Посмотреть все статьи',
-    'dashboard.noArticles': 'Нет доступных статей'
+    'dashboard.noArticles': 'Нет доступных статей',
+    'dashboard.inProgress': 'В процессе',
+    'dashboard.partnerCourse': 'Партнерский курс',
+    'dashboard.available': 'Доступно',
+    'dashboard.enrollNow': 'Записаться',
+    'dashboard.viewDetails': 'Подробнее'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -341,7 +356,12 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.noMentors': 'Қолжетімді менторлар жоқ',
     'dashboard.recentAdvice': 'Соңғы кеңестер',
     'dashboard.viewAllArticles': 'Барлық мақалаларды көру',
-    'dashboard.noArticles': 'Қолжетімді мақалалар жоқ'
+    'dashboard.noArticles': 'Қолжетімді мақалалар жоқ',
+    'dashboard.inProgress': 'Оқу үстінде',
+    'dashboard.partnerCourse': 'Серіктестік курс',
+    'dashboard.available': 'Қолжетімді',
+    'dashboard.enrollNow': 'Тіркелу',
+    'dashboard.viewDetails': 'Толығырақ'
   }
 };
 

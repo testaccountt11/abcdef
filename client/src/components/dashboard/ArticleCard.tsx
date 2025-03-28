@@ -11,8 +11,9 @@ interface ArticleCardProps {
 
 export default function ArticleCard({ article }: ArticleCardProps) {
   const { title, content, imageUrl, authorName, readTime, category } = article;
-  const summary = article.summary || content.substring(0, 100) + '...';
-  const publishDate = article.publishDate || null;
+  // Создаем краткое содержание статьи из начала контента, если поле summary отсутствует
+  const summary = content.substring(0, 100) + '...';
+  const publishDate = null; // Временно убираем, пока не добавим в БД
   const { language } = useTheme();
   
   const articleImage = imageUrl || '/assets/default-article.jpg';
