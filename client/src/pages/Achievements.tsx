@@ -54,13 +54,17 @@ export default function Achievements() {
   // Function to toggle badge display on profile
   const toggleBadgeDisplay = async (badgeId: number, displayOnProfile: boolean) => {
     try {
-      await fetch(`/api/badges/${badgeId}/display`, {
+      const response = await fetch(`/api/badges/${badgeId}/display`, {
         method: 'PATCH',
         body: JSON.stringify({ displayOnProfile }),
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      
+      if (!response.ok) {
+        throw new Error("Failed to update badge display settings");
+      }
       
       toast({
         title: displayOnProfile ? "Badge displayed" : "Badge hidden",
@@ -259,7 +263,7 @@ export default function Achievements() {
                         
                         {userAchievement?.isComplete && (
                           <UIBadge variant="outline" className="mt-2 text-green-800 bg-green-100">
-                            Completed {new Date(userAchievement.earnedAt).toLocaleDateString()}
+                            Completed {userAchievement.earnedAt ? new Date(userAchievement.earnedAt).toLocaleDateString() : 'recently'}
                           </UIBadge>
                         )}
                       </CardContent>
@@ -331,7 +335,7 @@ export default function Achievements() {
                         
                         <div className="ml-2">
                           <Switch 
-                            checked={userBadge.displayOnProfile} 
+                            checked={userBadge.displayOnProfile === true}
                             onCheckedChange={(checked) => toggleBadgeDisplay(userBadge.badgeId, checked)}
                           />
                         </div>
@@ -343,7 +347,7 @@ export default function Achievements() {
                       </p>
                       
                       <UIBadge variant="outline" className="text-xs">
-                        Earned {new Date(userBadge.earnedAt).toLocaleDateString()}
+                        Earned {userBadge.earnedAt ? new Date(userBadge.earnedAt).toLocaleDateString() : 'recently'}
                       </UIBadge>
                     </CardContent>
                   </Card>
