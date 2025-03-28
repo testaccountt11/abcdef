@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Course } from "@shared/schema";
-import { useTheme } from "@/contexts/ThemeContext";
-import { getTranslation } from "@/lib/translations";
+import { useTranslations } from "@/hooks/use-translations";
 import { Link } from "wouter";
 
 interface CourseCardProps {
@@ -13,7 +12,7 @@ interface CourseCardProps {
 
 export default function CourseCard({ course, onEnroll, showEnrollButton = false }: CourseCardProps) {
   const { title, description, imageUrl, progress, isPartnerCourse } = course;
-  const { language } = useTheme();
+  const { t } = useTranslations();
   
   const courseProgress = progress || 0;
   const courseImage = imageUrl || '/assets/default-course.jpg';
@@ -31,10 +30,10 @@ export default function CourseCard({ course, onEnroll, showEnrollButton = false 
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
           <div className="absolute bottom-0 left-0 p-4">
             {courseProgress > 0 ? (
-              <Badge className="bg-primary-600">{getTranslation('dashboard.inProgress', language)}</Badge>
+              <Badge className="bg-primary-600">{t('dashboard.inProgress')}</Badge>
             ) : (
               <Badge className={isPartner ? "bg-secondary-600" : "bg-primary-600"}>
-                {isPartner ? getTranslation('dashboard.partnerCourse', language) : getTranslation('dashboard.available', language)}
+                {isPartner ? t('dashboard.partnerCourse') : t('dashboard.available')}
               </Badge>
             )}
           </div>
@@ -61,17 +60,17 @@ export default function CourseCard({ course, onEnroll, showEnrollButton = false 
         {courseProgress > 0 ? (
           <Link href={`/courses/${course.id}`}>
             <Button className="w-full">
-              {getTranslation('dashboard.continueLearning', language)}
+              {t('dashboard.continueLearning')}
             </Button>
           </Link>
         ) : showEnrollButton ? (
           <Button className="w-full" onClick={onEnroll}>
-            {getTranslation('dashboard.enrollNow', language)}
+            {t('dashboard.enrollNow')}
           </Button>
         ) : (
           <Link href={`/courses/${course.id}`}>
             <Button className="w-full">
-              {getTranslation('dashboard.viewDetails', language)}
+              {t('dashboard.viewDetails')}
             </Button>
           </Link>
         )}

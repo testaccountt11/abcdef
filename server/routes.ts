@@ -263,6 +263,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: error.message });
     }
   });
+
+  // Course enrollment endpoint
+  app.post("/api/courses/:id/enroll", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const courseId = Number(req.params.id);
+      
+      // Check if already enrolled
+      const existingEnrollment = await storage.getEnrollment(userId, courseId);
+      
+      if (existingEnrollment) {
+        return res.status(400).json({ message: "Already enrolled in this course" });
+      }
+      
+      // Create enrollment
+      const enrollment = await storage.createEnrollment({
+        userId,
+        courseId,
+        progress: 0,
+        completed: false
+      });
+      
+      // Update user stats
+      const stats = await storage.getUserStats(userId);
+      if (stats) {
+        await storage.updateUserStats(userId, {
+          coursesInProgress: (stats.coursesInProgress || 0) + 1
+        });
+      }
+      
+      res.status(201).json(enrollment);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
   
   app.post("/api/courses", isAuthenticated, async (req, res) => {
     try {
@@ -327,7 +362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const stats = await storage.getUserStats(userId);
         if (stats) {
           await storage.updateUserStats(userId, {
-            coursesInProgress: stats.coursesInProgress + 1
+            coursesInProgress: (stats.coursesInProgress || 0) + 1
           });
         }
       } catch (achievementError) {
@@ -421,10 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 title: `Certificate of Completion: ${course.title}`,
                 issuer: "Portfol.IO",
                 issueDate: new Date().toISOString(),
-                expiryDate: null,
-                credentialId: `CERT-${userId}-${courseId}-${Date.now()}`,
-                credentialUrl: null,
-                courseId
+                certificateUrl: null
               });
             }
           }
@@ -462,6 +494,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Opportunity application endpoint
+  app.post("/api/opportunities/:id/apply", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const opportunityId = Number(req.params.id);
+      
+      // Check if opportunity exists
+      const opportunity = await storage.getOpportunity(opportunityId);
+      if (!opportunity) {
+        return res.status(404).json({ message: "Opportunity not found" });
+      }
+      
+      // In a real app, we would save the application to a database
+      // For now, just return a success response
+      
+      // Update user stats
+      const stats = await storage.getUserStats(userId);
+      if (stats) {
+        await storage.updateUserStats(userId, {
+          opportunitiesSaved: (stats.opportunitiesSaved || 0) + 1
+        });
+      }
+      
+      res.status(200).json({ 
+        message: `Successfully applied to opportunity: ${opportunity.title}`,
+        success: true
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+  
   app.post("/api/opportunities", isAuthenticated, async (req, res) => {
     try {
       const opportunityData = validateRequest(insertOpportunitySchema, req.body);
@@ -491,6 +555,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(mentor);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Book mentor session endpoint
+  app.post("/api/mentors/:id/book", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const mentorId = Number(req.params.id);
+      
+      // Check if mentor exists
+      const mentor = await storage.getMentor(mentorId);
+      if (!mentor) {
+        return res.status(404).json({ message: "Mentor not found" });
+      }
+      
+      // In a real app, we would save the booking to a database
+      // For now, just return a success response
+      
+      // Update user stats
+      const stats = await storage.getUserStats(userId);
+      if (stats) {
+        await storage.updateUserStats(userId, {
+          mentorSessions: (stats.mentorSessions || 0) + 1
+        });
+      }
+      
+      res.status(200).json({ 
+        message: `Successfully booked session with mentor: ${mentor.name || mentor.title}`,
+        success: true
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
   });
   

@@ -5,8 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Courses from "@/pages/Courses";
+import CourseDetail from "@/pages/CourseDetail";
 import Opportunities from "@/pages/Opportunities";
+import OpportunityDetail from "@/pages/OpportunityDetail";
 import Mentors from "@/pages/Mentors";
+import MentorDetail from "@/pages/MentorDetail";
 import Advice from "@/pages/Advice";
 import MyCertificates from "@/pages/MyCertificates";
 import Achievements from "@/pages/Achievements";
@@ -49,8 +52,11 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/courses" component={Courses} />
+      <Route path="/courses/:id" component={CourseDetail} />
       <Route path="/opportunities" component={Opportunities} />
+      <Route path="/opportunities/:id" component={OpportunityDetail} />
       <Route path="/mentors" component={Mentors} />
+      <Route path="/mentors/:id" component={MentorDetail} />
       <Route path="/advice" component={Advice} />
       <Route path="/certificates" component={MyCertificates} />
       <Route path="/achievements" component={Achievements} />
