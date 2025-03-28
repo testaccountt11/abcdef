@@ -628,7 +628,7 @@ export default function Landing() {
         
         {/* Partners */}
         <motion.section 
-          className="py-20 bg-card/30 backdrop-blur-lg"
+          className="py-20 bg-card/30 backdrop-blur-lg overflow-hidden"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -644,19 +644,64 @@ export default function Landing() {
               </p>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-              {partners.map((partner: string, index: number) => (
+            {/* Universities Carousel - First row */}
+            <div className="mb-10 relative">
+              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
+              
+              <div className="flex overflow-hidden">
                 <motion.div 
-                  key={index}
-                  className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 border border-border/50"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.05, duration: 0.4 }}
+                  className="flex space-x-8 animate-scroll-left"
+                  initial={{ x: 0 }}
+                  animate={{ x: "-50%" }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    repeatType: "loop", 
+                    duration: 30,
+                    ease: "linear"
+                  }}
                 >
-                  <p className="font-semibold text-foreground/80">{partner}</p>
+                  {/* First set of partners - doubled for seamless loop */}
+                  {[...partners, ...partners].map((partner: string, index: number) => (
+                    <div 
+                      key={`uni1-${index}`}
+                      className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 min-w-[200px] border border-border/50 shadow-md partner-logo"
+                    >
+                      <p className="font-semibold text-foreground/80">{partner}</p>
+                    </div>
+                  ))}
                 </motion.div>
-              ))}
+              </div>
+            </div>
+            
+            {/* Companies Carousel - Second row (opposite direction) */}
+            <div className="mb-12 relative">
+              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
+              
+              <div className="flex overflow-hidden">
+                <motion.div 
+                  className="flex space-x-8 animate-scroll-right"
+                  initial={{ x: "-50%" }}
+                  animate={{ x: 0 }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    repeatType: "loop", 
+                    duration: 25,
+                    ease: "linear"
+                  }}
+                >
+                  {/* Second set of partners (reversed) - doubled for seamless loop */}
+                  {[...partners.slice().reverse(), ...partners.slice().reverse()].map((partner: string, index: number) => (
+                    <div 
+                      key={`company-${index}`}
+                      className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 min-w-[200px] border border-border/50 shadow-md partner-logo"
+                    >
+                      <p className="font-semibold text-foreground/80">{partner}</p>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
             </div>
             
             <div className="text-center">

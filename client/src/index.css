@@ -129,6 +129,36 @@
   100% { transform: translateY(0px); }
 }
 
+/* Infinite scroll animations for partner logos */
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 30s linear infinite;
+}
+
+.animate-scroll-right {
+  animation: scrollRight 25s linear infinite;
+}
+
+/* Partner logo hover effect */
+.partner-logo {
+  transition: all 0.3s ease;
+}
+
+.partner-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
 .gradient-bg-dark {
   background: radial-gradient(circle at 50% 10%, rgba(38, 38, 76, 1) 0%, rgba(17, 24, 39, 1) 100%);
 }
