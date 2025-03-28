@@ -352,20 +352,56 @@ export default function Landing() {
           <div className="absolute left-0 right-0 top-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]"></div>
         </div>
         
+        {/* Decorative lines */}
+        <div className="absolute left-0 top-1/3 w-[30%] h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        <div className="absolute right-0 top-2/3 w-[30%] h-[1px] bg-gradient-to-l from-transparent via-primary/30 to-transparent"></div>
+        
+        {/* Additional floating elements */}
+        <motion.div 
+          className="absolute top-64 left-[40%] transform -translate-x-1/2 -z-10"
+          animate={{ 
+            scale: [1, 1.05, 1],
+            opacity: [0.2, 0.3, 0.2]
+          }}
+          transition={{ 
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <div className="w-32 h-32 rounded-full border border-primary/20 opacity-40"></div>
+        </motion.div>
+        
+        <motion.div 
+          className="absolute bottom-40 right-[35%] transform -translate-x-1/2 -z-10"
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{ 
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        >
+          <div className="w-24 h-24 rounded-full border border-blue-400/20 opacity-30"></div>
+        </motion.div>
+        
         <motion.section 
-          className="max-w-7xl mx-auto text-center relative z-10"
+          className="max-w-7xl mx-auto text-center relative z-10 pt-8"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-bold mb-6 text-gradient leading-tight"
+            className="text-5xl md:text-7xl font-bold mb-10 text-gradient leading-tight md:leading-tight lg:leading-tight"
             variants={fadeIn}
           >
             {t('hero.title')}
           </motion.h1>
           <motion.p 
-            className="text-xl mb-12 max-w-2xl mx-auto text-foreground/70"
+            className="text-xl mb-14 max-w-2xl mx-auto text-foreground/70 px-4"
             variants={fadeIn}
           >
             {t('hero.subtitle')}
@@ -376,17 +412,24 @@ export default function Landing() {
             variants={fadeIn}
           >
             <Button 
-              className="glow bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg py-6 px-8"
+              className="relative overflow-hidden group bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg py-6 px-10 shadow-lg border-0"
               onClick={() => setLocation("/register")}
             >
-              {t('hero.start')}
+              <span className="relative z-10 flex items-center font-medium">
+                {t('hero.start')}
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </span>
+              <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Button>
             <Button 
-              className="glow glass text-lg py-6 px-8"
+              className="relative overflow-hidden group text-lg py-6 px-10 border-primary/30 bg-transparent hover:bg-transparent"
               variant="outline"
               onClick={handleScrollToFeatures}
             >
-              {t('hero.learnMore')}
+              <span className="relative z-10 flex items-center">
+                {t('hero.learnMore')}
+              </span>
+              <div className="absolute inset-0 bg-primary/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Button>
           </motion.div>
           

@@ -17,12 +17,38 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-lg bg-background/80 border-b">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div 
           className="flex items-center space-x-2 cursor-pointer" 
           onClick={() => navigate('/')}
         >
-          <span className="font-bold text-xl text-gradient">Portfol.IO</span>
+          <div className="relative group">
+            <span className="font-bold text-2xl md:text-3xl text-gradient bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400 hover:to-cyan-500 transition-all duration-300 flex items-center">
+              <svg 
+                className="w-8 h-8 md:w-10 md:h-10 mr-2" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="url(#logoGradient)" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#22d3ee" />
+                  </linearGradient>
+                </defs>
+                <path d="M22 9a4 4 0 0 1-4 4h-1a4 4 0 0 1-4 4H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h16a2 2 0 0 1 2 2v4z" />
+                <path d="M16 7h.01" />
+                <path d="M12 7h.01" />
+                <path d="M8 7h.01" />
+              </svg>
+              Portfol<span className="text-primary font-extrabold">.IO</span>
+            </span>
+            <div className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+          </div>
         </div>
 
         {/* Desktop Menu */}
