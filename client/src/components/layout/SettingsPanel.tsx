@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function SettingsPanel() {
-  const { theme, toggleTheme, language, setLanguage } = useTheme();
+  const { theme, setTheme, language, setLanguage } = useTheme();
   
   // Function to get translated text
   const t = (key: string) => getTranslation(key as any, language);
@@ -31,7 +31,7 @@ export default function SettingsPanel() {
                 <Button 
                   variant="outline" 
                   size="icon"
-                  onClick={toggleTheme}
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                   className="h-8 w-8"
                 >
                   {theme === 'dark' ? (

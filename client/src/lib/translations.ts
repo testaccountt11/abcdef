@@ -87,7 +87,32 @@ export type TranslationKey =
   | 'dashboard.partnerCourse'
   | 'dashboard.available'
   | 'dashboard.enrollNow'
-  | 'dashboard.viewDetails';
+  | 'dashboard.viewDetails'
+  | 'profile.title'
+  | 'profile.subtitle'
+  | 'profile.notLoggedIn'
+  | 'profile.displayedBadges'
+  | 'profile.stats'
+  | 'profile.overview'
+  | 'profile.achievements'
+  | 'profile.badges'
+  | 'profile.summary'
+  | 'profile.summaryDesc'
+  | 'profile.achievementsCompleted'
+  | 'profile.badgesEarned'
+  | 'profile.recentAchievements'
+  | 'profile.recentBadges'
+  | 'profile.noAchievements'
+  | 'profile.noBadges'
+  | 'profile.allAchievements'
+  | 'profile.achievementsDesc'
+  | 'profile.allBadges'
+  | 'profile.badgesDesc'
+  | 'profile.completed'
+  | 'achievement.completed'
+  | 'achievement.progress';
+
+
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -179,7 +204,34 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.partnerCourse': 'Partner Course',
     'dashboard.available': 'Available',
     'dashboard.enrollNow': 'Enroll Now',
-    'dashboard.viewDetails': 'View Details'
+    'dashboard.viewDetails': 'View Details',
+
+    // Profile page translations
+    'profile.title': 'My Profile',
+    'profile.subtitle': 'View and manage your achievements and badges',
+    'profile.notLoggedIn': 'You need to be logged in to view your profile',
+    'profile.displayedBadges': 'Displayed Badges',
+    'profile.stats': 'Statistics',
+    'profile.overview': 'Overview',
+    'profile.achievements': 'Achievements',
+    'profile.badges': 'Badges',
+    'profile.summary': 'Summary',
+    'profile.summaryDesc': 'Your educational journey at a glance',
+    'profile.achievementsCompleted': 'Achievements Completed',
+    'profile.badgesEarned': 'Badges Earned',
+    'profile.recentAchievements': 'Recent Achievements',
+    'profile.recentBadges': 'Recent Badges',
+    'profile.noAchievements': 'No achievements yet. Start courses to earn achievements!',
+    'profile.noBadges': 'No badges yet. Complete achievements to earn badges!',
+    'profile.allAchievements': 'All Achievements',
+    'profile.achievementsDesc': 'Track your progress on all achievements',
+    'profile.allBadges': 'All Badges',
+    'profile.badgesDesc': 'Special recognitions for your accomplishments',
+    'profile.completed': 'Completed',
+
+    // Achievement card translations
+    'achievement.completed': 'Completed',
+    'achievement.progress': 'Progress'
   },
   ru: {
     'nav.about': 'О нас',
@@ -270,7 +322,34 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.partnerCourse': 'Партнерский курс',
     'dashboard.available': 'Доступно',
     'dashboard.enrollNow': 'Записаться',
-    'dashboard.viewDetails': 'Подробнее'
+    'dashboard.viewDetails': 'Подробнее',
+
+    // Переводы для страницы профиля
+    'profile.title': 'Мой профиль',
+    'profile.subtitle': 'Просмотр и управление вашими достижениями и значками',
+    'profile.notLoggedIn': 'Для просмотра профиля необходимо авторизоваться',
+    'profile.displayedBadges': 'Отображаемые значки',
+    'profile.stats': 'Статистика',
+    'profile.overview': 'Обзор',
+    'profile.achievements': 'Достижения',
+    'profile.badges': 'Значки',
+    'profile.summary': 'Сводка',
+    'profile.summaryDesc': 'Ваш образовательный путь с первого взгляда',
+    'profile.achievementsCompleted': 'Выполненные достижения',
+    'profile.badgesEarned': 'Полученные значки',
+    'profile.recentAchievements': 'Недавние достижения',
+    'profile.recentBadges': 'Недавние значки',
+    'profile.noAchievements': 'Пока нет достижений. Начните курсы, чтобы получить достижения!',
+    'profile.noBadges': 'Пока нет значков. Выполните достижения, чтобы получить значки!',
+    'profile.allAchievements': 'Все достижения',
+    'profile.achievementsDesc': 'Отслеживайте свой прогресс по всем достижениям',
+    'profile.allBadges': 'Все значки',
+    'profile.badgesDesc': 'Особые признания ваших достижений',
+    'profile.completed': 'Выполнено',
+
+    // Переводы для карточки достижений
+    'achievement.completed': 'Выполнено',
+    'achievement.progress': 'Прогресс'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -361,12 +440,44 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.partnerCourse': 'Серіктестік курс',
     'dashboard.available': 'Қолжетімді',
     'dashboard.enrollNow': 'Тіркелу',
-    'dashboard.viewDetails': 'Толығырақ'
+    'dashboard.viewDetails': 'Толығырақ',
+
+    // Профиль беті үшін аудармалар
+    'profile.title': 'Менің профилім',
+    'profile.subtitle': 'Жетістіктеріңіз бен белгілеріңізді қарау және басқару',
+    'profile.notLoggedIn': 'Профильді қарау үшін жүйеге кіру қажет',
+    'profile.displayedBadges': 'Көрсетілген белгілер',
+    'profile.stats': 'Статистика',
+    'profile.overview': 'Жалпы шолу',
+    'profile.achievements': 'Жетістіктер',
+    'profile.badges': 'Белгілер',
+    'profile.summary': 'Қорытынды',
+    'profile.summaryDesc': 'Сіздің білім беру жолыңыз бір көзқараста',
+    'profile.achievementsCompleted': 'Аяқталған жетістіктер',
+    'profile.badgesEarned': 'Алынған белгілер',
+    'profile.recentAchievements': 'Соңғы жетістіктер',
+    'profile.recentBadges': 'Соңғы белгілер',
+    'profile.noAchievements': 'Әзірге жетістіктер жоқ. Жетістіктерге қол жеткізу үшін курстарды бастаңыз!',
+    'profile.noBadges': 'Әзірге белгілер жоқ. Белгілерді алу үшін жетістіктерді аяқтаңыз!',
+    'profile.allAchievements': 'Барлық жетістіктер',
+    'profile.achievementsDesc': 'Барлық жетістіктер бойынша прогресіңізді қадағалаңыз',
+    'profile.allBadges': 'Барлық белгілер',
+    'profile.badgesDesc': 'Жетістіктеріңізге арналған арнайы мойындаулар',
+    'profile.completed': 'Аяқталды',
+
+    // Жетістіктер картасы үшін аудармалар
+    'achievement.completed': 'Аяқталды',
+    'achievement.progress': 'Прогресс'
   }
 };
 
 export type Language = keyof typeof translations;
 
-export const getTranslation = (key: TranslationKey, language: Language = 'en'): string => {
-  return translations[language][key] || key;
+export const getTranslation = (key: string, language: Language = 'en'): string => {
+  if (translations[language]?.[key as TranslationKey]) {
+    return translations[language][key as TranslationKey];
+  }
+  
+  // Return the key itself if it doesn't exist in our translations
+  return key;
 };

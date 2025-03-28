@@ -13,12 +13,11 @@ import {
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCGUvHusPIg0PqJ-VYcq40pSkpfCmXkdAk",
-  authDomain: "portfol-950a1.firebaseapp.com",
-  projectId: "portfol-950a1",
-  storageBucket: "portfol-950a1.firebasestorage.app",
-  messagingSenderId: "533661111877",
-  appId: "1:533661111877:web:f9ff2e252722192599752c",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: "G-Z3THS5DL17"
 };
 

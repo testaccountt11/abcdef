@@ -1,84 +1,90 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { type Language } from '@/lib/translations';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Language } from '@/lib/translations';
 
-type Theme = 'light' | 'dark';
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
+interface ThemeContextProps {
+  theme: 'light' | 'dark' | 'system';
   language: Language;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setLanguage: (language: Language) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const defaultThemeContext: ThemeContextProps = {
+  theme: 'system',
+  language: 'en',
+  setTheme: () => {},
+  setLanguage: () => {},
+};
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check for saved theme in localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      return savedTheme;
-    }
-    
-    // Check for system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'light';
-  });
+const ThemeContext = createContext<ThemeContextProps>(defaultThemeContext);
+
+export const useTheme = () => useContext(ThemeContext);
+
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Initialize theme from localStorage or default to 'system'
+  const [theme, setThemeState] = useState<'light' | 'dark' | 'system'>(
+    () => (localStorage.getItem('theme') as 'light' | 'dark' | 'system') || 'system'
+  );
   
-  const [language, setLanguage] = useState<Language>(() => {
-    // Check for saved language in localStorage
-    const savedLanguage = localStorage.getItem('language') as Language | null;
-    if (savedLanguage && ['en', 'ru', 'kz'].includes(savedLanguage)) {
-      return savedLanguage;
-    }
-    
-    // Check browser language
-    const browserLang = navigator.language.split('-')[0];
-    if (browserLang === 'ru' || browserLang === 'kz') {
-      return browserLang as Language;
-    }
-    
-    return 'en';
-  });
+  // Initialize language from localStorage or default to 'en'
+  const [language, setLanguageState] = useState<Language>(
+    () => (localStorage.getItem('language') as Language) || 'en'
+  );
 
-  // Apply theme class to document root
+  // Effect for updating theme class on document
   useEffect(() => {
-    localStorage.setItem('theme', theme);
+    const root = window.document.documentElement;
     
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('gradient-bg-dark');
-      document.body.classList.remove('gradient-bg-light');
+    // Remove any existing theme classes
+    root.classList.remove('light', 'dark');
+    
+    // Apply theme based on user preference or system
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
     } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('gradient-bg-dark');
-      document.body.classList.add('gradient-bg-light');
+      root.classList.add(theme);
     }
+    
+    // Store theme preference in localStorage
+    localStorage.setItem('theme', theme);
   }, [theme]);
   
-  // Save language preference
+  // Effect for updating language
   useEffect(() => {
+    // Store language preference in localStorage
     localStorage.setItem('language', language);
+    
+    // You can also update the document lang attribute
+    document.documentElement.lang = language;
   }, [language]);
 
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+  // Handle system theme change
+  useEffect(() => {
+    if (theme !== 'system') return;
+    
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = () => {
+      const root = window.document.documentElement;
+      root.classList.remove('light', 'dark');
+      root.classList.add(mediaQuery.matches ? 'dark' : 'light');
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [theme]);
+
+  const setTheme = (newTheme: 'light' | 'dark' | 'system') => {
+    setThemeState(newTheme);
+  };
+  
+  const setLanguage = (newLanguage: Language) => {
+    setLanguageState(newLanguage);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, language, setLanguage }}>
+    <ThemeContext.Provider value={{ theme, language, setTheme, setLanguage }}>
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
+};

@@ -1,43 +1,46 @@
+import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Globe } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
+import { Globe } from 'lucide-react';
 
-type Language = 'en' | 'ru' | 'kz';
-
-const languageNames: Record<Language, string> = {
-  en: 'English',
-  ru: 'Русский',
-  kz: 'Қазақша',
-};
-
-export function LanguageSwitcher() {
+export const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage } = useTheme();
-  
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'ru', name: 'Русский' },
+    { code: 'kz', name: 'Қазақша' }
+  ];
+
+  const currentLanguage = languages.find(lang => lang.code === language)?.name || 'English';
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full">
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">Switch language</span>
+        <Button variant="ghost" size="sm" className="h-9 gap-1">
+          <Globe className="h-[1rem] w-[1rem]" />
+          <span>{currentLanguage}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {Object.entries(languageNames).map(([code, name]) => (
-          <DropdownMenuItem
-            key={code}
-            onClick={() => setLanguage(code as Language)}
-            className={language === code ? 'bg-accent font-medium' : ''}
+        {languages.map((lang) => (
+          <DropdownMenuItem 
+            key={lang.code} 
+            onClick={() => setLanguage(lang.code as 'en' | 'ru' | 'kz')}
+            className={language === lang.code ? 'font-medium bg-accent text-accent-foreground' : ''}
           >
-            {name}
+            {lang.name}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
+
+export default LanguageSwitcher;
