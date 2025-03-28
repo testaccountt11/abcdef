@@ -268,9 +268,92 @@ export default function Landing() {
       <Navbar />
 
       {/* Hero Section */}
-      <main className="pt-32 px-6">
+      <main className="pt-32 px-6 relative overflow-hidden">
+        {/* Декоративные элементы */}
+        <div className="absolute top-20 left-[10%] w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse"></div>
+        <div className="absolute top-40 right-[15%] w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-[5%] transform -translate-y-1/2 -z-10">
+          <div className="text-primary/10 rotate-[20deg]">
+            <GraduationCapIcon className="w-36 h-36 md:w-48 md:h-48" />
+          </div>
+        </div>
+        <div className="absolute top-1/3 right-[5%] transform -translate-y-1/2 -z-10">
+          <div className="text-primary/10 -rotate-[15deg]">
+            <TrophyIcon className="w-28 h-28 md:w-40 md:h-40" />
+          </div>
+        </div>
+        
+        {/* Floating Elements */}
+        <motion.div 
+          className="absolute top-40 left-[20%] text-primary/20 -z-10"
+          animate={{ 
+            y: [0, -15, 0],
+            rotate: [0, 5, 0]
+          }}
+          transition={{ 
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <BrainIcon className="w-14 h-14" />
+        </motion.div>
+        
+        <motion.div 
+          className="absolute bottom-20 right-[25%] text-primary/20 -z-10"
+          animate={{ 
+            y: [0, 15, 0],
+            rotate: [0, -5, 0]
+          }}
+          transition={{ 
+            duration: 5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        >
+          <AwardIcon className="w-16 h-16" />
+        </motion.div>
+        
+        <motion.div 
+          className="absolute top-1/2 right-[15%] text-blue-400/20 -z-10"
+          animate={{ 
+            y: [0, 10, 0],
+            rotate: [0, -3, 0]
+          }}
+          transition={{ 
+            duration: 3.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5
+          }}
+        >
+          <BadgeIcon className="w-10 h-10" />
+        </motion.div>
+        
+        <motion.div 
+          className="absolute bottom-32 left-[30%] text-blue-400/20 -z-10"
+          animate={{ 
+            y: [0, -12, 0],
+            rotate: [0, 8, 0]
+          }}
+          transition={{ 
+            duration: 4.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.8
+          }}
+        >
+          <BookOpenIcon className="w-12 h-12" />
+        </motion.div>
+        
+        {/* Dots grid */}
+        <div className="absolute inset-0 -z-20 opacity-20">
+          <div className="absolute left-0 right-0 top-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]"></div>
+        </div>
+        
         <motion.section 
-          className="max-w-7xl mx-auto text-center"
+          className="max-w-7xl mx-auto text-center relative z-10"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
@@ -305,6 +388,47 @@ export default function Landing() {
             >
               {t('hero.learnMore')}
             </Button>
+          </motion.div>
+          
+          {/* Stats Counter */}
+          <motion.div 
+            className="flex flex-wrap justify-center gap-8 md:gap-16 mt-12 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
+            <div className="text-center">
+              <p className="text-4xl font-bold text-primary">{language === 'en' ? '100+' : '100+'}</p>
+              <p className="text-sm text-foreground/70">
+                {language === 'en' ? 'Courses' : 
+                 language === 'ru' ? 'Курсов' : 
+                 'Курстар'}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-primary">{language === 'en' ? '50+' : '50+'}</p>
+              <p className="text-sm text-foreground/70">
+                {language === 'en' ? 'Mentors' : 
+                 language === 'ru' ? 'Менторов' : 
+                 'Менторлар'}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-primary">{language === 'en' ? '200+' : '200+'}</p>
+              <p className="text-sm text-foreground/70">
+                {language === 'en' ? 'Opportunities' : 
+                 language === 'ru' ? 'Возможностей' : 
+                 'Мүмкіндіктер'}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-primary">{language === 'en' ? '1000+' : '1000+'}</p>
+              <p className="text-sm text-foreground/70">
+                {language === 'en' ? 'Students' : 
+                 language === 'ru' ? 'Студентов' : 
+                 'Студенттер'}
+              </p>
+            </div>
           </motion.div>
         </motion.section>
         
