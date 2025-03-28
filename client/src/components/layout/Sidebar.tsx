@@ -4,7 +4,7 @@ import UserProfile from "./UserProfile";
 import SettingsPanel from "./SettingsPanel";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
-import { getTranslation } from "@/lib/translations";
+import { useTranslations } from "@/hooks/use-translations";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,8 +16,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user } = useAuthContext();
   const { language } = useTheme();
   
-  // Function to get translated text
-  const t = (key: string) => getTranslation(key as any, language);
+  // Use the hook for translations
+  const { t } = useTranslations();
   
   // Handle clicks outside sidebar on mobile
   useEffect(() => {

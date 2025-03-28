@@ -1,12 +1,12 @@
 import { useTheme } from '@/contexts/ThemeContext';
-import { getTranslation, type TranslationKey } from '@/lib/translations';
+import { getTranslation } from '@/lib/translations';
 
 export function useTranslations() {
   const { language } = useTheme();
   
-  const t = (key: TranslationKey) => {
-    return getTranslation(key, language);
+  const t = (key: string) => {
+    return getTranslation(key as any, language);
   };
   
-  return { t };
+  return { t, language };
 }

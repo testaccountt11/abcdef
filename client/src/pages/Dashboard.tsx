@@ -9,8 +9,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
-import { getTranslation } from "@/lib/translations";
+import { useTranslations } from "@/hooks/use-translations";
 import { Link } from "wouter";
 import { Course, Opportunity, Mentor, Article, Stats } from "@shared/schema";
 import { ApiError } from "@/lib/queryClient";
@@ -18,7 +17,7 @@ import { ApiError } from "@/lib/queryClient";
 export default function Dashboard() {
   const { user } = useAuthContext();
   const { toast } = useToast();
-  const { language } = useTheme();
+  const { t } = useTranslations();
 
   // Fetch user stats
   const { data: stats, isLoading: isLoadingStats } = useQuery<Stats>({
@@ -86,19 +85,19 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {getTranslation('dashboard.welcome', language)}, {user?.firstName || user?.username || 'Student'}!
+            {t('dashboard.welcome')}, {user?.firstName || user?.username || 'Student'}!
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">{getTranslation('dashboard.portfolioDesc', language)}</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('dashboard.portfolioDesc')}</p>
         </div>
         
         {/* Announcements Section */}
         <div className="mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              {getTranslation('dashboard.announcement.title', language)}
+              {t('dashboard.announcement.title')}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-              {getTranslation('dashboard.announcement.details', language)}
+              {t('dashboard.announcement.details')}
             </p>
             
             <div className="space-y-3">
@@ -113,7 +112,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {getTranslation('dashboard.announcement.newCourse', language)}
+                      {t('dashboard.announcement.newCourse')}
                     </p>
                     <button 
                       className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
@@ -122,7 +121,7 @@ export default function Dashboard() {
                         window.location.href = '/courses/new';
                       }}
                     >
-                      {getTranslation('dashboard.announcement.viewDetails', language)}
+                      {t('dashboard.announcement.viewDetails')}
                     </button>
                   </div>
                 </div>
@@ -139,7 +138,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {getTranslation('dashboard.announcement.competition', language)}
+                      {t('dashboard.announcement.competition')}
                     </p>
                     <button 
                       className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
@@ -148,7 +147,7 @@ export default function Dashboard() {
                         window.location.href = '/opportunities/competition';
                       }}
                     >
-                      {getTranslation('dashboard.announcement.viewDetails', language)}
+                      {t('dashboard.announcement.viewDetails')}
                     </button>
                   </div>
                 </div>
@@ -165,7 +164,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {getTranslation('dashboard.announcement.scholarship', language)}
+                      {t('dashboard.announcement.scholarship')}
                     </p>
                     <button 
                       className="text-xs text-green-600 dark:text-green-400 hover:underline"
@@ -174,7 +173,7 @@ export default function Dashboard() {
                         window.location.href = '/opportunities/scholarship';
                       }}
                     >
-                      {getTranslation('dashboard.announcement.viewDetails', language)}
+                      {t('dashboard.announcement.viewDetails')}
                     </button>
                   </div>
                 </div>
@@ -196,25 +195,25 @@ export default function Dashboard() {
           ) : (
             <>
               <StatCard 
-                title={getTranslation('dashboard.coursesInProgress', language)} 
+                title={t('dashboard.coursesInProgress')} 
                 value={stats?.coursesInProgress || 0} 
                 icon="book-mark-line" 
                 color="primary" 
               />
               <StatCard 
-                title={getTranslation('dashboard.certificatesEarned', language)} 
+                title={t('dashboard.certificatesEarned')} 
                 value={stats?.certificatesEarned || 0} 
                 icon="award-line" 
                 color="secondary" 
               />
               <StatCard 
-                title={getTranslation('dashboard.mentorSessions', language)} 
+                title={t('dashboard.mentorSessions')} 
                 value={stats?.mentorSessions || 0} 
                 icon="group-line" 
                 color="accent" 
               />
               <StatCard 
-                title={getTranslation('dashboard.opportunitiesSaved', language)} 
+                title={t('dashboard.opportunitiesSaved')} 
                 value={stats?.opportunitiesSaved || 0} 
                 icon="briefcase-line" 
                 color="purple" 
@@ -226,9 +225,9 @@ export default function Dashboard() {
         {/* Continue Learning Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.continueLearning', language)}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.continueLearning')}</h2>
             <Link href="/courses" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {getTranslation('dashboard.viewAllCourses', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+              {t('dashboard.viewAllCourses')} <ArrowRightIcon className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
@@ -251,7 +250,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noCourses', language)}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noCourses')}</p>
               </div>
             )}
           </div>
@@ -260,9 +259,9 @@ export default function Dashboard() {
         {/* Recommended Opportunities Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.recommendedOpportunities', language)}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.recommendedOpportunities')}</h2>
             <Link href="/opportunities" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {getTranslation('dashboard.viewAllOpportunities', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+              {t('dashboard.viewAllOpportunities')} <ArrowRightIcon className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
@@ -291,7 +290,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noOpportunities', language)}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noOpportunities')}</p>
               </div>
             )}
           </div>
@@ -300,9 +299,9 @@ export default function Dashboard() {
         {/* Featured Mentors Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.featuredMentors', language)}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.featuredMentors')}</h2>
             <Link href="/mentors" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {getTranslation('dashboard.viewAllMentors', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+              {t('dashboard.viewAllMentors')} <ArrowRightIcon className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
@@ -329,7 +328,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-4 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noMentors', language)}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noMentors')}</p>
               </div>
             )}
           </div>
@@ -338,9 +337,9 @@ export default function Dashboard() {
         {/* Recent Advice Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{getTranslation('dashboard.recentAdvice', language)}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.recentAdvice')}</h2>
             <Link href="/advice" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {getTranslation('dashboard.viewAllArticles', language)} <ArrowRightIcon className="ml-1 h-4 w-4" />
+              {t('dashboard.viewAllArticles')} <ArrowRightIcon className="ml-1 h-4 w-4" />
             </Link>
           </div>
           
@@ -368,7 +367,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="col-span-2 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{getTranslation('dashboard.noArticles', language)}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noArticles')}</p>
               </div>
             )}
           </div>
