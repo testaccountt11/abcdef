@@ -13,9 +13,9 @@ import Achievements from "@/pages/Achievements";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
-import Landing from "@/pages/Landing"; // Import the Landing component
-
+import Landing from "@/pages/Landing";
 
 function Router() {
   const [location, setLocation] = useLocation();
@@ -29,13 +29,13 @@ function Router() {
         if (!response.ok && 
             !location.startsWith('/login') && 
             !location.startsWith('/register') &&
-            !location.startsWith('/')) { //Added check for landing page
+            !location.startsWith('/')) {
           setLocation('/login');
         }
       } catch (error) {
         if (!location.startsWith('/login') && 
             !location.startsWith('/register') &&
-            !location.startsWith('/')) { //Added check for landing page
+            !location.startsWith('/')) {
           setLocation('/login');
         }
       }
@@ -46,7 +46,7 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={Landing} /> {/*Added route for landing page*/}
+      <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/courses" component={Courses} />
       <Route path="/opportunities" component={Opportunities} />
@@ -64,10 +64,12 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router />
-        <Toaster />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router />
+          <Toaster />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

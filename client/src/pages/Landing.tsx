@@ -2,6 +2,9 @@
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
+import { useTranslations } from "@/hooks/use-translations";
+import { TargetIcon, GraduationCapIcon, TrophyIcon, Users2Icon } from "lucide-react";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -19,31 +22,34 @@ const staggerChildren = {
 
 export default function Landing() {
   const [, setLocation] = useLocation();
+  const { t } = useTranslations();
 
   const features = [
-    { icon: "🎯", title: "Личный путь", desc: "AI создаст индивидуальный план развития" },
-    { icon: "🎓", title: "Топ курсы", desc: "Лучшие возможности для портфолио" },
-    { icon: "🏆", title: "Олимпиады", desc: "Участвуй и выигрывай стипендии" },
-    { icon: "👥", title: "Менторство", desc: "Поддержка от профессионалов" }
+    { 
+      icon: <TargetIcon className="w-10 h-10 text-primary" />, 
+      title: t('features.personalPath.title'), 
+      desc: t('features.personalPath.desc')
+    },
+    { 
+      icon: <GraduationCapIcon className="w-10 h-10 text-primary" />, 
+      title: t('features.topCourses.title'), 
+      desc: t('features.topCourses.desc') 
+    },
+    { 
+      icon: <TrophyIcon className="w-10 h-10 text-primary" />, 
+      title: t('features.competitions.title'), 
+      desc: t('features.competitions.desc') 
+    },
+    { 
+      icon: <Users2Icon className="w-10 h-10 text-primary" />, 
+      title: t('features.mentorship.title'), 
+      desc: t('features.mentorship.desc') 
+    }
   ];
 
   return (
     <div className="min-h-screen">
-      <nav className="fixed w-full z-50 top-0 px-6 py-4">
-        <div className="glass max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-8">
-            <h1 className="text-2xl font-bold text-gradient">Portfol.IO</h1>
-            <div className="hidden md:flex space-x-6">
-              {["О нас", "Курсы", "Стажировки", "Менторы"].map(item => (
-                <a key={item} className="text-sm text-white/70 hover:text-white transition-colors">{item}</a>
-              ))}
-            </div>
-          </div>
-          <Button onClick={() => setLocation("/login")} className="glow glass">
-            Войти
-          </Button>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="pt-32 px-6">
         <motion.section 
@@ -56,13 +62,13 @@ export default function Landing() {
             className="text-5xl md:text-7xl font-bold mb-6 text-gradient leading-tight"
             variants={fadeIn}
           >
-            Построй свое будущее<br />с Portfol.IO
+            {t('hero.title')}
           </motion.h1>
           <motion.p 
-            className="text-xl text-white/60 mb-12 max-w-2xl mx-auto"
+            className="text-xl mb-12 max-w-2xl mx-auto text-foreground/70"
             variants={fadeIn}
           >
-            Платформа нового поколения для развития твоей карьеры. Курсы, стажировки и менторство в одном месте.
+            {t('hero.subtitle')}
           </motion.p>
 
           <motion.div 
@@ -70,16 +76,16 @@ export default function Landing() {
             variants={fadeIn}
           >
             <Button 
-              className="glow bg-gradient-to-r from-[#4A90E2] to-[#87CEEB] text-lg py-6 px-8"
+              className="glow bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg py-6 px-8"
               onClick={() => setLocation("/register")}
             >
-              Начать бесплатно
+              {t('hero.start')}
             </Button>
             <Button 
               className="glow glass text-lg py-6 px-8"
               variant="outline"
             >
-              Узнать больше
+              {t('hero.learnMore')}
             </Button>
           </motion.div>
 
@@ -90,12 +96,12 @@ export default function Landing() {
             {features.map((feature, i) => (
               <motion.div 
                 key={i}
-                className="glass p-6 text-center animate-float"
+                className="glass p-6 text-center animate-float flex flex-col items-center"
                 style={{ animationDelay: `${i * 0.2}s` }}
               >
-                <div className="text-4xl mb-4">{feature.icon}</div>
+                <div className="mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-white/60">{feature.desc}</p>
+                <p className="text-foreground/60">{feature.desc}</p>
               </motion.div>
             ))}
           </motion.div>
