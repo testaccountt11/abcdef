@@ -33,7 +33,25 @@ export type TranslationKey =
   | 'newsletter.subtitle'
   | 'newsletter.placeholder'
   | 'newsletter.subscribe'
-  | 'footer.rights';
+  | 'footer.rights'
+  | 'auth.signin'
+  | 'auth.signin.desc'
+  | 'auth.signin.button'
+  | 'auth.signin.alternative'
+  | 'auth.signin.google'
+  | 'auth.register'
+  | 'auth.register.desc'
+  | 'auth.register.button'
+  | 'auth.register.alternative'
+  | 'auth.register.google'
+  | 'auth.email'
+  | 'auth.password'
+  | 'auth.confirmPassword'
+  | 'auth.firstName'
+  | 'auth.lastName'
+  | 'auth.username'
+  | 'auth.haveAccount'
+  | 'auth.noAccount';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -71,7 +89,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'newsletter.subtitle': 'Subscribe to our newsletter for the latest opportunities',
     'newsletter.placeholder': 'Your email address',
     'newsletter.subscribe': 'Subscribe',
-    'footer.rights': 'All rights reserved'
+    'footer.rights': 'All rights reserved',
+    'auth.signin': 'Sign In',
+    'auth.signin.desc': 'Enter your credentials to access your portfolio',
+    'auth.signin.button': 'Sign In with Email',
+    'auth.signin.alternative': 'Or continue with',
+    'auth.signin.google': 'Sign In with Google',
+    'auth.register': 'Create an Account',
+    'auth.register.desc': 'Sign up to start building your educational portfolio',
+    'auth.register.button': 'Create Account with Email',
+    'auth.register.alternative': 'Or continue with',
+    'auth.register.google': 'Sign Up with Google',
+    'auth.email': 'Email',
+    'auth.password': 'Password',
+    'auth.confirmPassword': 'Confirm Password',
+    'auth.firstName': 'First Name',
+    'auth.lastName': 'Last Name',
+    'auth.username': 'Username',
+    'auth.haveAccount': 'Already have an account?',
+    'auth.noAccount': 'Don\'t have an account?'
   },
   ru: {
     'nav.about': 'О нас',
@@ -108,7 +144,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'newsletter.subtitle': 'Подпишитесь на нашу рассылку для получения последних возможностей',
     'newsletter.placeholder': 'Ваш email адрес',
     'newsletter.subscribe': 'Подписаться',
-    'footer.rights': 'Все права защищены'
+    'footer.rights': 'Все права защищены',
+    'auth.signin': 'Вход',
+    'auth.signin.desc': 'Введите данные для доступа к вашему портфолио',
+    'auth.signin.button': 'Войти с Email',
+    'auth.signin.alternative': 'Или продолжить с',
+    'auth.signin.google': 'Войти через Google',
+    'auth.register': 'Создать аккаунт',
+    'auth.register.desc': 'Зарегистрируйтесь, чтобы начать создавать ваше образовательное портфолио',
+    'auth.register.button': 'Создать аккаунт с Email',
+    'auth.register.alternative': 'Или продолжить с',
+    'auth.register.google': 'Зарегистрироваться через Google',
+    'auth.email': 'Email',
+    'auth.password': 'Пароль',
+    'auth.confirmPassword': 'Подтвердите пароль',
+    'auth.firstName': 'Имя',
+    'auth.lastName': 'Фамилия',
+    'auth.username': 'Имя пользователя',
+    'auth.haveAccount': 'Уже есть аккаунт?',
+    'auth.noAccount': 'Нет аккаунта?'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -145,7 +199,25 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'newsletter.subtitle': 'Соңғы мүмкіндіктер туралы хабардар болу үшін жаңалықтар таратылымына жазылыңыз',
     'newsletter.placeholder': 'Сіздің email адресіңіз',
     'newsletter.subscribe': 'Жазылу',
-    'footer.rights': 'Барлық құқықтар қорғалған'
+    'footer.rights': 'Барлық құқықтар қорғалған',
+    'auth.signin': 'Кіру',
+    'auth.signin.desc': 'Портфолиоңызға кіру үшін деректеріңізді енгізіңіз',
+    'auth.signin.button': 'Email арқылы кіру',
+    'auth.signin.alternative': 'Немесе жалғастыру',
+    'auth.signin.google': 'Google арқылы кіру',
+    'auth.register': 'Аккаунт құру',
+    'auth.register.desc': 'Білім портфолиоңызды жасауды бастау үшін тіркеліңіз',
+    'auth.register.button': 'Email арқылы аккаунт жасау',
+    'auth.register.alternative': 'Немесе жалғастыру',
+    'auth.register.google': 'Google арқылы тіркелу',
+    'auth.email': 'Email',
+    'auth.password': 'Құпия сөз',
+    'auth.confirmPassword': 'Құпия сөзді растау',
+    'auth.firstName': 'Аты',
+    'auth.lastName': 'Тегі',
+    'auth.username': 'Пайдаланушы аты',
+    'auth.haveAccount': 'Аккаунтыңыз бар ма?',
+    'auth.noAccount': 'Аккаунтыңыз жоқ па?'
   }
 };
 

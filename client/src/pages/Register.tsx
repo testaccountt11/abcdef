@@ -136,9 +136,9 @@ export default function Register() {
               </div>
               <span className="text-2xl font-bold text-foreground ml-2">Portfol.IO</span>
             </div>
-            <CardTitle className="text-xl text-center">Create an Account</CardTitle>
+            <CardTitle className="text-xl text-center">{t('auth.register')}</CardTitle>
             <CardDescription className="text-center">
-              Sign up to start building your educational portfolio
+              {t('auth.register.desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -150,7 +150,7 @@ export default function Register() {
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>First Name</FormLabel>
+                        <FormLabel>{t('auth.firstName')}</FormLabel>
                         <FormControl>
                           <Input placeholder="John" {...field} />
                         </FormControl>
@@ -163,7 +163,7 @@ export default function Register() {
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Last Name</FormLabel>
+                        <FormLabel>{t('auth.lastName')}</FormLabel>
                         <FormControl>
                           <Input placeholder="Doe" {...field} />
                         </FormControl>
@@ -177,7 +177,7 @@ export default function Register() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>{t('auth.username')}</FormLabel>
                       <FormControl>
                         <Input placeholder="johndoe" {...field} />
                       </FormControl>
@@ -190,7 +190,7 @@ export default function Register() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="john.doe@example.com" {...field} />
                       </FormControl>
@@ -203,7 +203,7 @@ export default function Register() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -216,7 +216,7 @@ export default function Register() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel>{t('auth.confirmPassword')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -225,7 +225,7 @@ export default function Register() {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  Create Account with Email
+                  {t('auth.register.button')}
                 </Button>
                 
                 <div className="relative my-4">
@@ -233,7 +233,7 @@ export default function Register() {
                     <Separator className="w-full" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    <span className="bg-background px-2 text-muted-foreground">{t('auth.register.alternative')}</span>
                   </div>
                 </div>
                 
@@ -244,20 +244,20 @@ export default function Register() {
                   onClick={handleGoogleSignUp}
                 >
                   <FcGoogle className="mr-2 h-4 w-4" />
-                  Sign Up with Google
+                  {t('auth.register.google')}
                 </Button>
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm">
-              Already have an account?{" "}
+              {t('auth.haveAccount')}{" "}
               <Button 
                 variant="link" 
                 className="p-0 h-auto font-medium" 
                 onClick={() => setLocation('/login')}
               >
-                Sign in
+                {t('auth.signin')}
               </Button>
             </div>
           </CardFooter>

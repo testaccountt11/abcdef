@@ -100,9 +100,9 @@ export default function Login() {
               </div>
               <span className="text-2xl font-bold text-foreground ml-2">Portfol.IO</span>
             </div>
-            <CardTitle className="text-xl text-center">Sign In</CardTitle>
+            <CardTitle className="text-xl text-center">{t('auth.signin')}</CardTitle>
             <CardDescription className="text-center">
-              Enter your credentials to access your portfolio
+              {t('auth.signin.desc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -113,7 +113,7 @@ export default function Login() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="you@example.com" {...field} />
                       </FormControl>
@@ -126,7 +126,7 @@ export default function Login() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -135,7 +135,7 @@ export default function Login() {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  Sign In with Email
+                  {t('auth.signin.button')}
                 </Button>
                 
                 <div className="relative my-4">
@@ -143,7 +143,7 @@ export default function Login() {
                     <Separator className="w-full" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    <span className="bg-background px-2 text-muted-foreground">{t('auth.signin.alternative')}</span>
                   </div>
                 </div>
                 
@@ -154,20 +154,20 @@ export default function Login() {
                   onClick={handleGoogleLogin}
                 >
                   <FcGoogle className="mr-2 h-4 w-4" />
-                  Sign In with Google
+                  {t('auth.signin.google')}
                 </Button>
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm">
-              Don't have an account?{" "}
+              {t('auth.noAccount')}{" "}
               <Button 
                 variant="link" 
                 className="p-0 h-auto font-medium" 
                 onClick={() => setLocation('/register')}
               >
-                Sign up
+                {t('auth.register')}
               </Button>
             </div>
           </CardFooter>
