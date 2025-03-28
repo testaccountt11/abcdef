@@ -1,7 +1,10 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useLocation } from "wouter";
 import UserProfile from "./UserProfile";
+import SettingsPanel from "./SettingsPanel";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
+import { getTranslation } from "@/lib/translations";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,6 +14,10 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { user } = useAuthContext();
+  const { language } = useTheme();
+  
+  // Function to get translated text
+  const t = (key: string) => getTranslation(key as any, language);
   
   // Handle clicks outside sidebar on mobile
   useEffect(() => {
@@ -54,13 +61,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
           onClick={onClose}
-        ></div>
+        />
       )}
       
       {/* Sidebar */}
       <aside 
         id="sidebar"
-        className={`sidebar fixed inset-y-0 left-0 z-30 w-64 flex-col bg-white border-r border-gray-200 shadow-sm transform transition-transform duration-200 ease-in-out ${
+        className={`sidebar fixed inset-y-0 left-0 z-30 w-64 flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-sm transform transition-transform duration-200 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         } flex md:flex`}
       >
@@ -70,7 +77,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="w-8 h-8 rounded-md bg-primary-600 flex items-center justify-center text-white mr-2">
               <i className="ri-stack-line text-xl"></i>
             </div>
-            <span className="text-xl font-bold text-gray-900">Portfol.IO</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Portfol.IO</span>
           </div>
         </div>
         
@@ -82,15 +89,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               href={link.path}
               className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                 location === link.path 
-                  ? 'bg-primary-50 text-primary-700' 
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? "bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
               }`}
             >
-              <i className={`${link.icon} mr-3 ${location === link.path ? 'text-primary-500' : 'text-gray-400'}`}></i>
+              <i className={`${link.icon} mr-3 ${location === link.path ? "text-primary-500" : "text-gray-400"}`}></i>
               {link.label}
             </a>
           ))}
         </nav>
+        
+        {/* Settings Panel */}
+        <SettingsPanel />
         
         {/* User Profile */}
         {user && <UserProfile />}

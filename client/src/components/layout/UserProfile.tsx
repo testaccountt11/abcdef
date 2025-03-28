@@ -1,7 +1,7 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { ApiRequestError, apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Settings, LogOut, User } from "lucide-react";
 
@@ -22,34 +22,33 @@ export default function UserProfile() {
       });
       setLocation('/login');
     } catch (error) {
-      const apiError = error as ApiRequestError;
       toast({
         title: "Error",
-        description: apiError.message || "Failed to log out",
+        description: error instanceof Error ? error.message : "Failed to log out",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <div className="border-t border-gray-200 p-4">
+    <div className="border-t border-gray-200 dark:border-gray-700 p-4">
       <DropdownMenu>
         <DropdownMenuTrigger className="focus:outline-none w-full">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               {user.profileImage ? (
                 <img src={user.profileImage} alt={user.username} className="h-full w-full object-cover" />
               ) : (
-                <User className="h-4 w-4 text-gray-500" />
+                <User className="h-4 w-4 text-gray-500 dark:text-gray-400" />
               )}
             </div>
             <div className="ml-3 text-left">
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {user.firstName} {user.lastName || ''}
               </p>
-              <p className="text-xs font-medium text-gray-500">{user.email}</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{user.email}</p>
             </div>
-            <span className="ml-auto text-gray-400 hover:text-gray-500">
+            <span className="ml-auto text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
               <i className="ri-settings-3-line"></i>
             </span>
           </div>
