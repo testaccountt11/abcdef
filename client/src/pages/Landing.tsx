@@ -253,9 +253,9 @@ export default function Landing() {
   };
 
   // Get localized content based on current language
-  const steps = stepsTranslations[language] || stepsTranslations.en;
-  const testimonials = testimonialTranslations[language] || testimonialTranslations.en;
-  const partners = partnerTranslations[language] || partnerTranslations.en;
+  const steps = stepsTranslations[language as keyof typeof stepsTranslations] || stepsTranslations.en;
+  const testimonials = testimonialTranslations[language as keyof typeof testimonialTranslations] || testimonialTranslations.en;
+  const partners = partnerTranslations[language as keyof typeof partnerTranslations] || partnerTranslations.en;
 
   const handleScrollToFeatures = () => {
     if (featuresRef.current) {
@@ -366,7 +366,7 @@ export default function Landing() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {steps.map((step, index) => (
+              {steps.map((step: { number: string; title: string; description: string; icon: React.ReactNode }, index: number) => (
                 <motion.div 
                   key={index}
                   className="relative"
@@ -425,7 +425,7 @@ export default function Landing() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial: { name: string; role: string; quote: string; rating: number; image: string }, index: number) => (
               <motion.div 
                 key={index}
                 className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-border/50 shadow-lg"
@@ -434,23 +434,26 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
               >
-                <div className="flex items-center mb-4">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name} 
-                    className="w-16 h-16 rounded-full object-cover mr-4 border-2 border-primary/20"
-                  />
-                  <div>
-                    <h4 className="font-bold">{testimonial.name}</h4>
-                    <p className="text-sm text-foreground/70">{testimonial.role}</p>
-                    <div className="flex mt-1">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-lg">{testimonial.name}</h4>
+                      <p className="text-sm text-foreground/70">{testimonial.role}</p>
+                    </div>
+                    <div className="flex">
                       {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
                   </div>
                 </div>
-                <blockquote className="text-foreground/80 italic">"{testimonial.quote}"</blockquote>
+                <div className="bg-primary/5 p-4 rounded-lg mt-2 mb-3">
+                  <blockquote className="text-foreground/80 italic relative">
+                    <span className="text-3xl absolute -top-4 -left-1 text-primary/40">"</span>
+                    <p className="pl-3 pr-3">{testimonial.quote}</p>
+                    <span className="text-3xl absolute -bottom-6 -right-1 text-primary/40">"</span>
+                  </blockquote>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -475,7 +478,7 @@ export default function Landing() {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
-              {partners.map((partner, index) => (
+              {partners.map((partner: string, index: number) => (
                 <motion.div 
                   key={index}
                   className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 border border-border/50"
