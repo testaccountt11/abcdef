@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link"; // Added Link component
+import { Link } from "wouter"; // Using wouter Link instead
 
 
 // Animation variants
