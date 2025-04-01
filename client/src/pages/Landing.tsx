@@ -104,7 +104,7 @@ export default function Landing() {
         description: "Complete courses, collect certificates and achieve success!",
         icon: <Medal className="w-10 h-10" />
       }
-    ],
+    },
     ru: [
       {
         number: "01",
