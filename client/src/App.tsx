@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Courses from "@/pages/Courses";
+import CourseCatalog from "@/pages/CourseCatalog";
 import CourseDetail from "@/pages/CourseDetail";
 import Opportunities from "@/pages/Opportunities";
 import OpportunityDetail from "@/pages/OpportunityDetail";
@@ -52,6 +53,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/courses" component={Courses} />
+        <Route path="/catalog" component={CourseCatalog} />
       <Route path="/courses/:id" component={CourseDetail} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/opportunities/:id" component={OpportunityDetail} />

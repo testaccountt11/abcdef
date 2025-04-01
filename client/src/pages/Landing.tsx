@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Link from "next/link"; // Added Link component
+
 
 // Animation variants
 const fadeIn = {
@@ -48,12 +50,12 @@ export default function Landing() {
   const featuresRef = useRef<HTMLDivElement>(null);
   const howItWorksRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress: featuresProgress } = useScroll({
     target: featuresRef,
     offset: ["start end", "end start"]
   });
-  
+
   const featureOpacity = useTransform(featuresProgress, [0, 0.5], [0.5, 1]);
   const featureScale = useTransform(featuresProgress, [0, 0.5], [0.95, 1]);
 
@@ -80,7 +82,7 @@ export default function Landing() {
       desc: t('features.mentorship.desc')
     }
   ];
-  
+
   // Steps with translations for each language
   const stepsTranslations = {
     en: [
@@ -102,7 +104,7 @@ export default function Landing() {
         description: "Complete courses, collect certificates and achieve success!",
         icon: <Medal className="w-10 h-10" />
       }
-    ],
+    },
     ru: [
       {
         number: "01",
@@ -144,7 +146,7 @@ export default function Landing() {
       }
     ]
   };
-  
+
   // Testimonials with translations for each language
   const testimonialTranslations = {
     en: [
@@ -217,7 +219,7 @@ export default function Landing() {
       }
     ]
   };
-  
+
   // Partner names with translations for each language
   const partnerTranslations = {
     en: [
@@ -282,7 +284,7 @@ export default function Landing() {
             <TrophyIcon className="w-28 h-28 md:w-40 md:h-40" />
           </div>
         </div>
-        
+
         {/* Floating Elements */}
         <motion.div 
           className="absolute top-40 left-[20%] text-primary/20 -z-10"
@@ -298,7 +300,7 @@ export default function Landing() {
         >
           <BrainIcon className="w-14 h-14" />
         </motion.div>
-        
+
         <motion.div 
           className="absolute bottom-20 right-[25%] text-primary/20 -z-10"
           animate={{ 
@@ -314,7 +316,7 @@ export default function Landing() {
         >
           <AwardIcon className="w-16 h-16" />
         </motion.div>
-        
+
         <motion.div 
           className="absolute top-1/2 right-[15%] text-blue-400/20 -z-10"
           animate={{ 
@@ -330,7 +332,7 @@ export default function Landing() {
         >
           <BadgeIcon className="w-10 h-10" />
         </motion.div>
-        
+
         <motion.div 
           className="absolute bottom-32 left-[30%] text-blue-400/20 -z-10"
           animate={{ 
@@ -346,16 +348,16 @@ export default function Landing() {
         >
           <BookOpenIcon className="w-12 h-12" />
         </motion.div>
-        
+
         {/* Dots grid */}
         <div className="absolute inset-0 -z-20 opacity-20">
           <div className="absolute left-0 right-0 top-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]"></div>
         </div>
-        
+
         {/* Decorative lines */}
         <div className="absolute left-0 top-1/3 w-[30%] h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
         <div className="absolute right-0 top-2/3 w-[30%] h-[1px] bg-gradient-to-l from-transparent via-primary/30 to-transparent"></div>
-        
+
         {/* Additional floating elements */}
         <motion.div 
           className="absolute top-64 left-[40%] transform -translate-x-1/2 -z-10"
@@ -371,7 +373,7 @@ export default function Landing() {
         >
           <div className="w-32 h-32 rounded-full border border-primary/20 opacity-40"></div>
         </motion.div>
-        
+
         <motion.div 
           className="absolute bottom-40 right-[35%] transform -translate-x-1/2 -z-10"
           animate={{ 
@@ -387,7 +389,7 @@ export default function Landing() {
         >
           <div className="w-24 h-24 rounded-full border border-blue-400/20 opacity-30"></div>
         </motion.div>
-        
+
         <motion.section 
           className="max-w-7xl mx-auto text-center relative z-10 pt-8"
           initial="initial"
@@ -421,18 +423,15 @@ export default function Landing() {
               </span>
               <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Button>
-            <Button 
-              className="relative overflow-hidden group text-lg py-6 px-10 border-primary/30 bg-transparent hover:bg-transparent"
-              variant="outline"
-              onClick={handleScrollToFeatures}
-            >
+            <Link href="/catalog" className="relative overflow-hidden group text-lg py-6 px-10 border-primary/30 bg-transparent hover:bg-transparent"> {/* Added Link to Course Catalog */}
               <span className="relative z-10 flex items-center">
-                {t('hero.learnMore')}
+                {t('hero.courses')} {/* Changed text to 'View Courses' */}
+                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
               </span>
               <div className="absolute inset-0 bg-primary/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-            </Button>
+            </Link>
           </motion.div>
-          
+
           {/* Stats Counter */}
           <motion.div 
             className="flex flex-wrap justify-center gap-8 md:gap-16 mt-12 mb-12"
@@ -474,7 +473,7 @@ export default function Landing() {
             </div>
           </motion.div>
         </motion.section>
-        
+
         {/* Feature Cards */}
         <motion.section 
           ref={featuresRef}
@@ -487,7 +486,7 @@ export default function Landing() {
               {t('about.subtitle')}
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
             {features.map((feature, i) => (
               <motion.div 
@@ -508,7 +507,7 @@ export default function Landing() {
             ))}
           </div>
         </motion.section>
-        
+
         {/* How It Works */}
         <motion.section 
           ref={howItWorksRef}
@@ -531,7 +530,7 @@ export default function Landing() {
                  'Білім жолыңызды бастау үшін үш қарапайым қадам'}
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {steps.map((step: { number: string; title: string; description: string; icon: React.ReactNode }, index: number) => (
                 <motion.div 
@@ -562,7 +561,7 @@ export default function Landing() {
             </div>
           </div>
         </motion.section>
-        
+
         {/* Testimonials */}
         <motion.section 
           ref={testimonialsRef}
@@ -590,7 +589,7 @@ export default function Landing() {
                ' студенттердің пікірлері'}
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial: { name: string; role: string; quote: string; rating: number; image: string }, index: number) => (
               <motion.div 
@@ -625,7 +624,7 @@ export default function Landing() {
             ))}
           </div>
         </motion.section>
-        
+
         {/* Partners */}
         <motion.section 
           className="py-20 bg-card/30 backdrop-blur-lg overflow-hidden"
@@ -643,12 +642,12 @@ export default function Landing() {
                  'Portfol.IO-ды 20+ университеттер мен 50+ компаниялар қолдайды!'}
               </p>
             </div>
-            
+
             {/* Universities Carousel - First row */}
             <div className="mb-10 relative">
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
               <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
-              
+
               <div className="flex overflow-hidden">
                 <motion.div 
                   className="flex space-x-8 animate-scroll-left"
@@ -673,12 +672,12 @@ export default function Landing() {
                 </motion.div>
               </div>
             </div>
-            
+
             {/* Companies Carousel - Second row (opposite direction) */}
             <div className="mb-12 relative">
               <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
               <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
-              
+
               <div className="flex overflow-hidden">
                 <motion.div 
                   className="flex space-x-8 animate-scroll-right"
@@ -703,7 +702,7 @@ export default function Landing() {
                 </motion.div>
               </div>
             </div>
-            
+
             <div className="text-center">
               <Button 
                 variant="outline" 
@@ -716,7 +715,7 @@ export default function Landing() {
             </div>
           </div>
         </motion.section>
-        
+
         {/* CTA */}
         <motion.section 
           className="py-24 max-w-5xl mx-auto px-4"
@@ -750,7 +749,7 @@ export default function Landing() {
             </Button>
           </motion.div>
         </motion.section>
-        
+
         {/* Footer */}
         <footer className="bg-card/50 backdrop-blur-lg border-t border-border/50 py-16">
           <div className="max-w-7xl mx-auto px-4">
@@ -774,7 +773,7 @@ export default function Landing() {
                   </a>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-lg mb-4">
                   {language === 'en' ? 'Quick Links' : 
@@ -801,7 +800,7 @@ export default function Landing() {
                   </a></li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="font-bold text-lg mb-4">
                   {language === 'en' ? 'Support' : 
@@ -828,7 +827,7 @@ export default function Landing() {
                 </ul>
               </div>
             </div>
-            
+
             <div className="pt-8 border-t border-border/50 text-center text-foreground/60">
               © 2025 Portfol.IO – 
               {language === 'en' ? 'All rights reserved.' : 
