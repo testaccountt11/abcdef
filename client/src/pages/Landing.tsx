@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "wouter"; // Using wouter Link instead
+import Link from "next/link"; // Added Link component
 
 
 // Animation variants
@@ -104,7 +104,7 @@ export default function Landing() {
         description: "Complete courses, collect certificates and achieve success!",
         icon: <Medal className="w-10 h-10" />
       }
-    ],
+    },
     ru: [
       {
         number: "01",
