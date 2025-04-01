@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Link } from "wouter"; // Using wouter Link instead
+import { useRef } from "react";
 
 
 // Animation variants
@@ -423,13 +423,7 @@ export default function Landing() {
               </span>
               <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Button>
-            <Link href="/catalog" className="relative overflow-hidden group text-lg py-6 px-10 border-primary/30 bg-transparent hover:bg-transparent"> {/* Added Link to Course Catalog */}
-              <span className="relative z-10 flex items-center">
-                {t('hero.courses')} {/* Changed text to 'View Courses' */}
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </span>
-              <div className="absolute inset-0 bg-primary/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-            </Link>
+            
           </motion.div>
 
           {/* Stats Counter */}
