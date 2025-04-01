@@ -39,8 +39,8 @@ export default function UserProfile() {
   return (
     <div className="border-t border-gray-200 dark:border-gray-700 p-4">
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md p-2 transition-colors">
+        <DropdownMenuTrigger className="focus:outline-none w-full">
+          <div className="flex items-center">
             <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
               {user.profileImage ? (
                 <img src={user.profileImage} alt={user.username} className="h-full w-full object-cover" />
