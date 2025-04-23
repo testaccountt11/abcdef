@@ -21,7 +21,7 @@ export default function AdviceCard({ article }: AdviceCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
-      <div className="md:flex">
+      <div className="md:flex"> 
         <div className="md:w-1/3">
           <img 
             src={imageUrl} 

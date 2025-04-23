@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Layout } from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -9,36 +8,40 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getTranslation } from '@/lib/translations';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Award, Medal, Trophy, Certificate, Lightbulb, BookOpen, Calendar } from 'lucide-react';
+import { Loader2, Award, Medal, Trophy, Lightbulb, BookOpen, Calendar, ArrowLeft } from 'lucide-react';
 import UIBadge from '@/components/badges/UIBadge';
 import AchievementCard from '@/components/achievements/AchievementCard';
+import { User, UserStats, Achievement, UserBadge, ApiResponse } from '@/types';
+import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
 
 export default function Profile() {
   const { language } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
+  const [, setLocation] = useLocation();
   
   // Fetch user data
-  const { data: userData, isLoading: userLoading } = useQuery({
+  const { data: userData, isLoading: userLoading } = useQuery<ApiResponse<User>>({
     queryKey: ['/api/user'],
     retry: false,
   });
   
   // Fetch user achievements
-  const { data: achievements, isLoading: achievementsLoading } = useQuery({
+  const { data: achievements, isLoading: achievementsLoading } = useQuery<Achievement[]>({
     queryKey: ['/api/achievements/user'],
     enabled: !!userData?.user?.id,
     retry: false,
   });
   
   // Fetch user badges
-  const { data: badges, isLoading: badgesLoading } = useQuery({
+  const { data: badges, isLoading: badgesLoading } = useQuery<UserBadge[]>({
     queryKey: ['/api/badges/user'],
     enabled: !!userData?.user?.id,
     retry: false,
   });
   
   // Fetch user stats
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery<UserStats>({
     queryKey: ['/api/stats'],
     enabled: !!userData?.user?.id,
     retry: false,
@@ -48,27 +51,25 @@ export default function Profile() {
   
   if (isLoading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </Layout>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
     );
   }
   
   if (!userData?.user) {
     return (
-      <Layout>
-        <Alert className="my-8">
+      <div className="flex items-center justify-center min-h-screen">
+        <Alert variant="destructive">
           <AlertDescription>
-            {getTranslation('profile.notLoggedIn', language)}
+            {getTranslation('errors.userNotFound', language)}
           </AlertDescription>
         </Alert>
-      </Layout>
+      </div>
     );
   }
   
-  const { user } = userData;
+  const user = userData.user;
   const fullName = user.firstName && user.lastName 
     ? `${user.firstName} ${user.lastName}` 
     : user.username;
@@ -85,12 +86,21 @@ export default function Profile() {
   
   // Get displayed badges (badges with displayOnProfile = true)
   const displayedBadges = userBadges
-    .filter(badge => badge.displayOnProfile)
-    .map(badge => badge.badge);
+    .filter((badge: UserBadge) => badge.displayOnProfile)
+    .map((badge: UserBadge) => badge.badge);
   
   return (
-    <Layout>
-      <div className="container py-10">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          className="mb-6"
+          onClick={() => setLocation('/dashboard')}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          {getTranslation('common.back', language)}
+        </Button>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* User Profile Card */}
           <Card className="col-span-1">
@@ -117,7 +127,7 @@ export default function Profile() {
                   <div className="w-full mt-4">
                     <h4 className="text-sm font-semibold mb-2">{getTranslation('profile.displayedBadges', language)}</h4>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {displayedBadges.map(badge => (
+                      {displayedBadges.map((badge) => (
                         <UIBadge 
                           key={badge.id} 
                           name={badge.name} 
@@ -144,7 +154,7 @@ export default function Profile() {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Certificate className="h-4 w-4 mr-2 opacity-70" />
+                      <Award className="h-4 w-4 mr-2 opacity-70" />
                       <span className="text-sm">{getTranslation('dashboard.certificatesEarned', language)}</span>
                     </div>
                     <Badge variant="outline">{userStats.certificatesEarned || 0}</Badge>
@@ -293,12 +303,12 @@ export default function Profile() {
                   <CardContent>
                     {userBadges.length > 0 ? (
                       <div className="flex flex-wrap gap-3 justify-center">
-                        {userBadges.slice(0, 6).map(badge => (
+                        {userBadges.slice(0, 6).map((userBadge) => (
                           <UIBadge 
-                            key={badge.badgeId}
-                            name={badge.badge.name}
-                            description={badge.badge.description}
-                            type={badge.badge.type}
+                            key={userBadge.id}
+                            name={userBadge.badge.name}
+                            description={userBadge.badge.description}
+                            type={userBadge.badge.type}
                             size="md"
                           />
                         ))}
@@ -355,17 +365,17 @@ export default function Profile() {
                   <CardContent>
                     {userBadges.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {userBadges.map(badge => (
-                          <div key={badge.badgeId} className="flex flex-col items-center">
+                        {userBadges.map((userBadge) => (
+                          <div key={userBadge.id} className="flex flex-col items-center">
                             <UIBadge 
-                              name={badge.badge.name}
-                              description={badge.badge.description}
-                              type={badge.badge.type}
+                              name={userBadge.badge.name}
+                              description={userBadge.badge.description}
+                              type={userBadge.badge.type}
                               size="lg"
                             />
                             <div className="mt-2 text-center">
-                              <h4 className="text-sm font-medium">{badge.badge.name}</h4>
-                              <p className="text-xs text-muted-foreground">{badge.badge.description}</p>
+                              <h4 className="text-sm font-medium">{userBadge.badge.name}</h4>
+                              <p className="text-xs text-muted-foreground">{userBadge.badge.description}</p>
                             </div>
                           </div>
                         ))}
@@ -382,6 +392,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }

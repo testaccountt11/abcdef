@@ -141,6 +141,9 @@ export const certificates = pgTable("certificates", {
   issuer: text("issuer").notNull(),
   issueDate: text("issue_date").notNull(),
   certificateUrl: text("certificate_url"),
+  certificateFile: text("certificate_file"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertCertificateSchema = createInsertSchema(certificates).pick({
@@ -149,6 +152,7 @@ export const insertCertificateSchema = createInsertSchema(certificates).pick({
   issuer: true,
   issueDate: true,
   certificateUrl: true,
+  certificateFile: true,
 });
 
 // Stats schema for dashboard

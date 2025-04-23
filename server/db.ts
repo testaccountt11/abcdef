@@ -1,13 +1,9 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import pg from 'pg';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { neon, neonConfig } from '@neondatabase/serverless';
 import * as schema from '@shared/schema';
 
-const { Pool } = pg;
+// Configure Neon to use fetch
+neonConfig.fetchConnectionCache = true;
 
-// Create PostgreSQL connection pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-// Create drizzle database instance
-export const db = drizzle(pool, { schema });
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(sql);

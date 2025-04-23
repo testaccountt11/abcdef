@@ -13,7 +13,8 @@ import { z } from "zod";
 import { useState } from "react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Award, Download, Plus } from "lucide-react";
+import { Award, Download, Plus, Upload } from "lucide-react";
+import { Certificate } from "@/types";
 
 // Certificate upload form schema
 const certificateFormSchema = z.object({
@@ -21,6 +22,7 @@ const certificateFormSchema = z.object({
   issuer: z.string().min(2, "Issuer must be at least 2 characters"),
   issueDate: z.string().min(1, "Issue date is required"),
   certificateUrl: z.string().optional(),
+  certificateFile: z.any().optional(),
 });
 
 type CertificateFormValues = z.infer<typeof certificateFormSchema>;
@@ -28,6 +30,7 @@ type CertificateFormValues = z.infer<typeof certificateFormSchema>;
 export default function MyCertificates() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Form for adding new certificate
   const form = useForm<CertificateFormValues>({
@@ -37,25 +40,55 @@ export default function MyCertificates() {
       issuer: "",
       issueDate: new Date().toISOString().split('T')[0],
       certificateUrl: "",
+      certificateFile: null,
     },
   });
 
   // Fetch certificates
-  const { data: certificates, isLoading } = useQuery({
+  const { data: certificates, isLoading } = useQuery<Certificate[]>({
     queryKey: ['/api/certificates'],
-    onError: (error: any) => {
+  });
+
+  // Handle file upload
+  const handleFileUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/upload-certificate', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) throw new Error('Failed to upload file');
+
+      const data = await response.json();
+      return data.fileUrl;
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to load certificates",
+        description: error instanceof Error ? error.message : "Failed to upload file",
         variant: "destructive",
       });
-    },
-  });
+      return null;
+    }
+  };
 
   // Handle form submission
   const onSubmit = async (values: CertificateFormValues) => {
     try {
-      await apiRequest('POST', '/api/certificates', values);
+      setIsUploading(true);
+      
+      let certificateFile = null;
+      if (values.certificateFile) {
+        certificateFile = await handleFileUpload(values.certificateFile);
+      }
+
+      await apiRequest('POST', '/api/certificates', {
+        ...values,
+        certificateFile,
+      });
       
       toast({
         title: "Success",
@@ -74,6 +107,8 @@ export default function MyCertificates() {
         description: error.message || "Failed to add certificate",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -141,6 +176,39 @@ export default function MyCertificates() {
                   />
                   <FormField
                     control={form.control}
+                    name="certificateFile"
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <FormItem>
+                        <FormLabel>Certificate File</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  onChange(file);
+                                }
+                              }}
+                              {...field}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => document.querySelector('input[type="file"]')?.click()}
+                            >
+                              <Upload className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="certificateUrl"
                     render={({ field }) => (
                       <FormItem>
@@ -153,7 +221,9 @@ export default function MyCertificates() {
                     )}
                   />
                   <DialogFooter>
-                    <Button type="submit">Add Certificate</Button>
+                    <Button type="submit" disabled={isUploading}>
+                      {isUploading ? "Uploading..." : "Add Certificate"}
+                    </Button>
                   </DialogFooter>
                 </form>
               </Form>
@@ -189,9 +259,9 @@ export default function MyCertificates() {
                   <CardDescription>Issued by {certificate.issuer}</CardDescription>
                 </CardHeader>
                 <CardFooter>
-                  {certificate.certificateUrl ? (
+                  {(certificate.certificateUrl || certificate.certificateFile) ? (
                     <a 
-                      href={certificate.certificateUrl} 
+                      href={certificate.certificateUrl || certificate.certificateFile} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="w-full"
@@ -202,7 +272,7 @@ export default function MyCertificates() {
                     </a>
                   ) : (
                     <Button variant="outline" className="w-full" disabled>
-                      <Download className="mr-2 h-4 w-4" /> No URL Available
+                      <Download className="mr-2 h-4 w-4" /> No Certificate Available
                     </Button>
                   )}
                 </CardFooter>

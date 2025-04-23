@@ -49,24 +49,119 @@ export type TranslationKey =
   | 'auth.confirmPassword'
   | 'auth.firstName'
   | 'auth.lastName'
-  | 'auth.username'
-  | 'auth.haveAccount'
-  | 'auth.noAccount'
-  | 'dashboard.home'
+  | 'auth.forgotPassword'
+  | 'auth.resetPassword'
+  | 'auth.resetPassword.desc'
+  | 'auth.resetPassword.button'
+  | 'auth.verifyEmail'
+  | 'auth.verifyEmail.desc'
+  | 'auth.verifyEmail.button'
+  | 'auth.resendVerification'
+  | 'auth.logout'
+  | 'common.back'
+  | 'common.loading'
+  | 'common.error'
+  | 'common.success'
+  | 'common.save'
+  | 'common.cancel'
+  | 'common.edit'
+  | 'common.delete'
+  | 'common.view'
+  | 'common.search'
+  | 'common.filter'
+  | 'common.sort'
+  | 'common.more'
+  | 'common.less'
+  | 'common.all'
+  | 'common.none'
+  | 'common.yes'
+  | 'common.no'
+  | 'common.or'
+  | 'common.and'
+  | 'common.required'
+  | 'common.optional'
+  | 'common.invalid'
+  | 'common.valid'
+  | 'common.unknown'
+  | 'common.unknownError'
+  | 'common.tryAgain'
+  | 'common.refresh'
+  | 'common.close'
+  | 'common.open'
+  | 'common.next'
+  | 'common.previous'
+  | 'common.first'
+  | 'common.last'
+  | 'common.skip'
+  | 'common.continue'
+  | 'common.finish'
+  | 'common.start'
+  | 'common.end'
+  | 'common.today'
+  | 'common.yesterday'
+  | 'common.tomorrow'
+  | 'common.now'
+  | 'common.ago'
+  | 'common.fromNow'
+  | 'common.until'
+  | 'common.since'
+  | 'common.between'
+  | 'common.not'
+  | 'common.is'
+  | 'common.are'
+  | 'common.was'
+  | 'common.were'
+  | 'common.will'
+  | 'common.would'
+  | 'common.could'
+  | 'common.should'
+  | 'common.must'
+  | 'common.may'
+  | 'common.might'
+  | 'common.can'
+  | 'common.cannot'
+  | 'common.dashboard'
+  | 'dashboard.welcome'
+  | 'dashboard.overview'
   | 'dashboard.courses'
-  | 'dashboard.opportunities'
+  | 'dashboard.internships'
   | 'dashboard.mentors'
+  | 'dashboard.profile'
+  | 'dashboard.settings'
+  | 'dashboard.logout'
+  | 'dashboard.notifications'
+  | 'dashboard.messages'
+  | 'dashboard.tasks'
+  | 'dashboard.calendar'
+  | 'dashboard.help'
+  | 'dashboard.support'
+  | 'dashboard.feedback'
+  | 'dashboard.report'
+  | 'dashboard.about'
+  | 'dashboard.contact'
+  | 'dashboard.terms'
+  | 'dashboard.privacy'
+  | 'dashboard.cookies'
+  | 'dashboard.accessibility'
+  | 'dashboard.language'
+  | 'dashboard.theme'
+  | 'dashboard.darkMode'
+  | 'dashboard.lightMode'
+  | 'dashboard.systemMode'
+  | 'dashboard.home'
+  | 'dashboard.opportunities'
   | 'dashboard.advice'
   | 'dashboard.achievements'
   | 'dashboard.certificates'
-  | 'dashboard.settings'
-  | 'dashboard.theme'
-  | 'dashboard.language'
-  | 'dashboard.welcomeBack'
-  | 'dashboard.profile'
-  | 'dashboard.logout'
-  | 'dashboard.welcome'
+  | 'dashboard.title'
+  | 'dashboard.changeLanguage'
   | 'dashboard.portfolioDesc'
+  | 'dashboard.announcement.title'
+  | 'dashboard.announcement.details'
+  | 'dashboard.announcement.newCourse'
+  | 'dashboard.announcement.viewDetails'
+  | 'dashboard.announcement.competition'
+  | 'dashboard.announcement.scholarship'
   | 'dashboard.coursesInProgress'
   | 'dashboard.certificatesEarned'
   | 'dashboard.mentorSessions'
@@ -83,40 +178,25 @@ export type TranslationKey =
   | 'dashboard.recentAdvice'
   | 'dashboard.viewAllArticles'
   | 'dashboard.noArticles'
-  | 'dashboard.inProgress'
-  | 'dashboard.partnerCourse'
-  | 'dashboard.available'
-  | 'dashboard.enrollNow'
-  | 'dashboard.viewDetails'
-  | 'dashboard.announcement.title'
-  | 'dashboard.announcement.details'
-  | 'dashboard.announcement.newCourse'
-  | 'dashboard.announcement.competition'
-  | 'dashboard.announcement.scholarship'
-  | 'dashboard.announcement.viewDetails'
-  | 'profile.title'
-  | 'profile.subtitle'
-  | 'profile.notLoggedIn'
-  | 'profile.displayedBadges'
-  | 'profile.stats'
-  | 'profile.overview'
-  | 'profile.achievements'
-  | 'profile.badges'
-  | 'profile.summary'
-  | 'profile.summaryDesc'
-  | 'profile.achievementsCompleted'
-  | 'profile.badgesEarned'
-  | 'profile.recentAchievements'
-  | 'profile.recentBadges'
-  | 'profile.noAchievements'
-  | 'profile.noBadges'
-  | 'profile.allAchievements'
-  | 'profile.achievementsDesc'
-  | 'profile.allBadges'
-  | 'profile.badgesDesc'
-  | 'profile.completed'
-  | 'achievement.completed'
-  | 'achievement.progress';
+  | 'settings.notLoggedIn'
+  | 'settings.title'
+  | 'settings.description'
+  | 'settings.profile'
+  | 'settings.security'
+  | 'settings.profileSettings'
+  | 'settings.profileSettingsDesc'
+  | 'settings.securitySettings'
+  | 'settings.securitySettingsDesc'
+  | 'settings.firstName'
+  | 'settings.lastName'
+  | 'settings.email'
+  | 'settings.username'
+  | 'settings.currentPassword'
+  | 'settings.newPassword'
+  | 'settings.confirmPassword'
+  | 'settings.changePicture'
+  | 'settings.saveChanges'
+  | 'settings.updatePassword';
 
 
 
@@ -172,78 +252,154 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.confirmPassword': 'Confirm Password',
     'auth.firstName': 'First Name',
     'auth.lastName': 'Last Name',
-    'auth.username': 'Username',
-    'auth.haveAccount': 'Already have an account?',
-    'auth.noAccount': 'Don\'t have an account?',
-    'dashboard.home': 'Home',
+    'auth.forgotPassword': 'Forgot Password',
+    'auth.resetPassword': 'Reset Password',
+    'auth.resetPassword.desc': 'Enter your email to reset your password',
+    'auth.resetPassword.button': 'Reset Password',
+    'auth.verifyEmail': 'Verify Email',
+    'auth.verifyEmail.desc': 'Check your email for the verification link',
+    'auth.verifyEmail.button': 'Verify Email',
+    'auth.resendVerification': 'Resend Verification Email',
+    'auth.logout': 'Logout',
+    'common.back': 'Back',
+    'common.loading': 'Loading',
+    'common.error': 'Error',
+    'common.success': 'Success',
+    'common.save': 'Save',
+    'common.cancel': 'Cancel',
+    'common.edit': 'Edit',
+    'common.delete': 'Delete',
+    'common.view': 'View',
+    'common.search': 'Search',
+    'common.filter': 'Filter',
+    'common.sort': 'Sort',
+    'common.more': 'More',
+    'common.less': 'Less',
+    'common.all': 'All',
+    'common.none': 'None',
+    'common.yes': 'Yes',
+    'common.no': 'No',
+    'common.or': 'Or',
+    'common.and': 'And',
+    'common.required': 'Required',
+    'common.optional': 'Optional',
+    'common.invalid': 'Invalid',
+    'common.valid': 'Valid',
+    'common.unknown': 'Unknown',
+    'common.unknownError': 'Unknown Error',
+    'common.tryAgain': 'Try Again',
+    'common.refresh': 'Refresh',
+    'common.close': 'Close',
+    'common.open': 'Open',
+    'common.next': 'Next',
+    'common.previous': 'Previous',
+    'common.first': 'First',
+    'common.last': 'Last',
+    'common.skip': 'Skip',
+    'common.continue': 'Continue',
+    'common.finish': 'Finish',
+    'common.start': 'Start',
+    'common.end': 'End',
+    'common.today': 'Today',
+    'common.yesterday': 'Yesterday',
+    'common.tomorrow': 'Tomorrow',
+    'common.now': 'Now',
+    'common.ago': 'Ago',
+    'common.fromNow': 'From Now',
+    'common.until': 'Until',
+    'common.since': 'Since',
+    'common.between': 'Between',
+    'common.not': 'Not',
+    'common.is': 'Is',
+    'common.are': 'Are',
+    'common.was': 'Was',
+    'common.were': 'Were',
+    'common.will': 'Will',
+    'common.would': 'Would',
+    'common.could': 'Could',
+    'common.should': 'Should',
+    'common.must': 'Must',
+    'common.may': 'May',
+    'common.might': 'Might',
+    'common.can': 'Can',
+    'common.cannot': 'Cannot',
+    'common.dashboard': 'Dashboard',
+    'dashboard.welcome': 'Welcome, {name}!',
+    'dashboard.overview': 'Overview',
     'dashboard.courses': 'My Courses',
-    'dashboard.opportunities': 'Opportunities',
+    'dashboard.internships': 'Opportunities',
     'dashboard.mentors': 'Mentors',
+    'dashboard.profile': 'Profile',
+    'dashboard.settings': 'Settings',
+    'dashboard.logout': 'Logout',
+    'dashboard.notifications': 'Notifications',
+    'dashboard.messages': 'Messages',
+    'dashboard.tasks': 'Tasks',
+    'dashboard.calendar': 'Calendar',
+    'dashboard.help': 'Help',
+    'dashboard.support': 'Support',
+    'dashboard.feedback': 'Feedback',
+    'dashboard.report': 'Report',
+    'dashboard.about': 'About',
+    'dashboard.contact': 'Contact',
+    'dashboard.terms': 'Terms',
+    'dashboard.privacy': 'Privacy',
+    'dashboard.cookies': 'Cookies',
+    'dashboard.accessibility': 'Accessibility',
+    'dashboard.language': 'Language',
+    'dashboard.theme': 'Theme',
+    'dashboard.darkMode': 'Dark Mode',
+    'dashboard.lightMode': 'Light Mode',
+    'dashboard.systemMode': 'System Mode',
+    'dashboard.home': 'My Courses',
+    'dashboard.opportunities': 'Mentors',
     'dashboard.advice': 'Advice',
     'dashboard.achievements': 'Achievements',
-    'dashboard.certificates': 'My Certificates',
-    'dashboard.settings': 'Settings',
-    'dashboard.theme': 'Theme',
-    'dashboard.language': 'Language',
-    'dashboard.welcomeBack': 'Welcome back',
-    'dashboard.profile': 'Profile',
-    'dashboard.logout': 'Logout',
-    'dashboard.welcome': 'Welcome',
-    'dashboard.portfolioDesc': 'Build your educational portfolio and unlock new opportunities',
-    'dashboard.coursesInProgress': 'Courses in progress',
-    'dashboard.certificatesEarned': 'Certificates earned',
-    'dashboard.mentorSessions': 'Mentor sessions',
-    'dashboard.opportunitiesSaved': 'Opportunities saved',
+    'dashboard.certificates': 'Certificates',
+    'dashboard.title': 'Title',
+    'dashboard.changeLanguage': 'Change Language',
+    'dashboard.portfolioDesc': 'Track your learning progress and achievements',
+    'dashboard.announcement.title': 'Announcements',
+    'dashboard.announcement.details': 'View details',
+    'dashboard.announcement.newCourse': 'New course available',
+    'dashboard.announcement.viewDetails': 'View details',
+    'dashboard.announcement.competition': 'New competition',
+    'dashboard.announcement.scholarship': 'New scholarship opportunity',
+    'dashboard.coursesInProgress': 'Courses in Progress',
+    'dashboard.certificatesEarned': 'Certificates Earned',
+    'dashboard.mentorSessions': 'Mentor Sessions',
+    'dashboard.opportunitiesSaved': 'Opportunities Saved',
     'dashboard.continueLearning': 'Continue Learning',
-    'dashboard.viewAllCourses': 'View all courses',
+    'dashboard.viewAllCourses': 'View All Courses',
     'dashboard.noCourses': 'No courses in progress',
     'dashboard.recommendedOpportunities': 'Recommended Opportunities',
-    'dashboard.viewAllOpportunities': 'View all opportunities',
+    'dashboard.viewAllOpportunities': 'View All Opportunities',
     'dashboard.noOpportunities': 'No opportunities available',
     'dashboard.featuredMentors': 'Featured Mentors',
-    'dashboard.viewAllMentors': 'View all mentors',
+    'dashboard.viewAllMentors': 'View All Mentors',
     'dashboard.noMentors': 'No mentors available',
     'dashboard.recentAdvice': 'Recent Advice',
-    'dashboard.viewAllArticles': 'View all articles',
+    'dashboard.viewAllArticles': 'View All Articles',
     'dashboard.noArticles': 'No articles available',
-    'dashboard.inProgress': 'In Progress',
-    'dashboard.partnerCourse': 'Partner Course',
-    'dashboard.available': 'Available',
-    'dashboard.enrollNow': 'Enroll Now',
-    'dashboard.viewDetails': 'View Details',
-    'dashboard.announcement.title': 'Announcements',
-    'dashboard.announcement.details': 'Click on any announcement to view details',
-    'dashboard.announcement.newCourse': 'New course available: "Advanced Data Science". Enroll now to get early access!',
-    'dashboard.announcement.competition': 'Upcoming competition: "AI Innovation Challenge". Registration opens next week.',
-    'dashboard.announcement.scholarship': 'New scholarship opportunity available for top performing students.',
-    'dashboard.announcement.viewDetails': 'View Details',
-
-    // Profile page translations
-    'profile.title': 'My Profile',
-    'profile.subtitle': 'View and manage your achievements and badges',
-    'profile.notLoggedIn': 'You need to be logged in to view your profile',
-    'profile.displayedBadges': 'Displayed Badges',
-    'profile.stats': 'Statistics',
-    'profile.overview': 'Overview',
-    'profile.achievements': 'Achievements',
-    'profile.badges': 'Badges',
-    'profile.summary': 'Summary',
-    'profile.summaryDesc': 'Your educational journey at a glance',
-    'profile.achievementsCompleted': 'Achievements Completed',
-    'profile.badgesEarned': 'Badges Earned',
-    'profile.recentAchievements': 'Recent Achievements',
-    'profile.recentBadges': 'Recent Badges',
-    'profile.noAchievements': 'No achievements yet. Start courses to earn achievements!',
-    'profile.noBadges': 'No badges yet. Complete achievements to earn badges!',
-    'profile.allAchievements': 'All Achievements',
-    'profile.achievementsDesc': 'Track your progress on all achievements',
-    'profile.allBadges': 'All Badges',
-    'profile.badgesDesc': 'Special recognitions for your accomplishments',
-    'profile.completed': 'Completed',
-
-    // Achievement card translations
-    'achievement.completed': 'Completed',
-    'achievement.progress': 'Progress'
+    'settings.notLoggedIn': "You must be logged in to access settings",
+    'settings.title': "Settings",
+    'settings.description': "Manage your account settings and preferences",
+    'settings.profile': "Profile",
+    'settings.security': "Security",
+    'settings.profileSettings': "Profile Settings",
+    'settings.profileSettingsDesc': "Update your personal information and profile picture",
+    'settings.securitySettings': "Security Settings",
+    'settings.securitySettingsDesc': "Manage your password and security preferences",
+    'settings.firstName': "First Name",
+    'settings.lastName': "Last Name",
+    'settings.email': "Email",
+    'settings.username': "Username",
+    'settings.currentPassword': "Current Password",
+    'settings.newPassword': "New Password",
+    'settings.confirmPassword': "Confirm New Password",
+    'settings.changePicture': "Change Picture",
+    'settings.saveChanges': "Save Changes",
+    'settings.updatePassword': "Update Password",
   },
   ru: {
     'nav.about': 'О нас',
@@ -251,8 +407,8 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'nav.internships': 'Стажировки',
     'nav.mentors': 'Менторы',
     'nav.login': 'Войти',
-    'hero.title': 'Построй свое будущее с Portfol.IO',
-    'hero.subtitle': 'Платформа нового поколения для развития твоей карьеры. Курсы, стажировки и менторство в одном месте.',
+    'hero.title': 'Создайте свое будущее с Portfol.IO',
+    'hero.subtitle': 'Платформа нового поколения для развития вашей карьеры. Курсы, стажировки и менторство в одном месте.',
     'hero.start': 'Начать бесплатно',
     'hero.learnMore': 'Узнать больше',
     'features.personalPath.title': 'Личный путь',
@@ -296,78 +452,154 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.confirmPassword': 'Подтвердите пароль',
     'auth.firstName': 'Имя',
     'auth.lastName': 'Фамилия',
-    'auth.username': 'Имя пользователя',
-    'auth.haveAccount': 'Уже есть аккаунт?',
-    'auth.noAccount': 'Нет аккаунта?',
-    'dashboard.home': 'Главная',
-    'dashboard.courses': 'Мои курсы',
-    'dashboard.opportunities': 'Возможности',
+    'auth.forgotPassword': 'Забыли пароль',
+    'auth.resetPassword': 'Сбросить пароль',
+    'auth.resetPassword.desc': 'Введите ваш email для получения ссылки для сброса пароля',
+    'auth.resetPassword.button': 'Сбросить пароль',
+    'auth.verifyEmail': 'Подтвердить email',
+    'auth.verifyEmail.desc': 'Проверьте ваш email на наличие ссылки для подтверждения',
+    'auth.verifyEmail.button': 'Подтвердить email',
+    'auth.resendVerification': 'Отправить повторное подтверждение email',
+    'auth.logout': 'Выйти',
+    'common.back': 'Назад',
+    'common.loading': 'Загрузка',
+    'common.error': 'Ошибка',
+    'common.success': 'Успех',
+    'common.save': 'Сохранить',
+    'common.cancel': 'Отменить',
+    'common.edit': 'Редактировать',
+    'common.delete': 'Удалить',
+    'common.view': 'Просмотр',
+    'common.search': 'Поиск',
+    'common.filter': 'Фильтр',
+    'common.sort': 'Сортировать',
+    'common.more': 'Больше',
+    'common.less': 'Меньше',
+    'common.all': 'Все',
+    'common.none': 'Ни один',
+    'common.yes': 'Да',
+    'common.no': 'Нет',
+    'common.or': 'Или',
+    'common.and': 'И',
+    'common.required': 'Требуется',
+    'common.optional': 'Необязательно',
+    'common.invalid': 'Недействительный',
+    'common.valid': 'Действительный',
+    'common.unknown': 'Неизвестный',
+    'common.unknownError': 'Неизвестная ошибка',
+    'common.tryAgain': 'Попробуйте еще раз',
+    'common.refresh': 'Обновить',
+    'common.close': 'Закрыть',
+    'common.open': 'Открыть',
+    'common.next': 'Следующий',
+    'common.previous': 'Предыдущий',
+    'common.first': 'Первый',
+    'common.last': 'Последний',
+    'common.skip': 'Пропустить',
+    'common.continue': 'Продолжить',
+    'common.finish': 'Завершить',
+    'common.start': 'Начать',
+    'common.end': 'Завершить',
+    'common.today': 'Сегодня',
+    'common.yesterday': 'Вчера',
+    'common.tomorrow': 'Завтра',
+    'common.now': 'Теперь',
+    'common.ago': 'Назад',
+    'common.fromNow': 'Сейчас',
+    'common.until': 'До',
+    'common.since': 'С',
+    'common.between': 'Между',
+    'common.not': 'Не',
+    'common.is': 'Это',
+    'common.are': 'Это',
+    'common.was': 'Было',
+    'common.were': 'Было',
+    'common.will': 'Будет',
+    'common.would': 'Бы',
+    'common.could': 'Мог',
+    'common.should': 'Должен',
+    'common.must': 'Должен',
+    'common.may': 'Может',
+    'common.might': 'Мог',
+    'common.can': 'Может',
+    'common.cannot': 'Не может',
+    'common.dashboard': 'Панель',
+    'dashboard.welcome': 'Добро пожаловать, {name}!',
+    'dashboard.overview': 'Обзор',
+    'dashboard.courses': 'Курсы',
+    'dashboard.internships': 'Стажировки',
     'dashboard.mentors': 'Менторы',
+    'dashboard.profile': 'Профиль',
+    'dashboard.settings': 'Настройки',
+    'dashboard.logout': 'Выйти',
+    'dashboard.notifications': 'Уведомления',
+    'dashboard.messages': 'Сообщения',
+    'dashboard.tasks': 'Задачи',
+    'dashboard.calendar': 'Календарь',
+    'dashboard.help': 'Помощь',
+    'dashboard.support': 'Поддержка',
+    'dashboard.feedback': 'Отзывы',
+    'dashboard.report': 'Отчет',
+    'dashboard.about': 'О нас',
+    'dashboard.contact': 'Контакты',
+    'dashboard.terms': 'Условия',
+    'dashboard.privacy': 'Конфиденциальность',
+    'dashboard.cookies': 'Cookies',
+    'dashboard.accessibility': 'Доступность',
+    'dashboard.language': 'Язык',
+    'dashboard.theme': 'Тема',
+    'dashboard.darkMode': 'Темный режим',
+    'dashboard.lightMode': 'Светлый режим',
+    'dashboard.systemMode': 'Системный режим',
+    'dashboard.home': 'Мои курсы',
+    'dashboard.opportunities': 'Менторы',
     'dashboard.advice': 'Советы',
     'dashboard.achievements': 'Достижения',
-    'dashboard.certificates': 'Мои сертификаты',
-    'dashboard.settings': 'Настройки',
-    'dashboard.theme': 'Тема',
-    'dashboard.language': 'Язык',
-    'dashboard.welcomeBack': 'С возвращением',
-    'dashboard.profile': 'Профиль',
-    'dashboard.logout': 'Выйти',
-    'dashboard.welcome': 'Добро пожаловать',
-    'dashboard.portfolioDesc': 'Создайте своё образовательное портфолио и откройте новые возможности',
+    'dashboard.certificates': 'Сертификаты',
+    'dashboard.title': 'Заголовок',
+    'dashboard.changeLanguage': 'Изменить язык',
+    'dashboard.portfolioDesc': 'Отслеживайте свой прогресс в обучении и достижения',
+    'dashboard.announcement.title': 'Объявления',
+    'dashboard.announcement.details': 'Подробнее',
+    'dashboard.announcement.newCourse': 'Новый курс доступен',
+    'dashboard.announcement.viewDetails': 'Подробнее',
+    'dashboard.announcement.competition': 'Новый конкурс',
+    'dashboard.announcement.scholarship': 'Возможность получения стипендии',
     'dashboard.coursesInProgress': 'Курсы в процессе',
     'dashboard.certificatesEarned': 'Полученные сертификаты',
-    'dashboard.mentorSessions': 'Сессии с менторами',
+    'dashboard.mentorSessions': 'Сессии с ментором',
     'dashboard.opportunitiesSaved': 'Сохраненные возможности',
     'dashboard.continueLearning': 'Продолжить обучение',
-    'dashboard.viewAllCourses': 'Посмотреть все курсы',
-    'dashboard.noCourses': 'Нет курсов в процессе',
+    'dashboard.viewAllCourses': 'Все курсы',
+    'dashboard.noCourses': 'Нет доступных курсов',
     'dashboard.recommendedOpportunities': 'Рекомендуемые возможности',
-    'dashboard.viewAllOpportunities': 'Посмотреть все возможности',
+    'dashboard.viewAllOpportunities': 'Все возможности',
     'dashboard.noOpportunities': 'Нет доступных возможностей',
     'dashboard.featuredMentors': 'Рекомендуемые менторы',
-    'dashboard.viewAllMentors': 'Посмотреть всех менторов',
+    'dashboard.viewAllMentors': 'Все менторы',
     'dashboard.noMentors': 'Нет доступных менторов',
     'dashboard.recentAdvice': 'Последние советы',
-    'dashboard.viewAllArticles': 'Посмотреть все статьи',
+    'dashboard.viewAllArticles': 'Просмотреть все статьи',
     'dashboard.noArticles': 'Нет доступных статей',
-    'dashboard.inProgress': 'В процессе',
-    'dashboard.partnerCourse': 'Партнерский курс',
-    'dashboard.available': 'Доступно',
-    'dashboard.enrollNow': 'Записаться',
-    'dashboard.viewDetails': 'Подробнее',
-    'dashboard.announcement.title': 'Объявления',
-    'dashboard.announcement.details': 'Нажмите на любое объявление, чтобы увидеть подробности',
-    'dashboard.announcement.newCourse': 'Доступен новый курс: "Продвинутая наука о данных". Запишитесь сейчас для получения раннего доступа!',
-    'dashboard.announcement.competition': 'Предстоящий конкурс: "AI Innovation Challenge". Регистрация открывается на следующей неделе.',
-    'dashboard.announcement.scholarship': 'Доступна новая возможность получения стипендии для лучших студентов.',
-    'dashboard.announcement.viewDetails': 'Посмотреть детали',
-
-    // Переводы для страницы профиля
-    'profile.title': 'Мой профиль',
-    'profile.subtitle': 'Просмотр и управление вашими достижениями и значками',
-    'profile.notLoggedIn': 'Для просмотра профиля необходимо авторизоваться',
-    'profile.displayedBadges': 'Отображаемые значки',
-    'profile.stats': 'Статистика',
-    'profile.overview': 'Обзор',
-    'profile.achievements': 'Достижения',
-    'profile.badges': 'Значки',
-    'profile.summary': 'Сводка',
-    'profile.summaryDesc': 'Ваш образовательный путь с первого взгляда',
-    'profile.achievementsCompleted': 'Выполненные достижения',
-    'profile.badgesEarned': 'Полученные значки',
-    'profile.recentAchievements': 'Недавние достижения',
-    'profile.recentBadges': 'Недавние значки',
-    'profile.noAchievements': 'Пока нет достижений. Начните курсы, чтобы получить достижения!',
-    'profile.noBadges': 'Пока нет значков. Выполните достижения, чтобы получить значки!',
-    'profile.allAchievements': 'Все достижения',
-    'profile.achievementsDesc': 'Отслеживайте свой прогресс по всем достижениям',
-    'profile.allBadges': 'Все значки',
-    'profile.badgesDesc': 'Особые признания ваших достижений',
-    'profile.completed': 'Выполнено',
-
-    // Переводы для карточки достижений
-    'achievement.completed': 'Выполнено',
-    'achievement.progress': 'Прогресс'
+    'settings.notLoggedIn': "Вы должны войти в систему для доступа к настройкам",
+    'settings.title': "Настройки",
+    'settings.description': "Управляйте настройками и предпочтениями вашей учетной записи",
+    'settings.profile': "Профиль",
+    'settings.security': "Безопасность",
+    'settings.profileSettings': "Настройки профиля",
+    'settings.profileSettingsDesc': "Обновите свою личную информацию и фотографию профиля",
+    'settings.securitySettings': "Настройки безопасности",
+    'settings.securitySettingsDesc': "Управляйте своим паролем и настройками безопасности",
+    'settings.firstName': "Имя",
+    'settings.lastName': "Фамилия",
+    'settings.email': "Email",
+    'settings.username': "Имя пользователя",
+    'settings.currentPassword': "Текущий пароль",
+    'settings.newPassword': "Новый пароль",
+    'settings.confirmPassword': "Подтвердите новый пароль",
+    'settings.changePicture': "Изменить фото",
+    'settings.saveChanges': "Сохранить изменения",
+    'settings.updatePassword': "Обновить пароль"
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -420,78 +652,154 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.confirmPassword': 'Құпия сөзді растау',
     'auth.firstName': 'Аты',
     'auth.lastName': 'Тегі',
-    'auth.username': 'Пайдаланушы аты',
-    'auth.haveAccount': 'Аккаунтыңыз бар ма?',
-    'auth.noAccount': 'Аккаунтыңыз жоқ па?',
-    'dashboard.home': 'Басты бет',
-    'dashboard.courses': 'Менің курстарым',
-    'dashboard.opportunities': 'Мүмкіндіктер',
+    'auth.forgotPassword': 'Құпия сөзді ұмыттым',
+    'auth.resetPassword': 'Құпия сөзді қалпына келтіру',
+    'auth.resetPassword.desc': 'Құпия сөзді қалпына келтіру үшін электрондық поштаңызды енгізіңіз',
+    'auth.resetPassword.button': 'Құпия сөзді қалпына келтіру',
+    'auth.verifyEmail': 'Электрондық поштадан растау',
+    'auth.verifyEmail.desc': 'Электрондық поштаңызды тексеріңіз',
+    'auth.verifyEmail.button': 'Электрондық поштадан растау',
+    'auth.resendVerification': 'Растау электрондық поштасын қайта жіберу',
+    'auth.logout': 'Шығу',
+    'common.back': 'Артқа',
+    'common.loading': 'Жүктелу',
+    'common.error': 'Қате',
+    'common.success': 'Сәтті',
+    'common.save': 'Сақтау',
+    'common.cancel': 'Болдырмау',
+    'common.edit': 'Өзгерту',
+    'common.delete': 'Жою',
+    'common.view': 'Көру',
+    'common.search': 'Іздеу',
+    'common.filter': 'Фильтр',
+    'common.sort': 'Сорттау',
+    'common.more': 'Көбірек',
+    'common.less': 'Кемірек',
+    'common.all': 'Барлығы',
+    'common.none': 'Біреуі жоқ',
+    'common.yes': 'Иә',
+    'common.no': 'Жоқ',
+    'common.or': 'Немесе',
+    'common.and': 'Және',
+    'common.required': 'Қажет',
+    'common.optional': 'Необязательный',
+    'common.invalid': 'Недействительный',
+    'common.valid': 'Действительный',
+    'common.unknown': 'Белгісіз',
+    'common.unknownError': 'Белгісіз қате',
+    'common.tryAgain': 'Бірнеше рет көпіртеу',
+    'common.refresh': 'Жаңарту',
+    'common.close': 'Жабу',
+    'common.open': 'Ашу',
+    'common.next': 'Келесі',
+    'common.previous': 'Алдыңғы',
+    'common.first': 'Бірінші',
+    'common.last': 'Соңғы',
+    'common.skip': 'Жағынан өту',
+    'common.continue': 'Жалғастыру',
+    'common.finish': 'Аяқтау',
+    'common.start': 'Бастау',
+    'common.end': 'Аяқтау',
+    'common.today': 'Бүгін',
+    'common.yesterday': 'Кеше',
+    'common.tomorrow': 'Ертең',
+    'common.now': 'Қазір',
+    'common.ago': 'Аралық',
+    'common.fromNow': 'Соңынан',
+    'common.until': 'Қашан',
+    'common.since': 'Сонынан',
+    'common.between': 'Арасында',
+    'common.not': 'Емес',
+    'common.is': 'Бар',
+    'common.are': 'Бар',
+    'common.was': 'Была',
+    'common.were': 'Была',
+    'common.will': 'Бол',
+    'common.would': 'Бы',
+    'common.could': 'Мог',
+    'common.should': 'Дол',
+    'common.must': 'Дол',
+    'common.may': 'Может',
+    'common.might': 'Мог',
+    'common.can': 'Может',
+    'common.cannot': 'Мог',
+    'common.dashboard': 'Панель',
+    'dashboard.welcome': 'Қош келдіңіз, {name}!',
+    'dashboard.overview': 'Шолу',
+    'dashboard.courses': 'Курстар',
+    'dashboard.internships': 'Тәжірибеден өту',
     'dashboard.mentors': 'Менторлар',
-    'dashboard.advice': 'Кеңестер',
-    'dashboard.achievements': 'Жетістіктер',
-    'dashboard.certificates': 'Менің сертификаттарым',
-    'dashboard.settings': 'Параметрлер',
-    'dashboard.theme': 'Тақырып',
-    'dashboard.language': 'Тіл',
-    'dashboard.welcomeBack': 'Қайта оралуыңызбен',
     'dashboard.profile': 'Профиль',
+    'dashboard.settings': 'Параметрлер',
     'dashboard.logout': 'Шығу',
-    'dashboard.welcome': 'Қош келдіңіз',
-    'dashboard.portfolioDesc': 'Өзіңіздің білім портфолиоңызды құрыңыз және жаңа мүмкіндіктерді ашыңыз',
-    'dashboard.coursesInProgress': 'Оқу үстіндегі курстар',
+    'dashboard.notifications': 'Хабарландырулар',
+    'dashboard.messages': 'Хабарламалар',
+    'dashboard.tasks': 'Тапсырмалар',
+    'dashboard.calendar': 'Күнтізбе',
+    'dashboard.help': 'Көмек',
+    'dashboard.support': 'Қолдау',
+    'dashboard.feedback': 'Пікірлер',
+    'dashboard.report': 'Есеп',
+    'dashboard.about': 'Біз туралы',
+    'dashboard.contact': 'Байланыс',
+    'dashboard.terms': 'Шарттар',
+    'dashboard.privacy': 'Құпиялылық',
+    'dashboard.cookies': 'Cookies',
+    'dashboard.accessibility': 'Қолжетімділік',
+    'dashboard.language': 'Тіл',
+    'dashboard.theme': 'Режим',
+    'dashboard.darkMode': 'Қара режим',
+    'dashboard.lightMode': 'Жарық режим',
+    'dashboard.systemMode': 'Жүйелік режим',
+    'dashboard.home': 'Менің курстарым',
+    'dashboard.opportunities': 'Менторлар',
+    'dashboard.advice': 'Кеңес',
+    'dashboard.achievements': 'Жетістіктер',
+    'dashboard.certificates': 'Сертификаттар',
+    'dashboard.title': 'Тақырып',
+    'dashboard.changeLanguage': 'Тілді өзгерту',
+    'dashboard.portfolioDesc': 'Оқу процесіңіз мен жетістіктеріңізді бақылаңыз',
+    'dashboard.announcement.title': 'Хабарландырулар',
+    'dashboard.announcement.details': 'Толығырақ',
+    'dashboard.announcement.newCourse': 'Жаңа курс қолжетімді',
+    'dashboard.announcement.viewDetails': 'Толығырақ',
+    'dashboard.announcement.competition': 'Жаңа байқау',
+    'dashboard.announcement.scholarship': 'Шәкіртақы мүмкіндігі',
+    'dashboard.coursesInProgress': 'Оқып жатқан курстар',
     'dashboard.certificatesEarned': 'Алынған сертификаттар',
     'dashboard.mentorSessions': 'Ментор сессиялары',
     'dashboard.opportunitiesSaved': 'Сақталған мүмкіндіктер',
     'dashboard.continueLearning': 'Оқуды жалғастыру',
-    'dashboard.viewAllCourses': 'Барлық курстарды көру',
-    'dashboard.noCourses': 'Оқу үстіндегі курстар жоқ',
+    'dashboard.viewAllCourses': 'Барлық курстар',
+    'dashboard.noCourses': 'Қолжетімді курстар жоқ',
     'dashboard.recommendedOpportunities': 'Ұсынылған мүмкіндіктер',
-    'dashboard.viewAllOpportunities': 'Барлық мүмкіндіктерді көру',
+    'dashboard.viewAllOpportunities': 'Барлық мүмкіндіктер',
     'dashboard.noOpportunities': 'Қолжетімді мүмкіндіктер жоқ',
     'dashboard.featuredMentors': 'Ұсынылған менторлар',
-    'dashboard.viewAllMentors': 'Барлық менторларды көру',
+    'dashboard.viewAllMentors': 'Барлық менторлар',
     'dashboard.noMentors': 'Қолжетімді менторлар жоқ',
     'dashboard.recentAdvice': 'Соңғы кеңестер',
-    'dashboard.viewAllArticles': 'Барлық мақалаларды көру',
-    'dashboard.noArticles': 'Қолжетімді мақалалар жоқ',
-    'dashboard.inProgress': 'Оқу үстінде',
-    'dashboard.partnerCourse': 'Серіктестік курс',
-    'dashboard.available': 'Қолжетімді',
-    'dashboard.enrollNow': 'Тіркелу',
-    'dashboard.viewDetails': 'Толығырақ',
-    'dashboard.announcement.title': 'Хабарландырулар',
-    'dashboard.announcement.details': 'Толық мәліметтерді көру үшін кез келген хабарландыруды басыңыз',
-    'dashboard.announcement.newCourse': 'Жаңа курс қолжетімді: "Деректер туралы ғылымның жоғары деңгейі". Ерте қол жеткізу үшін қазір тіркеліңіз!',
-    'dashboard.announcement.competition': 'Алдағы байқау: "AI Innovation Challenge". Тіркеу келесі аптада басталады.',
-    'dashboard.announcement.scholarship': 'Үздік студенттер үшін жаңа стипендия мүмкіндігі бар.',
-    'dashboard.announcement.viewDetails': 'Толық ақпаратты көру',
-
-    // Профиль беті үшін аудармалар
-    'profile.title': 'Менің профилім',
-    'profile.subtitle': 'Жетістіктеріңіз бен белгілеріңізді қарау және басқару',
-    'profile.notLoggedIn': 'Профильді қарау үшін жүйеге кіру қажет',
-    'profile.displayedBadges': 'Көрсетілген белгілер',
-    'profile.stats': 'Статистика',
-    'profile.overview': 'Жалпы шолу',
-    'profile.achievements': 'Жетістіктер',
-    'profile.badges': 'Белгілер',
-    'profile.summary': 'Қорытынды',
-    'profile.summaryDesc': 'Сіздің білім беру жолыңыз бір көзқараста',
-    'profile.achievementsCompleted': 'Аяқталған жетістіктер',
-    'profile.badgesEarned': 'Алынған белгілер',
-    'profile.recentAchievements': 'Соңғы жетістіктер',
-    'profile.recentBadges': 'Соңғы белгілер',
-    'profile.noAchievements': 'Әзірге жетістіктер жоқ. Жетістіктерге қол жеткізу үшін курстарды бастаңыз!',
-    'profile.noBadges': 'Әзірге белгілер жоқ. Белгілерді алу үшін жетістіктерді аяқтаңыз!',
-    'profile.allAchievements': 'Барлық жетістіктер',
-    'profile.achievementsDesc': 'Барлық жетістіктер бойынша прогресіңізді қадағалаңыз',
-    'profile.allBadges': 'Барлық белгілер',
-    'profile.badgesDesc': 'Жетістіктеріңізге арналған арнайы мойындаулар',
-    'profile.completed': 'Аяқталды',
-
-    // Жетістіктер картасы үшін аудармалар
-    'achievement.completed': 'Аяқталды',
-    'achievement.progress': 'Прогресс'
+    'dashboard.viewAllArticles': 'Барлық мақалаларды қарау',
+    'dashboard.noArticles': 'Қол жетімді мақалалар жоқ',
+    'settings.notLoggedIn': "Параметрлерге қол жеткізу үшін жүйеге кіруіңіз керек",
+    'settings.title': "Параметрлер",
+    'settings.description': "Тіркелгі параметрлері мен теңшеліктерін басқарыңыз",
+    'settings.profile': "Профиль",
+    'settings.security': "Қауіпсіздік",
+    'settings.profileSettings': "Профиль параметрлері",
+    'settings.profileSettingsDesc': "Жеке ақпаратыңыз бен профиль суретін жаңартыңыз",
+    'settings.securitySettings': "Қауіпсіздік параметрлері",
+    'settings.securitySettingsDesc': "Құпия сөзіңіз бен қауіпсіздік параметрлерін басқарыңыз",
+    'settings.firstName': "Аты",
+    'settings.lastName': "Тегі",
+    'settings.email': "Email",
+    'settings.username': "Пайдаланушы аты",
+    'settings.currentPassword': "Ағымдағы құпия сөз",
+    'settings.newPassword': "Жаңа құпия сөз",
+    'settings.confirmPassword': "Жаңа құпия сөзді растаңыз",
+    'settings.changePicture': "Суретті өзгерту",
+    'settings.saveChanges': "Өзгерістерді сақтау",
+    'settings.updatePassword': "Құпия сөзді жаңарту"
   }
 };
 

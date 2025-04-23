@@ -20,6 +20,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
 import Landing from "@/pages/Landing";
+import Profile from "@/pages/Profile";
+import Settings from "@/pages/Settings";
 
 function Router() {
   const [location, setLocation] = useLocation();
@@ -53,7 +55,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/courses" component={Courses} />
-        <Route path="/catalog" component={CourseCatalog} />
+      <Route path="/catalog" component={CourseCatalog} />
       <Route path="/courses/:id" component={CourseDetail} />
       <Route path="/opportunities" component={Opportunities} />
       <Route path="/opportunities/:id" component={OpportunityDetail} />
@@ -64,6 +66,8 @@ function Router() {
       <Route path="/achievements" component={Achievements} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/profile" component={Profile} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );

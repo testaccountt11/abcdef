@@ -7,28 +7,28 @@ import {
   BrainIcon, BookOpenIcon, AwardIcon, BadgeIcon, 
   ArrowRight, UserPlusIcon, Compass, Medal, Star
 } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect, lazy, Suspense } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+// Lazy load sections that are not immediately visible
+const LazyFeatureSection = lazy(() => import('@/components/landing/FeatureSection'));
+const LazyHowItWorksSection = lazy(() => import('@/components/landing/HowItWorksSection'));
+const LazyTestimonialsSection = lazy(() => import('@/components/landing/TestimonialsSection'));
+const LazyPartnersSection = lazy(() => import('@/components/landing/PartnersSection'));
+const LazyCTASection = lazy(() => import('@/components/landing/CTASection'));
 
 // Animation variants
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
-
 const staggerChildren = {
   animate: {
     transition: {
-      staggerChildren: 0.2
+      staggerChildren: 0.1
     }
   }
 };
 
 const featureCardVariants = {
   offscreen: {
-    y: 50,
+    y: 30,
     opacity: 0
   },
   onscreen: (i: number) => ({
@@ -36,9 +36,9 @@ const featureCardVariants = {
     opacity: 1,
     transition: {
       type: "spring",
-      bounce: 0.4,
-      duration: 0.8,
-      delay: i * 0.1
+      bounce: 0.2,
+      duration: 0.5,
+      delay: i * 0.05
     }
   })
 };
@@ -46,36 +46,63 @@ const featureCardVariants = {
 export default function Landing() {
   const [, setLocation] = useLocation();
   const { t, language } = useTranslations();
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const howItWorksRef = useRef<HTMLDivElement>(null);
-  const testimonialsRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress: featuresProgress } = useScroll({
-    target: featuresRef,
-    offset: ["start end", "end start"]
+  const [isVisible, setIsVisible] = useState({
+    features: false,
+    howItWorks: false,
+    testimonials: false,
+    partners: false,
+    cta: false
   });
 
-  const featureOpacity = useTransform(featuresProgress, [0, 0.5], [0.5, 1]);
-  const featureScale = useTransform(featuresProgress, [0, 0.5], [0.95, 1]);
+  // Use Intersection Observer to detect when sections are visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            setIsVisible(prev => ({ ...prev, [id]: true }));
+            // Once a section is visible, we can unobserve it
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    // Observe each section
+    const sections = ['features', 'howItWorks', 'testimonials', 'partners', 'cta'];
+    sections.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+
+    return () => {
+      sections.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) observer.unobserve(element);
+      });
+    };
+  }, []);
 
   // All features with translations
   const features = [
-    { 
+    {
       icon: <BrainIcon className="w-12 h-12 text-primary" />, 
       title: t('features.personalPath.title'), 
       desc: t('features.personalPath.desc')
     },
-    { 
+    {
       icon: <GraduationCapIcon className="w-12 h-12 text-primary" />, 
       title: t('features.topCourses.title'), 
       desc: t('features.topCourses.desc')
     },
-    { 
+    {
       icon: <TrophyIcon className="w-12 h-12 text-primary" />, 
       title: t('features.competitions.title'), 
       desc: t('features.competitions.desc')
     },
-    { 
+    {
       icon: <Users2Icon className="w-12 h-12 text-primary" />, 
       title: t('features.mentorship.title'), 
       desc: t('features.mentorship.desc')
@@ -198,7 +225,7 @@ export default function Landing() {
       {
         name: "Әсел Қ.",
         role: "Мектеп түлегі",
-        quote: "Portfol.IO арқасында мен бәсекеге қабілетті портфолио дайындап, үздік университетке грантпен түстім!",
+        quote: "Portfol.IO арқылы мен бәсекеге қабілетті портфолио дайындап, үздік университетке грантпен түстім!",
         rating: 5,
         image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&h=256&q=80"
       },
@@ -258,40 +285,46 @@ export default function Landing() {
   const testimonials = testimonialTranslations[language as keyof typeof testimonialTranslations] || testimonialTranslations.en;
   const partners = partnerTranslations[language as keyof typeof partnerTranslations] || partnerTranslations.en;
 
-  const handleScrollToFeatures = () => {
-    if (featuresRef.current) {
-      featuresRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
       <main className="pt-32 px-6 relative overflow-hidden">
-        {/* Декоративные элементы */}
-        <div className="absolute top-20 left-[10%] w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse"></div>
-        <div className="absolute top-40 right-[15%] w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-[5%] transform -translate-y-1/2 -z-10">
-          <div className="text-primary/10 rotate-[20deg]">
-            <GraduationCapIcon className="w-36 h-36 md:w-48 md:h-48" />
-          </div>
-        </div>
-        <div className="absolute top-1/3 right-[5%] transform -translate-y-1/2 -z-10">
-          <div className="text-primary/10 -rotate-[15deg]">
-            <TrophyIcon className="w-28 h-28 md:w-40 md:h-40" />
-          </div>
-        </div>
-
-        {/* Floating Elements */}
+        {/* Animated background elements */}
+        <motion.div 
+          className="absolute top-20 left-[10%] w-96 h-96 bg-primary/5 rounded-full blur-xl -z-10"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute top-40 right-[15%] w-64 h-64 bg-blue-500/5 rounded-full blur-xl -z-10"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.5, 0.3, 0.5]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        {/* Animated floating icons */}
         <motion.div 
           className="absolute top-40 left-[20%] text-primary/20 -z-10"
-          animate={{ 
-            y: [0, -15, 0],
+          animate={{
+            y: [0, -20, 0],
             rotate: [0, 5, 0]
           }}
-          transition={{ 
+          transition={{
             duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
@@ -299,118 +332,61 @@ export default function Landing() {
         >
           <BrainIcon className="w-14 h-14" />
         </motion.div>
-
+        
         <motion.div 
           className="absolute bottom-20 right-[25%] text-primary/20 -z-10"
-          animate={{ 
-            y: [0, 15, 0],
+          animate={{
+            y: [0, 20, 0],
             rotate: [0, -5, 0]
           }}
-          transition={{ 
+          transition={{
             duration: 5,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
+            ease: "easeInOut"
           }}
         >
           <AwardIcon className="w-16 h-16" />
         </motion.div>
 
+        {/* Animated dots grid */}
         <motion.div 
-          className="absolute top-1/2 right-[15%] text-blue-400/20 -z-10"
-          animate={{ 
-            y: [0, 10, 0],
-            rotate: [0, -3, 0]
+          className="absolute inset-0 -z-20 opacity-5"
+          animate={{
+            backgroundPosition: ["0px 0px", "16px 16px"]
           }}
-          transition={{ 
-            duration: 3.5,
+          transition={{
+            duration: 20,
             repeat: Infinity,
-            ease: "easeInOut",
-            delay: 0.5
+            ease: "linear"
           }}
         >
-          <BadgeIcon className="w-10 h-10" />
+          <div className="absolute left-0 right-0 top-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
         </motion.div>
 
-        <motion.div 
-          className="absolute bottom-32 left-[30%] text-blue-400/20 -z-10"
-          animate={{ 
-            y: [0, -12, 0],
-            rotate: [0, 8, 0]
-          }}
-          transition={{ 
-            duration: 4.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 0.8
-          }}
-        >
-          <BookOpenIcon className="w-12 h-12" />
-        </motion.div>
-
-        {/* Dots grid */}
-        <div className="absolute inset-0 -z-20 opacity-20">
-          <div className="absolute left-0 right-0 top-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]"></div>
-        </div>
-
-        {/* Decorative lines */}
-        <div className="absolute left-0 top-1/3 w-[30%] h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-        <div className="absolute right-0 top-2/3 w-[30%] h-[1px] bg-gradient-to-l from-transparent via-primary/30 to-transparent"></div>
-
-        {/* Additional floating elements */}
-        <motion.div 
-          className="absolute top-64 left-[40%] transform -translate-x-1/2 -z-10"
-          animate={{ 
-            scale: [1, 1.05, 1],
-            opacity: [0.2, 0.3, 0.2]
-          }}
-          transition={{ 
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <div className="w-32 h-32 rounded-full border border-primary/20 opacity-40"></div>
-        </motion.div>
-
-        <motion.div 
-          className="absolute bottom-40 right-[35%] transform -translate-x-1/2 -z-10"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ 
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        >
-          <div className="w-24 h-24 rounded-full border border-blue-400/20 opacity-30"></div>
-        </motion.div>
-
-        <motion.section 
-          className="max-w-7xl mx-auto text-center relative z-10 pt-8"
-          initial="initial"
-          animate="animate"
-          variants={staggerChildren}
-        >
+        {/* Hero content */}
+        <section className="max-w-7xl mx-auto text-center relative z-10 pt-8">
           <motion.h1 
             className="text-5xl md:text-7xl font-bold mb-10 text-gradient leading-tight md:leading-tight lg:leading-tight"
-            variants={fadeIn}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
             {t('hero.title')}
           </motion.h1>
           <motion.p 
             className="text-xl mb-14 max-w-2xl mx-auto text-foreground/70 px-4"
-            variants={fadeIn}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             {t('hero.subtitle')}
           </motion.p>
 
           <motion.div 
             className="flex flex-wrap justify-center gap-4 mb-20"
-            variants={fadeIn}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Button 
               className="relative overflow-hidden group bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg py-6 px-10 shadow-lg border-0"
@@ -422,15 +398,14 @@ export default function Landing() {
               </span>
               <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
             </Button>
-            
           </motion.div>
 
           {/* Stats Counter */}
           <motion.div 
             className="flex flex-wrap justify-center gap-8 md:gap-16 mt-12 mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             <div className="text-center">
               <p className="text-4xl font-bold text-primary">{language === 'en' ? '100+' : '100+'}</p>
@@ -465,286 +440,55 @@ export default function Landing() {
               </p>
             </div>
           </motion.div>
-        </motion.section>
+        </section>
 
-        {/* Feature Cards */}
-        <motion.section 
-          ref={featuresRef}
-          className="py-24 max-w-7xl mx-auto"
-          style={{ opacity: featureOpacity, scale: featureScale }}
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('about.title')}</h2>
-            <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-              {t('about.subtitle')}
-            </p>
-          </div>
+        {/* Feature Cards - Lazy loaded */}
+        <div id="features">
+          {isVisible.features && (
+            <Suspense fallback={<div className="py-24 max-w-7xl mx-auto text-center">Loading...</div>}>
+              <LazyFeatureSection features={features} t={t} />
+            </Suspense>
+          )}
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-            {features.map((feature, i) => (
-              <motion.div 
-                key={i}
-                className="bg-card/50 backdrop-blur-md rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-border/50 hover:border-primary/30 h-full flex flex-col items-center justify-center"
-                initial="offscreen"
-                whileInView="onscreen"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={featureCardVariants}
-                custom={i}
-              >
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-foreground/70 text-center">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+        {/* How It Works - Lazy loaded */}
+        <div id="howItWorks">
+          {isVisible.howItWorks && (
+            <Suspense fallback={<div className="py-24 bg-primary/5 text-center">Loading...</div>}>
+              <LazyHowItWorksSection steps={steps} language={language} />
+            </Suspense>
+          )}
+        </div>
 
-        {/* How It Works */}
-        <motion.section 
-          ref={howItWorksRef}
-          className="py-24 bg-primary/5 backdrop-blur-lg"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {language === 'en' ? 'How It Works' : 
-                 language === 'ru' ? 'Как это работает?' : 
-                 'Қалай жұмыс істейді?'}
-              </h2>
-              <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                {language === 'en' ? 'Just three simple steps to start your educational journey' : 
-                 language === 'ru' ? 'Всего три простых шага для начала вашего образовательного пути' : 
-                 'Білім жолыңызды бастау үшін үш қарапайым қадам'}
-              </p>
-            </div>
+        {/* Testimonials - Lazy loaded */}
+        <div id="testimonials">
+          {isVisible.testimonials && (
+            <Suspense fallback={<div className="py-24 max-w-7xl mx-auto px-4 text-center">Loading...</div>}>
+              <LazyTestimonialsSection testimonials={testimonials} t={t} language={language} />
+            </Suspense>
+          )}
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {steps.map((step: { number: string; title: string; description: string; icon: React.ReactNode }, index: number) => (
-                <motion.div 
-                  key={index}
-                  className="relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.2, duration: 0.5 }}
-                >
-                  <div className="bg-card/80 backdrop-blur-sm rounded-xl p-6 border border-border/50 h-full">
-                    <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
-                      {step.icon}
-                    </div>
-                    <span className="text-5xl font-bold text-primary/20 absolute top-4 right-6">
-                      {step.number}
-                    </span>
-                    <h3 className="text-xl font-bold mb-3">{step.title}</h3>
-                    <p className="text-foreground/70">{step.description}</p>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                      <ArrowRight className="w-8 h-8 text-primary/50" />
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.section>
+        {/* Partners - Lazy loaded */}
+        <div id="partners">
+          {isVisible.partners && (
+            <Suspense fallback={<div className="py-20 bg-card/30 text-center">Loading...</div>}>
+              <LazyPartnersSection partners={partners} t={t} language={language} />
+            </Suspense>
+          )}
+        </div>
 
-        {/* Testimonials */}
-        <motion.section 
-          ref={testimonialsRef}
-          className="py-24 max-w-7xl mx-auto px-4"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('testimonials.title')}</h2>
-            <div className="flex items-center justify-center gap-1 mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star key={star} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <p className="text-lg text-foreground/70">
-              <span className="font-bold">4.8/5</span> 
-              {language === 'en' ? ' based on ' : 
-               language === 'ru' ? ' на основе ' : 
-               ' негізінде '}
-              <span className="font-bold">10,000+</span> 
-              {language === 'en' ? ' student reviews' : 
-               language === 'ru' ? ' отзывов студентов' : 
-               ' студенттердің пікірлері'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial: { name: string; role: string; quote: string; rating: number; image: string }, index: number) => (
-              <motion.div 
-                key={index}
-                className="bg-card/30 backdrop-blur-sm rounded-xl p-6 border border-border/50 shadow-lg"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <div className="mb-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                      <p className="text-sm text-foreground/70">{testimonial.role}</p>
-                    </div>
-                    <div className="flex">
-                      {Array.from({ length: testimonial.rating }).map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-primary/5 p-4 rounded-lg mt-2 mb-3">
-                  <blockquote className="text-foreground/80 italic relative">
-                    <span className="text-3xl absolute -top-4 -left-1 text-primary/40">"</span>
-                    <p className="pl-3 pr-3">{testimonial.quote}</p>
-                    <span className="text-3xl absolute -bottom-6 -right-1 text-primary/40">"</span>
-                  </blockquote>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Partners */}
-        <motion.section 
-          className="py-20 bg-card/30 backdrop-blur-lg overflow-hidden"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">{t('partners.title')}</h2>
-              <p className="text-xl text-foreground/70">
-                {language === 'en' ? 'Portfol.IO is already supported by 20+ universities and 50+ companies!' : 
-                 language === 'ru' ? 'Portfol.IO уже поддерживают 20+ университетов и 50+ компаний!' : 
-                 'Portfol.IO-ды 20+ университеттер мен 50+ компаниялар қолдайды!'}
-              </p>
-            </div>
-
-            {/* Universities Carousel - First row */}
-            <div className="mb-10 relative">
-              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
-
-              <div className="flex overflow-hidden">
-                <motion.div 
-                  className="flex space-x-8 animate-scroll-left"
-                  initial={{ x: 0 }}
-                  animate={{ x: "-50%" }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    repeatType: "loop", 
-                    duration: 30,
-                    ease: "linear"
-                  }}
-                >
-                  {/* First set of partners - doubled for seamless loop */}
-                  {[...partners, ...partners].map((partner: string, index: number) => (
-                    <div 
-                      key={`uni1-${index}`}
-                      className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 min-w-[200px] border border-border/50 shadow-md partner-logo"
-                    >
-                      <p className="font-semibold text-foreground/80">{partner}</p>
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Companies Carousel - Second row (opposite direction) */}
-            <div className="mb-12 relative">
-              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-r from-card/30 to-transparent"></div>
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-20 h-full pointer-events-none z-10 bg-gradient-to-l from-card/30 to-transparent"></div>
-
-              <div className="flex overflow-hidden">
-                <motion.div 
-                  className="flex space-x-8 animate-scroll-right"
-                  initial={{ x: "-50%" }}
-                  animate={{ x: 0 }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    repeatType: "loop", 
-                    duration: 25,
-                    ease: "linear"
-                  }}
-                >
-                  {/* Second set of partners (reversed) - doubled for seamless loop */}
-                  {[...partners.slice().reverse(), ...partners.slice().reverse()].map((partner: string, index: number) => (
-                    <div 
-                      key={`company-${index}`}
-                      className="bg-background/50 backdrop-blur-md rounded-lg p-4 flex items-center justify-center h-20 min-w-[200px] border border-border/50 shadow-md partner-logo"
-                    >
-                      <p className="font-semibold text-foreground/80">{partner}</p>
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <Button 
-                variant="outline" 
-                className="border-primary/50 text-primary hover:bg-primary/10"
-              >
-                {language === 'en' ? 'Become a Partner' : 
-                 language === 'ru' ? 'Стать партнёром' : 
-                 'Серіктес болу'}
-              </Button>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* CTA */}
-        <motion.section 
-          className="py-24 max-w-5xl mx-auto px-4"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div 
-            className="bg-gradient-to-br from-primary/10 to-primary/30 backdrop-blur-xl rounded-2xl p-10 shadow-xl border border-primary/20 text-center"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {language === 'en' ? 'Ready to start? Register for free and build your career!' : 
-               language === 'ru' ? 'Готов начать? Зарегистрируйся бесплатно и построй свою карьеру!' : 
-               'Бастауға дайынсыз ба? Тегін тіркеліп, мансабыңызды құрыңыз!'}
-            </h2>
-            <p className="text-xl text-foreground/70 mb-8 max-w-2xl mx-auto">
-              {language === 'en' ? 'Join thousands of students who are already using Portfol.IO to achieve their goals' : 
-               language === 'ru' ? 'Присоединяйся к тысячам студентов, которые уже используют Portfol.IO для достижения своих целей' : 
-               'Мақсаттарына жету үшін Portfol.IO-ты қолданып жатқан мыңдаған студенттерге қосылыңыз'}
-            </p>
-            <Button 
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-white text-lg py-6 px-12 rounded-xl"
-              onClick={() => setLocation("/register")}
-            >
-              {t('hero.start')}
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </motion.div>
-        </motion.section>
+        {/* CTA - Lazy loaded */}
+        <div id="cta">
+          {isVisible.cta && (
+            <Suspense fallback={<div className="py-24 max-w-5xl mx-auto px-4 text-center">Loading...</div>}>
+              <LazyCTASection t={t} language={language} setLocation={setLocation} />
+            </Suspense>
+          )}
+        </div>
 
         {/* Footer */}
-        <footer className="bg-card/50 backdrop-blur-lg border-t border-border/50 py-16">
+        <footer className="bg-card/50 backdrop-blur-sm border-t border-border/50 py-16">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
               <div className="col-span-1 md:col-span-2">
@@ -754,17 +498,6 @@ export default function Landing() {
                    language === 'ru' ? 'Инновационная образовательная платформа для построения успешного будущего через персональное портфолио и развитие навыков' : 
                    'Жеке портфолио мен дағдыларды дамыту арқылы табысты болашақ құруға арналған инновациялық білім беру платформасы'}
                 </p>
-                <div className="flex gap-4">
-                  <a href="#" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                  </a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-                  </a>
-                  <a href="#" className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                  </a>
-                </div>
               </div>
 
               <div>

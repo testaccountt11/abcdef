@@ -26,6 +26,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [location] = useLocation();
   const { language } = useTheme();
   
+  // Don't render layout on profile page
+  if (location === '/profile') {
+    return <>{children}</>;
+  }
+  
   const navItems = [
     { path: '/dashboard', icon: <Home className="w-5 h-5" />, label: getTranslation('dashboard.home', language) },
     { path: '/courses', icon: <BookOpen className="w-5 h-5" />, label: getTranslation('dashboard.courses', language) },
