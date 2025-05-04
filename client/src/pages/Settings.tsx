@@ -16,6 +16,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
 
 // Form validation schemas
 const profileFormSchema = z.object({
@@ -26,27 +27,42 @@ const profileFormSchema = z.object({
   profileImage: z.string().optional(),
 });
 
-const passwordFormSchema = z.object({
-  currentPassword: z.string().min(6, 'Password must be at least 6 characters'),
-  newPassword: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+type PasswordFormValues = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
-type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 export default function Settings() {
   const { user, login } = useAuthContext();
   const { toast } = useToast();
   const { language } = useTheme();
+  const { t } = useTranslations();
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(user?.profileImage || '');
 
-  // Profile form
+  const passwordForm = useForm<PasswordFormValues>({
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    },
+    validate: {
+      currentPassword: (value) => value.length > 0 || "Current password is required",
+      newPassword: (value) => {
+        if (value.length < 8) return getTranslation('auth.password.requirements.length', language);
+        if (!/[A-Z]/.test(value)) return getTranslation('auth.password.requirements.uppercase', language);
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return getTranslation('auth.password.requirements.special', language);
+        return true;
+      },
+      confirmPassword: (value, formValues) => 
+        value === formValues.newPassword || getTranslation('auth.password.requirements.match', language)
+    }
+  });
+
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -55,16 +71,6 @@ export default function Settings() {
       email: user?.email || '',
       username: user?.username || '',
       profileImage: user?.profileImage || '',
-    },
-  });
-
-  // Password form
-  const passwordForm = useForm<PasswordFormValues>({
-    resolver: zodResolver(passwordFormSchema),
-    defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
     },
   });
 

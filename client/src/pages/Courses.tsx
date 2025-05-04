@@ -7,34 +7,35 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { Course } from "@shared/schema";
 
 export default function Courses() {
   const { toast } = useToast();
   const { user } = useAuthContext();
 
   // Fetch all courses
-  const { data: allCourses, isLoading: isLoadingAllCourses } = useQuery({
+  const { data: allCourses = [], isLoading: isLoadingAllCourses } = useQuery<Course[]>({
     queryKey: ['/api/courses'],
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load courses",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      return response.json();
     },
   });
 
   // Fetch user enrolled courses
-  const { data: userCourses, isLoading: isLoadingUserCourses } = useQuery({
+  const { data: userCourses = [], isLoading: isLoadingUserCourses } = useQuery<Course[]>({
     queryKey: ['/api/user/courses'],
-    enabled: !!user,
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load your courses",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user courses');
+      }
+      return response.json();
     },
+    enabled: !!user,
   });
 
   // Handle course enrollment
@@ -68,8 +69,8 @@ export default function Courses() {
   };
 
   // Filter platform and partner courses
-  const platformCourses = allCourses?.filter(course => !course.isPartnerCourse) || [];
-  const partnerCourses = allCourses?.filter(course => course.isPartnerCourse) || [];
+  const platformCourses = allCourses.filter((course: Course) => !course.isPartnerCourse) || [];
+  const partnerCourses = allCourses.filter((course: Course) => course.isPartnerCourse) || [];
 
   return (
     <AppLayout>
@@ -101,13 +102,13 @@ export default function Courses() {
                     </div>
                   </div>
                 ))
-              ) : allCourses && allCourses.length > 0 ? (
-                allCourses.map((course) => (
+              ) : allCourses.length > 0 ? (
+                allCourses.map((course: Course) => (
                   <CourseCard 
                     key={course.id} 
                     course={course} 
                     onEnroll={() => handleEnroll(course.id)}
-                    showEnrollButton={!userCourses?.some(c => c.id === course.id)}
+                    showEnrollButton={!userCourses.some((c: Course) => c.id === course.id)}
                   />
                 ))
               ) : (
@@ -133,12 +134,12 @@ export default function Courses() {
                   </div>
                 ))
               ) : platformCourses.length > 0 ? (
-                platformCourses.map((course) => (
+                platformCourses.map((course: Course) => (
                   <CourseCard 
                     key={course.id} 
                     course={course} 
                     onEnroll={() => handleEnroll(course.id)}
-                    showEnrollButton={!userCourses?.some(c => c.id === course.id)}
+                    showEnrollButton={!userCourses.some((c: Course) => c.id === course.id)}
                   />
                 ))
               ) : (
@@ -163,11 +164,11 @@ export default function Courses() {
                   </div>
                 ))
               ) : partnerCourses.length > 0 ? (
-                partnerCourses.map((course) => (
+                partnerCourses.map((course: Course) => (
                   <div key={course.id} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
                     <div className="relative h-40">
                       <img 
-                        src={course.imageUrl} 
+                        src={course.imageUrl || ''} 
                         className="w-full h-full object-cover" 
                         alt={course.title} 
                       />
@@ -215,18 +216,23 @@ export default function Courses() {
                       <div className="p-4">
                         <Skeleton className="h-6 w-3/4 mb-2" />
                         <Skeleton className="h-4 w-full mb-3" />
-                        <Skeleton className="h-2 w-full mb-3" />
-                        <Skeleton className="h-10 w-full rounded-md" />
+                        <Skeleton className="h-4 w-2/3 mb-2" />
+                        <Skeleton className="h-2 w-full" />
+                        <Skeleton className="h-10 w-full rounded-md mt-3" />
                       </div>
                     </div>
                   ))
-                ) : userCourses && userCourses.length > 0 ? (
-                  userCourses.map((course) => (
-                    <CourseCard key={course.id} course={course} />
+                ) : userCourses.length > 0 ? (
+                  userCourses.map((course: Course) => (
+                    <CourseCard 
+                      key={course.id} 
+                      course={course} 
+                      showProgress={true}
+                    />
                   ))
                 ) : (
                   <div className="col-span-3 text-center py-8">
-                    <p className="text-gray-500">You're not enrolled in any courses yet</p>
+                    <p className="text-gray-500">You haven't enrolled in any courses yet</p>
                   </div>
                 )}
               </div>

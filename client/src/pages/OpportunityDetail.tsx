@@ -29,23 +29,24 @@ export default function OpportunityDetail() {
   const { t } = useTranslations();
 
   // Fetch opportunity details
-  const { data: opportunity, isLoading } = useQuery<Opportunity>({
+  const { data: opportunity, isLoading, error } = useQuery<Opportunity>({
     queryKey: [`/api/opportunities/${id}`],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load opportunity details",
-        variant: "destructive",
-      });
-    },
+    retry: 1
   });
+
+  // Show error toast if query fails
+  if (error) {
+    toast({
+      title: "Error",
+      description: error instanceof ApiError ? error.message : "Failed to load opportunity details",
+      variant: "destructive",
+    });
+  }
 
   // Handle application
   const handleApply = async () => {
     try {
-      await apiRequest(`/api/opportunities/${id}/apply`, {
-        method: "POST",
-      });
+      await apiRequest("POST", `/api/opportunities/${id}/apply`);
       
       toast({
         title: t('opportunity.applied'),
@@ -64,9 +65,7 @@ export default function OpportunityDetail() {
   // Handle save for later
   const handleSave = async () => {
     try {
-      await apiRequest(`/api/opportunities/${id}/save`, {
-        method: "POST",
-      });
+      await apiRequest("POST", `/api/opportunities/${id}/save`);
       
       toast({
         title: t('opportunity.saved'),

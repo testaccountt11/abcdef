@@ -1,13 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, ApiError } from "@/lib/queryClient";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (user: User) => void;
   logout: () => Promise<void>;
-  firebaseInitialized: boolean; // Keeping for compatibility with existing code
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -15,7 +14,6 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: () => {},
   logout: async () => {},
-  firebaseInitialized: true
 });
 
 export const useAuthContext = () => useContext(AuthContext);
@@ -37,9 +35,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error("Session auth check failed:", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -54,13 +55,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      // Sign out from our backend
       await apiRequest('POST', '/api/logout', {});
-      
-      // Clear user state
       setUser(null);
     } catch (error) {
-      console.error("Logout error:", error);
+      if (error instanceof ApiError) {
+        console.error("Logout error:", error.message);
+      } else {
+        console.error("Unexpected logout error:", error);
+      }
       throw error;
     }
   };
@@ -70,8 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       user, 
       loading, 
       login, 
-      logout, 
-      firebaseInitialized: true // Always true since we're no longer depending on Firebase initialization
+      logout
     }}>
       {children}
     </AuthContext.Provider>

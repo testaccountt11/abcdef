@@ -19,23 +19,24 @@ export default function MentorDetail() {
   const { t } = useTranslations();
 
   // Fetch mentor details
-  const { data: mentor, isLoading } = useQuery<Mentor>({
+  const { data: mentor, isLoading, error } = useQuery<Mentor>({
     queryKey: [`/api/mentors/${id}`],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load mentor details",
-        variant: "destructive",
-      });
-    },
+    retry: 1
   });
+
+  // Show error toast if query fails
+  if (error) {
+    toast({
+      title: "Error",
+      description: error instanceof ApiError ? error.message : "Failed to load mentor details",
+      variant: "destructive",
+    });
+  }
 
   // Handle booking
   const handleBookSession = async () => {
     try {
-      await apiRequest(`/api/mentors/${id}/book`, {
-        method: "POST",
-      });
+      await apiRequest("POST", `/api/mentors/${id}/book`);
       
       toast({
         title: t('mentor.booked'),

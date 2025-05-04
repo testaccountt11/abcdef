@@ -1,9 +1,27 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import pkg from 'pg';
+const { Pool } = pkg;
 import * as schema from '@shared/schema';
 
-// Configure Neon to use fetch
-neonConfig.fetchConnectionCache = true;
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
 
-const sql = neon(process.env.DATABASE_URL!);
-export const db = drizzle(sql);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Test the connection
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('Error connecting to Railway PostgreSQL database:', err.message);
+    return;
+  }
+  console.log('Successfully connected to Railway PostgreSQL database');
+  release();
+});
+
+export const db = drizzle(pool, { schema });

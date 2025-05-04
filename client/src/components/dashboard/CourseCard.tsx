@@ -8,9 +8,10 @@ interface CourseCardProps {
   course: Course;
   onEnroll?: () => void;
   showEnrollButton?: boolean;
+  showProgress?: boolean;
 }
 
-export default function CourseCard({ course, onEnroll, showEnrollButton = false }: CourseCardProps) {
+export default function CourseCard({ course, onEnroll, showEnrollButton = false, showProgress = false }: CourseCardProps) {
   const { title, description, imageUrl, progress, isPartnerCourse } = course;
   const { t } = useTranslations();
   
@@ -45,7 +46,7 @@ export default function CourseCard({ course, onEnroll, showEnrollButton = false 
         </Link>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{description}</p>
         
-        {courseProgress > 0 && (
+        {(courseProgress > 0 || showProgress) && (
           <div className="flex items-center mb-3">
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div 

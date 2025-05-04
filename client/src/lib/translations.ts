@@ -44,7 +44,9 @@ export type TranslationKey =
   | 'auth.register.button'
   | 'auth.register.alternative'
   | 'auth.register.google'
+  | 'auth.haveAccount'
   | 'auth.email'
+  | 'auth.username'
   | 'auth.password'
   | 'auth.confirmPassword'
   | 'auth.firstName'
@@ -196,12 +198,91 @@ export type TranslationKey =
   | 'settings.confirmPassword'
   | 'settings.changePicture'
   | 'settings.saveChanges'
-  | 'settings.updatePassword';
-
-
+  | 'settings.updatePassword'
+  | 'profile.title'
+  | 'profile.subtitle'
+  | 'profile.displayedBadges'
+  | 'profile.stats'
+  | 'profile.overview'
+  | 'profile.achievements'
+  | 'profile.badges'
+  | 'profile.summary'
+  | 'profile.summaryDesc'
+  | 'profile.achievementsCompleted'
+  | 'profile.badgesEarned'
+  | 'profile.recentAchievements'
+  | 'profile.completed'
+  | 'profile.noAchievements'
+  | 'profile.recentBadges'
+  | 'profile.noBadges'
+  | 'profile.allAchievements'
+  | 'profile.achievementsDesc'
+  | 'profile.allBadges'
+  | 'profile.badgesDesc'
+  | 'errors.userNotFound'
+  | 'achievement.completed'
+  | 'achievement.progress'
+  | 'features.title'
+  | 'features.subtitle'
+  | 'auth.noAccount'
+  | 'auth.accountNotFound'
+  | 'aboutUs.title'
+  | 'aboutUs.subtitle'
+  | 'aboutUs.mission.title'
+  | 'aboutUs.mission.description1'
+  | 'aboutUs.mission.description2'
+  | 'aboutUs.mission.joinButton'
+  | 'aboutUs.mission.exploreButton'
+  | 'aboutUs.values.title'
+  | 'aboutUs.values.subtitle'
+  | 'aboutUs.values.community.title'
+  | 'aboutUs.values.community.description'
+  | 'aboutUs.values.innovation.title'
+  | 'aboutUs.values.innovation.description'
+  | 'aboutUs.values.inclusivity.title'
+  | 'aboutUs.values.inclusivity.description'
+  | 'aboutUs.values.excellence.title'
+  | 'aboutUs.values.excellence.description'
+  | 'aboutUs.values.growth.title'
+  | 'aboutUs.values.growth.description'
+  | 'aboutUs.team.title'
+  | 'aboutUs.team.subtitle'
+  | 'aboutUs.team.member1.name'
+  | 'aboutUs.team.member1.role'
+  | 'aboutUs.team.member1.bio'
+  | 'aboutUs.team.member2.name'
+  | 'aboutUs.team.member2.role'
+  | 'aboutUs.team.member2.bio'
+  | 'aboutUs.team.member3.name'
+  | 'aboutUs.team.member3.role'
+  | 'aboutUs.team.member3.bio'
+  | 'aboutUs.team.member4.name'
+  | 'aboutUs.team.member4.role'
+  | 'aboutUs.team.member4.bio'
+  | 'aboutUs.cta.title'
+  | 'aboutUs.cta.description'
+  | 'aboutUs.cta.button'
+  | 'footer.links.aboutUs'
+  | 'aboutUs.mission.imageCaption'
+  | 'aboutUs.team.connectButton'
+  | 'aboutUs.cta.primaryButton'
+  | 'aboutUs.cta.secondaryButton'
+  | 'aboutUs.cta.stat1'
+  | 'aboutUs.cta.stat2'
+  | 'aboutUs.cta.stat3'
+  | 'aboutUs.values.description'
+  | 'faq.title'
+  | 'faq.subtitle'
+  | 'auth.password'
+  | 'auth.confirmPassword'
+  | 'auth.password.requirements.length'
+  | 'auth.password.requirements.uppercase'
+  | 'auth.password.requirements.special'
+  | 'auth.password.requirements.match';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
+    'auth.haveAccount': 'Have an account?',
     'nav.about': 'About Us',
     'nav.courses': 'Courses',
     'nav.internships': 'Internships',
@@ -248,6 +329,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.register.alternative': 'Or continue with',
     'auth.register.google': 'Sign Up with Google',
     'auth.email': 'Email',
+    'auth.username': 'Username',
     'auth.password': 'Password',
     'auth.confirmPassword': 'Confirm Password',
     'auth.firstName': 'First Name',
@@ -400,27 +482,106 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'settings.changePicture': "Change Picture",
     'settings.saveChanges': "Save Changes",
     'settings.updatePassword': "Update Password",
+    'profile.title': 'Profile',
+    'profile.subtitle': 'Manage your profile and settings',
+    'profile.displayedBadges': 'Displayed Badges',
+    'profile.stats': 'Stats',
+    'profile.overview': 'Overview',
+    'profile.achievements': 'Achievements',
+    'profile.badges': 'Badges',
+    'profile.summary': 'Summary',
+    'profile.summaryDesc': 'General information about your progress',
+    'profile.achievementsCompleted': 'Achievements Completed',
+    'profile.badgesEarned': 'Badges Earned',
+    'profile.recentAchievements': 'Recent Achievements',
+    'profile.completed': 'Completed',
+    'profile.noAchievements': 'No Achievements',
+    'profile.recentBadges': 'Recent Badges',
+    'profile.noBadges': 'No Badges',
+    'profile.allAchievements': 'All Achievements',
+    'profile.achievementsDesc': 'View all your achievements',
+    'profile.allBadges': 'All Badges',
+    'profile.badgesDesc': 'View all your badges',
+    'errors.userNotFound': 'User not found',
+    'achievement.completed': 'Completed',
+    'achievement.progress': 'Progress',
+    'features.title': 'Platform Features',
+    'features.subtitle': 'Discover what makes us unique',
+    'auth.noAccount': 'No account?',
+    'auth.accountNotFound': 'Account not found',
+    'aboutUs.title': 'About Us',
+    'aboutUs.subtitle': 'Learn more about our company, mission, and team behind Portfol.IO',
+    'aboutUs.mission.title': 'Our Mission',
+    'aboutUs.mission.description1': 'At Portfol.IO, we aim to democratize access to quality education and career opportunities for students around the world, regardless of their background or circumstances.',
+    'aboutUs.mission.description2': 'We create a platform that connects students with the best educational resources, internships, and mentors, helping them build a successful future in their chosen field.',
+    'aboutUs.mission.joinButton': 'Join Now',
+    'aboutUs.mission.exploreButton': 'Explore Courses',
+    'aboutUs.values.title': 'Our Values',
+    'aboutUs.values.subtitle': 'The fundamental principles that define our work and interaction with the community',
+    'aboutUs.values.community.title': 'Community',
+    'aboutUs.values.community.description': 'We believe in the power of community and collaborative learning to create a richer educational experience.',
+    'aboutUs.values.innovation.title': 'Innovation',
+    'aboutUs.values.innovation.description': 'We constantly explore new technologies and learning methods to create more effective educational solutions.',
+    'aboutUs.values.inclusivity.title': 'Inclusivity',
+    'aboutUs.values.inclusivity.description': 'We strive to create a platform accessible to all, regardless of geography, language, or socio-economic position.',
+    'aboutUs.values.excellence.title': 'Excellence',
+    'aboutUs.values.excellence.description': 'We strive for the highest quality in everything we do, from course content to technical infrastructure.',
+    'aboutUs.values.growth.title': 'Growth',
+    'aboutUs.values.growth.description': 'We encourage continuous growth and development for both our users and our team.',
+    'aboutUs.team.title': 'Our Team',
+    'aboutUs.team.subtitle': 'Meet the people who make Portfol.IO possible',
+    'aboutUs.team.member1.name': 'Alexey Petrov',
+    'aboutUs.team.member1.role': 'Founder and CEO',
+    'aboutUs.team.member1.bio': 'Former lecturer with 10 years of experience, passionate about educational technologies and innovations.',
+    'aboutUs.team.member2.name': 'Ekaterina Sergeeva',
+    'aboutUs.team.member2.role': 'Technical Director',
+    'aboutUs.team.member2.bio': 'Experienced software engineer with experience working in leading technology companies and deep understanding of educational platforms.',
+    'aboutUs.team.member3.name': 'Ivan Smirnov',
+    'aboutUs.team.member3.role': 'Education Director',
+    'aboutUs.team.member3.bio': 'Former dean with extensive experience in developing educational programs and assessing educational quality.',
+    'aboutUs.team.member4.name': 'Maria Kuznetsova',
+    'aboutUs.team.member4.role': 'Marketing Director',
+    'aboutUs.team.member4.bio': 'Experienced marketer with experience working in EdTech and deep understanding of student needs.',
+    'aboutUs.cta.title': 'Join Us Today',
+    'aboutUs.cta.description': 'Become part of the growing community of students, teachers, and professionals building future education.',
+    'aboutUs.cta.button': 'Sign Up',
+    'footer.links.aboutUs': 'About Us',
+    'aboutUs.mission.imageCaption': 'Building a better future through education',
+    'aboutUs.team.connectButton': 'Connect',
+    'aboutUs.cta.primaryButton': 'Join Now',
+    'aboutUs.cta.secondaryButton': 'Explore Courses',
+    'aboutUs.cta.stat1': 'Active Users',
+    'aboutUs.cta.stat2': 'Learning Partners',
+    'aboutUs.cta.stat3': 'Satisfaction Rate',
+    'aboutUs.values.description': 'These core values guide everything we do - from product development to community engagement.',
+    'faq.title': "Frequently Asked Questions",
+    'faq.subtitle': "Find answers to common questions about our platform and services.",
+    'auth.password.requirements.length': 'Password must be at least 8 characters',
+    'auth.password.requirements.uppercase': 'Password must contain at least one uppercase letter',
+    'auth.password.requirements.special': 'Password must contain at least one special character',
+    'auth.password.requirements.match': 'Passwords don\'t match'
   },
   ru: {
+    'auth.haveAccount': 'Уже есть аккаунт?',
     'nav.about': 'О нас',
     'nav.courses': 'Курсы',
     'nav.internships': 'Стажировки',
-    'nav.mentors': 'Менторы',
+    'nav.mentors': 'Наставники',
     'nav.login': 'Войти',
-    'hero.title': 'Создайте свое будущее с Portfol.IO',
-    'hero.subtitle': 'Платформа нового поколения для развития вашей карьеры. Курсы, стажировки и менторство в одном месте.',
+    'hero.title': 'Создайте своё будущее с Portfol.IO',
+    'hero.subtitle': 'Платформа нового поколения для вашего карьерного развития. Курсы, стажировки и наставничество в одном месте.',
     'hero.start': 'Начать бесплатно',
     'hero.learnMore': 'Узнать больше',
-    'features.personalPath.title': 'Личный путь',
-    'features.personalPath.desc': 'AI создаст индивидуальный план развития',
-    'features.topCourses.title': 'Топ курсы',
-    'features.topCourses.desc': 'Лучшие возможности для портфолио',
-    'features.competitions.title': 'Олимпиады',
-    'features.competitions.desc': 'Участвуй и выигрывай стипендии',
-    'features.mentorship.title': 'Менторство',
+    'features.personalPath.title': 'Персональный путь',
+    'features.personalPath.desc': 'ИИ создаёт индивидуальный план развития',
+    'features.topCourses.title': 'Лучшие курсы',
+    'features.topCourses.desc': 'Отличные возможности для вашего портфолио',
+    'features.competitions.title': 'Соревнования',
+    'features.competitions.desc': 'Участвуйте и выигрывайте стипендии',
+    'features.mentorship.title': 'Наставничество',
     'features.mentorship.desc': 'Поддержка от профессионалов',
     'about.title': 'О Portfol.IO',
-    'about.subtitle': 'Мы помогаем студентам строить их будущее',
+    'about.subtitle': 'Наша миссия - дать студентам возможность строить своё будущее',
     'about.mission': 'Наша миссия — предоставить студентам инструменты и возможности, необходимые для демонстрации их талантов и достижений в профессиональном портфолио.',
     'about.vision': 'Мы представляем мир, где каждый студент имеет равный доступ к образовательным ресурсам и карьерным возможностям.',
     'partners.title': 'Наши партнеры',
@@ -448,6 +609,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.register.alternative': 'Или продолжить с',
     'auth.register.google': 'Зарегистрироваться через Google',
     'auth.email': 'Email',
+    'auth.username': 'Имя пользователя',
     'auth.password': 'Пароль',
     'auth.confirmPassword': 'Подтвердите пароль',
     'auth.firstName': 'Имя',
@@ -528,7 +690,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.overview': 'Обзор',
     'dashboard.courses': 'Курсы',
     'dashboard.internships': 'Стажировки',
-    'dashboard.mentors': 'Менторы',
+    'dashboard.mentors': 'Наставники',
     'dashboard.profile': 'Профиль',
     'dashboard.settings': 'Настройки',
     'dashboard.logout': 'Выйти',
@@ -552,7 +714,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.lightMode': 'Светлый режим',
     'dashboard.systemMode': 'Системный режим',
     'dashboard.home': 'Мои курсы',
-    'dashboard.opportunities': 'Менторы',
+    'dashboard.opportunities': 'Наставники',
     'dashboard.advice': 'Советы',
     'dashboard.achievements': 'Достижения',
     'dashboard.certificates': 'Сертификаты',
@@ -565,19 +727,19 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.announcement.viewDetails': 'Подробнее',
     'dashboard.announcement.competition': 'Новый конкурс',
     'dashboard.announcement.scholarship': 'Возможность получения стипендии',
-    'dashboard.coursesInProgress': 'Курсы в процессе',
+    'dashboard.coursesInProgress': 'Обучающиеся курсы',
     'dashboard.certificatesEarned': 'Полученные сертификаты',
-    'dashboard.mentorSessions': 'Сессии с ментором',
+    'dashboard.mentorSessions': 'Сессии с наставником',
     'dashboard.opportunitiesSaved': 'Сохраненные возможности',
     'dashboard.continueLearning': 'Продолжить обучение',
     'dashboard.viewAllCourses': 'Все курсы',
-    'dashboard.noCourses': 'Нет доступных курсов',
+    'dashboard.noCourses': 'Нет обучающих курсов',
     'dashboard.recommendedOpportunities': 'Рекомендуемые возможности',
     'dashboard.viewAllOpportunities': 'Все возможности',
     'dashboard.noOpportunities': 'Нет доступных возможностей',
-    'dashboard.featuredMentors': 'Рекомендуемые менторы',
-    'dashboard.viewAllMentors': 'Все менторы',
-    'dashboard.noMentors': 'Нет доступных менторов',
+    'dashboard.featuredMentors': 'Рекомендуемые наставники',
+    'dashboard.viewAllMentors': 'Все наставники',
+    'dashboard.noMentors': 'Нет доступных наставников',
     'dashboard.recentAdvice': 'Последние советы',
     'dashboard.viewAllArticles': 'Просмотреть все статьи',
     'dashboard.noArticles': 'Нет доступных статей',
@@ -599,7 +761,85 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'settings.confirmPassword': "Подтвердите новый пароль",
     'settings.changePicture': "Изменить фото",
     'settings.saveChanges': "Сохранить изменения",
-    'settings.updatePassword': "Обновить пароль"
+    'settings.updatePassword': "Обновить пароль",
+    'profile.title': 'Профиль',
+    'profile.subtitle': 'Профиліңіз бен параметрлерді басқару',
+    'profile.displayedBadges': 'Көрсетілген белгілер',
+    'profile.stats': 'Статистика',
+    'profile.overview': 'Шолу',
+    'profile.achievements': 'Жетістіктер',
+    'profile.badges': 'Белгілер',
+    'profile.summary': 'Қорытынды',
+    'profile.summaryDesc': 'Сіздің прогресіңіз туралы жалпы ақпарат',
+    'profile.achievementsCompleted': 'Аяқталған жетістіктер',
+    'profile.badgesEarned': 'Алынған белгілер',
+    'profile.recentAchievements': 'Соңғы жетістіктер',
+    'profile.completed': 'Аяқталды',
+    'profile.noAchievements': 'Жетістіктер жоқ',
+    'profile.recentBadges': 'Соңғы белгілер',
+    'profile.noBadges': 'Белгілер жоқ',
+    'profile.allAchievements': 'Барлық жетістіктер',
+    'profile.achievementsDesc': 'Барлық жетістіктеріңізді қарау',
+    'profile.allBadges': 'Барлық белгілер',
+    'profile.badgesDesc': 'Барлық белгілеріңізді қарау',
+    'errors.userNotFound': 'Пайдаланушы табылмады',
+    'achievement.completed': 'Аяқталды',
+    'achievement.progress': 'Прогресс',
+    'features.title': 'Возможности платформы',
+    'features.subtitle': 'Узнайте, что делает нас уникальными',
+    'auth.noAccount': 'Аккаунтыңыз жоқ па?',
+    'auth.accountNotFound': 'Аккаунт табылмады',
+    'aboutUs.title': 'Біз туралы',
+    'aboutUs.subtitle': 'Portfol.IO артындағы біздің компания, миссиямыз және командамыз туралы көбірек біліңіз',
+    'aboutUs.mission.title': 'Біздің миссиямыз',
+    'aboutUs.mission.description1': 'Portfol.IO-да біз студенттердің шығу тегі мен жағдайларына қарамастан, әлемнің барлық студенттері үшін сапалы білім мен мансаптық мүмкіндіктерге қол жетімділікті демократияландыруға тырысамыз.',
+    'aboutUs.mission.description2': 'Біз студенттерді үздік білім беру ресурстарымен, тәжірибеден өтумен және тәлімгерлермен байланыстыратын платформа жасап, оларға таңдаған салада табысты болашақ құруға көмектесеміз.',
+    'aboutUs.mission.joinButton': 'Қазір қосылу',
+    'aboutUs.mission.exploreButton': 'Курстарды зерттеу',
+    'aboutUs.values.title': 'Біздің құндылықтарымыз',
+    'aboutUs.values.subtitle': 'Біздің жұмысымыз бен қоғаммен өзара әрекеттесуімізді анықтайтын негізгі принциптер',
+    'aboutUs.values.community.title': 'Қауымдастық',
+    'aboutUs.values.community.description': 'Біз байырақ білім беру тәжірибесін құру үшін қоғамдастық пен бірлескен оқытудың күшіне сенеміз.',
+    'aboutUs.values.innovation.title': 'Инновация',
+    'aboutUs.values.innovation.description': 'Біз тиімді білім беру шешімдерін жасау үшін жаңа технологиялар мен оқыту әдістерін үнемі зерттейміз.',
+    'aboutUs.values.inclusivity.title': 'Инклюзивтілік',
+    'aboutUs.values.inclusivity.description': 'Біз географиялық орналасуына, тіліне немесе әлеуметтік-экономикалық жағдайына қарамастан, барлығына қол жетімді платформа құруға тырысамыз.',
+    'aboutUs.values.excellence.title': 'Үздіктік',
+    'aboutUs.values.excellence.description': 'Біз курс мазмұнынан бастап техникалық инфрақұрылымға дейін барлық жұмысымызда ең жоғары сапаға ұмтыламыз.',
+    'aboutUs.values.growth.title': 'Өсу',
+    'aboutUs.values.growth.description': 'Біз пайдаланушыларымыз бен командамыз үшін үздіксіз өсу мен дамуды қолдаймыз.',
+    'aboutUs.team.title': 'Біздің команда',
+    'aboutUs.team.subtitle': 'Portfol.IO мүмкін ететін адамдармен танысыңыз',
+    'aboutUs.team.member1.name': 'Алексей Петров',
+    'aboutUs.team.member1.role': 'Негізін қалаушы және CEO',
+    'aboutUs.team.member1.bio': 'Білім беру технологиялары мен инновацияларға құштар 10 жылдық тәжірибесі бар бұрынғы оқытушы.',
+    'aboutUs.team.member2.name': 'Екатерина Сергеева',
+    'aboutUs.team.member2.role': 'Техникалық директор',
+    'aboutUs.team.member2.bio': 'Жетекші технологиялық компанияларда жұмыс істеу тәжірибесі бар және білім беру платформаларын терең түсінетін тәжірибелі бағдарламалық инженер.',
+    'aboutUs.team.member3.name': 'Иван Смирнов',
+    'aboutUs.team.member3.role': 'Білім беру директоры',
+    'aboutUs.team.member3.bio': 'Білім беру бағдарламаларын әзірлеу және білім беру сапасын бағалау саласында үлкен тәжірибесі бар бұрынғы декан.',
+    'aboutUs.team.member4.name': 'Мария Кузнецова',
+    'aboutUs.team.member4.role': 'Маркетинг жөніндегі директор',
+    'aboutUs.team.member4.bio': 'EdTech саласында жұмыс істеу тәжірибесі бар және студенттердің қажеттіліктерін терең түсінетін тәжірибелі маркетолог.',
+    'aboutUs.cta.title': 'Бүгін бізге қосылыңыз',
+    'aboutUs.cta.description': 'Болашақ білім беруді құратын студенттердің, оқытушылардың және кәсіпқойлардың өсіп келе жатқан қауымдастығының бір бөлігі болыңыз.',
+    'aboutUs.cta.button': 'Тіркелу',
+    'footer.links.aboutUs': 'Біз туралы',
+    'aboutUs.mission.imageCaption': 'Строим лучшее будущее через образование',
+    'aboutUs.team.connectButton': 'Связаться',
+    'aboutUs.cta.primaryButton': 'Присоединиться',
+    'aboutUs.cta.secondaryButton': 'Изучить курсы',
+    'aboutUs.cta.stat1': 'Активных пользователей',
+    'aboutUs.cta.stat2': 'Образовательных партнеров',
+    'aboutUs.cta.stat3': 'Уровень удовлетворенности',
+    'aboutUs.values.description': 'Эти основные ценности определяют всё, что мы делаем - от разработки продукта до взаимодействия с сообществом.',
+    'faq.title': "Часто задаваемые вопросы",
+    'faq.subtitle': "Найдите ответы на распространенные вопросы о нашей платформе и услугах.",
+    'auth.password.requirements.length': 'Пароль должен содержать не менее 8 символов',
+    'auth.password.requirements.uppercase': 'Пароль должен содержать как минимум одну заглавную букву',
+    'auth.password.requirements.special': 'Пароль должен содержать как минимум один специальный символ',
+    'auth.password.requirements.match': 'Пароли не совпадают'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -608,7 +848,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'nav.mentors': 'Менторлар',
     'nav.login': 'Кіру',
     'hero.title': 'Portfol.IO-мен болашағыңды құр',
-    'hero.subtitle': 'Мансабыңды дамытуға арналған жаңа буын платформасы. Курстар, тәжірибеден өту және тәлімгерлік бір жерде.',
+    'hero.subtitle': 'Мансабыңды дамытуға арналған жаң буын платформасы. Курстар, тәжірибеден өту және тәлімгерлік бір жерде.',
     'hero.start': 'Тегін бастау',
     'hero.learnMore': 'Көбірек білу',
     'features.personalPath.title': 'Жеке жол',
@@ -625,7 +865,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'about.vision': 'Біз әрбір студенттің білім беру ресурстары мен мансаптық мүмкіндіктерге тең қол жеткізетін әлемді елестетеміз.',
     'partners.title': 'Біздің серіктестер',
     'partners.subtitle': 'Жетекші білім беру мекемелерімен жұмыс жасаймыз',
-    'testimonials.title': 'Табыс хикаялары',
+    'testimonials.title': 'Табыс жолдары',
     'testimonials.subtitle': 'Пайдаланушыларымыз біз туралы не айтады',
     'contact.title': 'Бізбен байланысу',
     'contact.subtitle': 'Сұрақтарыңыз бар ма? Бізбен байланысыңыз!',
@@ -648,6 +888,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.register.alternative': 'Немесе жалғастыру',
     'auth.register.google': 'Google арқылы тіркелу',
     'auth.email': 'Email',
+    'auth.username': 'Пайдаланушы аты',
     'auth.password': 'Құпия сөз',
     'auth.confirmPassword': 'Құпия сөзді растау',
     'auth.firstName': 'Аты',
@@ -682,9 +923,9 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'common.or': 'Немесе',
     'common.and': 'Және',
     'common.required': 'Қажет',
-    'common.optional': 'Необязательный',
-    'common.invalid': 'Недействительный',
-    'common.valid': 'Действительный',
+    'common.optional': 'Міндетті емес',
+    'common.invalid': 'Жарамсыз',
+    'common.valid': 'Жарамды',
     'common.unknown': 'Белгісіз',
     'common.unknownError': 'Белгісіз қате',
     'common.tryAgain': 'Бірнеше рет көпіртеу',
@@ -712,9 +953,9 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'common.not': 'Емес',
     'common.is': 'Бар',
     'common.are': 'Бар',
-    'common.was': 'Была',
-    'common.were': 'Была',
-    'common.will': 'Бол',
+    'common.was': 'Болған',
+    'common.were': 'Болған',
+    'common.will': 'Будет',
     'common.would': 'Бы',
     'common.could': 'Мог',
     'common.should': 'Дол',
@@ -776,7 +1017,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'dashboard.viewAllOpportunities': 'Барлық мүмкіндіктер',
     'dashboard.noOpportunities': 'Қолжетімді мүмкіндіктер жоқ',
     'dashboard.featuredMentors': 'Ұсынылған менторлар',
-    'dashboard.viewAllMentors': 'Барлық менторлар',
+    'dashboard.viewAllMentors': 'Все менторлар',
     'dashboard.noMentors': 'Қолжетімді менторлар жоқ',
     'dashboard.recentAdvice': 'Соңғы кеңестер',
     'dashboard.viewAllArticles': 'Барлық мақалаларды қарау',
@@ -799,7 +1040,86 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'settings.confirmPassword': "Жаңа құпия сөзді растаңыз",
     'settings.changePicture': "Суретті өзгерту",
     'settings.saveChanges': "Өзгерістерді сақтау",
-    'settings.updatePassword': "Құпия сөзді жаңарту"
+    'settings.updatePassword': "Құпия сөзді жаңарту",
+    'profile.title': 'Профиль',
+    'profile.subtitle': 'Профиліңіз бен параметрлерді басқару',
+    'profile.displayedBadges': 'Көрсетілген белгілер',
+    'profile.stats': 'Статистика',
+    'profile.overview': 'Шолу',
+    'profile.achievements': 'Жетістіктер',
+    'profile.badges': 'Белгілер',
+    'profile.summary': 'Қорытынды',
+    'profile.summaryDesc': 'Сіздің прогресіңіз туралы жалпы ақпарат',
+    'profile.achievementsCompleted': 'Аяқталған жетістіктер',
+    'profile.badgesEarned': 'Алынған белгілер',
+    'profile.recentAchievements': 'Соңғы жетістіктер',
+    'profile.completed': 'Аяқталды',
+    'profile.noAchievements': 'Жетістіктер жоқ',
+    'profile.recentBadges': 'Соңғы белгілер',
+    'profile.noBadges': 'Белгілер жоқ',
+    'profile.allAchievements': 'Барлық жетістіктер',
+    'profile.achievementsDesc': 'Барлық жетістіктеріңізді қарау',
+    'profile.allBadges': 'Барлық белгілер',
+    'profile.badgesDesc': 'Барлық белгілеріңізді қарау',
+    'errors.userNotFound': 'Пайдаланушы табылмады',
+    'achievement.completed': 'Аяқталды',
+    'achievement.progress': 'Прогресс',
+    'features.title': 'Платформаның мүмкіндіктері',
+    'features.subtitle': 'Біздің ерекшеліктерімізді біліңіз',
+    'auth.noAccount': 'Аккаунтыңыз жоқ па?',
+    'auth.accountNotFound': 'Аккаунт табылмады',
+    'auth.haveAccount': 'Аккаунтыңыз бар ма?',
+    'aboutUs.title': 'Біз туралы',
+    'aboutUs.subtitle': 'Portfol.IO артындағы біздің компания, миссиямыз және командамыз туралы көбірек біліңіз',
+    'aboutUs.mission.title': 'Біздің миссиямыз',
+    'aboutUs.mission.description1': 'Portfol.IO-да біз студенттердің шығу тегі мен жағдайларына қарамастан, әлемнің барлық студенттері үшін сапалы білім мен мансаптық мүмкіндіктерге қол жетімділікті демократияландыруға тырысамыз.',
+    'aboutUs.mission.description2': 'Біз студенттерді үздік білім беру ресурстарымен, тәжірибеден өтумен және тәлімгерлермен байланыстыратын платформа жасап, оларға таңдаған салада табысты болашақ құруға көмектесеміз.',
+    'aboutUs.mission.joinButton': 'Қазір қосылу',
+    'aboutUs.mission.exploreButton': 'Курстарды зерттеу',
+    'aboutUs.values.title': 'Біздің құндылықтарымыз',
+    'aboutUs.values.subtitle': 'Біздің жұмысымыз бен қоғаммен өзара әрекеттесуімізді анықтайтын негізгі принциптер',
+    'aboutUs.values.community.title': 'Қауымдастық',
+    'aboutUs.values.community.description': 'Біз байырақ білім беру тәжірибесін құру үшін қоғамдастық пен бірлескен оқытудың күшіне сенеміз.',
+    'aboutUs.values.innovation.title': 'Инновация',
+    'aboutUs.values.innovation.description': 'Біз тиімді білім беру шешімдерін жасау үшін жаңа технологиялар мен оқыту әдістерін үнемі зерттейміз.',
+    'aboutUs.values.inclusivity.title': 'Инклюзивтілік',
+    'aboutUs.values.inclusivity.description': 'Біз географиялық орналасуына, тіліне немесе әлеуметтік-экономикалық жағдайына қарамастан, барлығына қол жетімді платформа құруға тырысамыз.',
+    'aboutUs.values.excellence.title': 'Үздіктік',
+    'aboutUs.values.excellence.description': 'Біз курс мазмұнынан бастап техникалық инфрақұрылымға дейін барлық жұмысымызда ең жоғары сапаға ұмтыламыз.',
+    'aboutUs.values.growth.title': 'Өсу',
+    'aboutUs.values.growth.description': 'Біз пайдаланушыларымыз бен командамыз үшін үздіксіз өсу мен дамуды қолдаймыз.',
+    'aboutUs.team.title': 'Біздің команда',
+    'aboutUs.team.subtitle': 'Portfol.IO мүмкін ететін адамдармен танысыңыз',
+    'aboutUs.team.member1.name': 'Алексей Петров',
+    'aboutUs.team.member1.role': 'Негізін қалаушы және CEO',
+    'aboutUs.team.member1.bio': 'Білім беру технологиялары мен инновацияларға құштар 10 жылдық тәжірибесі бар бұрынғы оқытушы.',
+    'aboutUs.team.member2.name': 'Екатерина Сергеева',
+    'aboutUs.team.member2.role': 'Техникалық директор',
+    'aboutUs.team.member2.bio': 'Жетекші технологиялық компанияларда жұмыс істеу тәжірибесі бар және білім беру платформаларын терең түсінетін тәжірибелі бағдарламалық инженер.',
+    'aboutUs.team.member3.name': 'Иван Смирнов',
+    'aboutUs.team.member3.role': 'Білім беру директоры',
+    'aboutUs.team.member3.bio': 'Білім беру бағдарламаларын әзірлеу және білім беру сапасын бағалау саласында үлкен тәжірибесі бар бұрынғы декан.',
+    'aboutUs.team.member4.name': 'Мария Кузнецова',
+    'aboutUs.team.member4.role': 'Маркетинг жөніндегі директор',
+    'aboutUs.team.member4.bio': 'EdTech саласында жұмыс істеу тәжірибесі бар және студенттердің қажеттіліктерін терең түсінетін тәжірибелі маркетолог.',
+    'aboutUs.cta.title': 'Бүгін бізге қосылыңыз',
+    'aboutUs.cta.description': 'Болашақ білім беруді құратын студенттердің, оқытушылардың және кәсіпқойлардың өсіп келе жатқан қауымдастығының бір бөлігі болыңыз.',
+    'aboutUs.cta.button': 'Тіркелу',
+    'footer.links.aboutUs': 'Біз туралы',
+    'aboutUs.mission.imageCaption': 'Білім арқылы жақсы болашақ құру',
+    'aboutUs.team.connectButton': 'Байланысу',
+    'aboutUs.cta.primaryButton': 'Қазір қосылу',
+    'aboutUs.cta.secondaryButton': 'Курстарды зерттеу',
+    'aboutUs.cta.stat1': 'Белсенді қолданушылар',
+    'aboutUs.cta.stat2': 'Білім беру серіктестері',
+    'aboutUs.cta.stat3': 'Қанағаттану деңгейі',
+    'aboutUs.values.description': 'Бұл негізгі құндылықтар біздің барлық іс-әрекеттерімізді анықтайды - өнімді дамытудан бастап қоғаммен қарым-қатынасқа дейін.',
+    'faq.title': "Жиі қойылатын сұрақтар",
+    'faq.subtitle': "Біздің платформа мен қызметтеріміз туралы жиі қойылатын сұрақтарға жауаптар табыңыз.",
+    'auth.password.requirements.length': 'Құпия сөз кемінде 8 таңбадан тұруы керек',
+    'auth.password.requirements.uppercase': 'Құпия сөзде кемінде бір бас әріп болуы керек',
+    'auth.password.requirements.special': 'Құпия сөзде кемінде бір арнайы таңба болуы керек',
+    'auth.password.requirements.match': 'Құпия сөздер сәйкес келмейді'
   }
 };
 

@@ -8,6 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+// Define Opportunity type
+interface Opportunity {
+  id: number;
+  title: string;
+  company: string;
+  description: string;
+  location: string;
+  type: string;
+  logoUrl: string | null;
+  duration: string | null;
+  deadline: string | null;
+  // Add other fields as needed
+}
+
 export default function Opportunities() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,19 +29,21 @@ export default function Opportunities() {
   const [locationFilter, setLocationFilter] = useState("all");
 
   // Fetch opportunities
-  const { data: opportunities, isLoading } = useQuery({
+  const { data: opportunities, isLoading, isError, error } = useQuery<Opportunity[]>({
     queryKey: ['/api/opportunities'],
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load opportunities",
-        variant: "destructive",
-      });
-    },
   });
 
+  // Show error toast if there was an error
+  if (isError && error instanceof Error) {
+    toast({
+      title: "Error",
+      description: error.message || "Failed to load opportunities",
+      variant: "destructive",
+    });
+  }
+
   // Apply filters
-  const filteredOpportunities = opportunities?.filter(opportunity => {
+  const filteredOpportunities = opportunities?.filter((opportunity: Opportunity) => {
     // Search filter
     const matchesSearch = searchTerm === "" || 
       opportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,7 +61,7 @@ export default function Opportunities() {
   });
 
   // Get unique locations for filter
-  const uniqueLocations = [...new Set(opportunities?.map(o => o.location).filter(Boolean))];
+  const uniqueLocations = Array.from(new Set(opportunities?.map((o: Opportunity) => o.location) || [])).filter(Boolean);
 
   return (
     <AppLayout>
@@ -86,7 +102,7 @@ export default function Opportunities() {
               <SelectContent>
                 <SelectItem value="all">All locations</SelectItem>
                 {uniqueLocations.map((location, index) => (
-                  <SelectItem key={index} value={location}>{location}</SelectItem>
+                  <SelectItem key={index} value={String(location)}>{String(location)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -122,7 +138,7 @@ export default function Opportunities() {
                   </div>
                 ))
               ) : filteredOpportunities && filteredOpportunities.length > 0 ? (
-                filteredOpportunities.map((opportunity) => (
+                filteredOpportunities.map((opportunity: Opportunity) => (
                   <OpportunityCard key={opportunity.id} opportunity={opportunity} />
                 ))
               ) : (
@@ -154,10 +170,10 @@ export default function Opportunities() {
                       </div>
                     </div>
                   ))
-                ) : filteredOpportunities?.filter(o => o.type === type).length > 0 ? (
+                ) : filteredOpportunities && filteredOpportunities.filter((o: Opportunity) => o.type === type).length > 0 ? (
                   filteredOpportunities
-                    .filter(o => o.type === type)
-                    .map((opportunity) => (
+                    .filter((o: Opportunity) => o.type === type)
+                    .map((opportunity: Opportunity) => (
                       <OpportunityCard key={opportunity.id} opportunity={opportunity} />
                     ))
                 ) : (

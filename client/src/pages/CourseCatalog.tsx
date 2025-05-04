@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AppLayout from "@/components/layout/AppLayout";
@@ -11,6 +10,22 @@ import { useTranslations } from "@/hooks/use-translations";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+// Define course type
+type Course = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  format: string;
+  level: string;
+  isPartnerCourse: boolean;
+  imageUrl: string | null;
+  category: string;
+  provider: string;
+  contactInfo: string | null;
+  progress: number | null;
+};
+
 export default function CourseCatalog() {
   const { toast } = useToast();
   const { t } = useTranslations();
@@ -19,16 +34,18 @@ export default function CourseCatalog() {
   const [formatFilter, setFormatFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
 
-  const { data: courses, isLoading } = useQuery({
+  const { data: courses, isLoading, isError, error } = useQuery<Course[]>({
     queryKey: ['/api/courses'],
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load courses",
-        variant: "destructive",
-      });
-    },
   });
+
+  // Show error toast if there was an error
+  if (isError && error instanceof Error) {
+    toast({
+      title: "Error",
+      description: error.message || "Failed to load courses",
+      variant: "destructive",
+    });
+  }
 
   const filteredCourses = courses?.filter(course => {
     const matchesSearch = searchTerm === "" || 

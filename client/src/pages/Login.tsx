@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { loginWithEmail, signInWithGoogle } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
@@ -18,12 +18,12 @@ import { useTranslations } from "@/hooks/use-translations";
 
 const loginFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
-export default function Login() {
+const Login: React.FC = () => {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { login } = useAuthContext();
@@ -37,7 +37,7 @@ export default function Login() {
     },
   });
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignIn = async () => {
     toast({
       title: "Google Sign-In Unavailable",
       description: "Please use email/password login for now. Google Sign-In will be available soon.",
@@ -47,7 +47,9 @@ export default function Login() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      // Direct authentication with our backend 
+      console.log("Attempting to login with email:", values.email);
+      
+      // Login directly with our backend
       const response = await apiRequest('POST', '/api/login/direct', {
         email: values.email,
         password: values.password
@@ -65,9 +67,11 @@ export default function Login() {
       }
     } catch (error: any) {
       console.error("Login error:", error);
+      
+      // Show detailed error message
       toast({
-        title: "Error",
-        description: error.message || "Invalid email or password",
+        title: "Login Failed",
+        description: error.message || "Failed to login. Please check your credentials and try again.",
         variant: "destructive",
       });
     }
@@ -80,8 +84,7 @@ export default function Login() {
         <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
-      
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div 
@@ -115,7 +118,7 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="you@example.com" {...field} />
+                        <Input type="email" placeholder="john.doe@example.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -134,6 +137,16 @@ export default function Login() {
                     </FormItem>
                   )}
                 />
+                <div className="flex justify-end">
+                  <Button 
+                    variant="link" 
+                    className="p-0 h-auto text-sm" 
+                    onClick={() => setLocation('/forgot-password')}
+                    type="button"
+                  >
+                    {t('auth.forgotPassword')}
+                  </Button>
+                </div>
                 <Button type="submit" className="w-full">
                   {t('auth.signin.button')}
                 </Button>
@@ -151,7 +164,7 @@ export default function Login() {
                   type="button" 
                   variant="outline" 
                   className="w-full" 
-                  onClick={handleGoogleLogin}
+                  onClick={handleGoogleSignIn}
                 >
                   <FcGoogle className="mr-2 h-4 w-4" />
                   {t('auth.signin.google')}
@@ -173,6 +186,20 @@ export default function Login() {
           </CardFooter>
         </Card>
       </div>
+      {/* Back Button */}
+      <div className="flex justify-center pt-6 pb-8">
+        <button
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-background shadow-md border border-border text-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          onClick={() => setLocation('/')}
+          aria-label="Назад на главную"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default Login; 

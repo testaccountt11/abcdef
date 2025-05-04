@@ -197,7 +197,10 @@ export default function MyCertificates() {
                               type="button"
                               variant="outline"
                               size="icon"
-                              onClick={() => document.querySelector('input[type="file"]')?.click()}
+                              onClick={() => {
+                                const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                                if (fileInput) fileInput.click();
+                              }}
                             >
                               <Upload className="h-4 w-4" />
                             </Button>

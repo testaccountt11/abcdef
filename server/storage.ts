@@ -251,6 +251,7 @@ export class MemStorage implements IStorage {
       {
         title: "How to Build a Standout Portfolio",
         content: "Tips from industry experts on creating a portfolio that catches recruiters' attention.",
+        summary: "Learn expert strategies for creating an impressive portfolio that will help you stand out to recruiters.",
         category: "Career Advice",
         imageUrl: "https://images.unsplash.com/photo-1501504905252-473c47e087f8",
         authorName: "James Wilson",
@@ -260,6 +261,7 @@ export class MemStorage implements IStorage {
       {
         title: "Acing Your College Interviews",
         content: "Strategies and preparation tips for successful university admission interviews.",
+        summary: "Essential tips and strategies to help you prepare for and excel in your college admission interviews.",
         category: "Admissions",
         imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173",
         authorName: "Emily Chen",
@@ -588,12 +590,17 @@ export class MemStorage implements IStorage {
   
   async createArticle(insertArticle: InsertArticle): Promise<Article> {
     const id = this.currentIds.articles++;
-    const article: Article = { 
-      ...insertArticle, 
+    const article: Article = {
       id,
+      title: insertArticle.title,
+      content: insertArticle.content,
+      summary: insertArticle.summary,
+      category: insertArticle.category,
       imageUrl: insertArticle.imageUrl || null,
+      authorName: insertArticle.authorName,
       authorImage: insertArticle.authorImage || null,
-      readTime: insertArticle.readTime || null
+      readTime: insertArticle.readTime || null,
+      publishDate: insertArticle.publishDate || null
     };
     this.articles.set(id, article);
     return article;
@@ -611,21 +618,19 @@ export class MemStorage implements IStorage {
   
   async createCertificate(insertCertificate: InsertCertificate): Promise<Certificate> {
     const id = this.currentIds.certificates++;
-    const certificate: Certificate = { 
-      ...insertCertificate, 
+    const now = new Date();
+    const certificate: Certificate = {
       id,
-      certificateUrl: insertCertificate.certificateUrl || null
+      title: insertCertificate.title,
+      userId: insertCertificate.userId,
+      issuer: insertCertificate.issuer,
+      issueDate: insertCertificate.issueDate,
+      certificateUrl: insertCertificate.certificateUrl || null,
+      certificateFile: insertCertificate.certificateFile || null,
+      createdAt: now,
+      updatedAt: now
     };
     this.certificates.set(id, certificate);
-    
-    // Update user stats
-    const userStats = await this.getUserStats(certificate.userId);
-    if (userStats) {
-      await this.updateUserStats(certificate.userId, {
-        certificatesEarned: (userStats.certificatesEarned || 0) + 1
-      });
-    }
-    
     return certificate;
   }
   
@@ -685,9 +690,16 @@ export class MemStorage implements IStorage {
   
   async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
     const id = this.currentIds.achievements++;
-    const achievement: Achievement = { 
-      ...insertAchievement, 
+    const achievement: Achievement = {
       id,
+      name: insertAchievement.name,
+      description: insertAchievement.description,
+      category: insertAchievement.category,
+      iconUrl: insertAchievement.iconUrl,
+      requirement: insertAchievement.requirement,
+      requiredValue: insertAchievement.requiredValue || null,
+      points: insertAchievement.points || null,
+      isHidden: insertAchievement.isHidden || null,
       createdAt: new Date()
     };
     this.achievements.set(id, achievement);
@@ -734,65 +746,57 @@ export class MemStorage implements IStorage {
   async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined> {
     const key = `${userId}-${achievementId}`;
     const userAchievement = this.userAchievements.get(key);
-    
-    if (!userAchievement) return undefined;
-    
     const achievement = await this.getAchievement(achievementId);
-    if (!achievement) return undefined;
     
-    // If progress meets the required value, mark as complete
-    const isComplete = progress >= achievement.requiredValue;
-    
-    const updatedUserAchievement: UserAchievement = {
+    if (!userAchievement || !achievement) {
+      return undefined;
+    }
+
+    const updatedUA: UserAchievement = {
       ...userAchievement,
-      progress,
-      isComplete,
-      earnedAt: isComplete && !userAchievement.isComplete ? new Date() : userAchievement.earnedAt,
-      completedValue: isComplete ? progress : userAchievement.completedValue
+      progress
     };
-    
-    this.userAchievements.set(key, updatedUserAchievement);
-    
-    // Check for badge qualification if achievement is newly completed
-    if (isComplete && !userAchievement.isComplete) {
+
+    // Check if achievement is completed
+    if (achievement.requiredValue !== null && progress >= achievement.requiredValue && !userAchievement.isComplete) {
+      updatedUA.isComplete = true;
+      updatedUA.completedValue = progress;
+      updatedUA.earnedAt = new Date();
+      
+      // Check for badge qualification
       await this.checkAndAwardBadges(userId);
     }
-    
-    return updatedUserAchievement;
+
+    this.userAchievements.set(key, updatedUA);
+    return updatedUA;
   }
   
   async completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
     const key = `${userId}-${achievementId}`;
     const userAchievement = this.userAchievements.get(key);
+    const achievement = await this.getAchievement(achievementId);
     
-    if (!userAchievement) {
-      // If the user doesn't have this achievement tracked yet, create it
-      const achievement = await this.getAchievement(achievementId);
-      if (!achievement) return undefined;
-      
-      return this.createUserAchievement({
-        userId,
-        achievementId,
-        progress: completedValue,
+    if (!userAchievement || !achievement || achievement.requiredValue === null) {
+      return undefined;
+    }
+
+    // Only complete if the completed value meets or exceeds the required value
+    if (completedValue >= achievement.requiredValue) {
+      const updatedUA: UserAchievement = {
+        ...userAchievement,
         isComplete: true,
-        completedValue
-      });
+        completedValue,
+        earnedAt: new Date()
+      };
+      this.userAchievements.set(key, updatedUA);
+      
+      // Check if user qualifies for any badges after completing achievement
+      await this.checkAndAwardBadges(userId);
+      
+      return updatedUA;
     }
     
-    const updatedUserAchievement: UserAchievement = {
-      ...userAchievement,
-      progress: completedValue,
-      isComplete: true,
-      earnedAt: new Date(),
-      completedValue
-    };
-    
-    this.userAchievements.set(key, updatedUserAchievement);
-    
-    // Check for badge qualification
-    await this.checkAndAwardBadges(userId);
-    
-    return updatedUserAchievement;
+    return userAchievement;
   }
   
   // Badge methods
@@ -812,9 +816,15 @@ export class MemStorage implements IStorage {
   
   async createBadge(insertBadge: InsertBadge): Promise<Badge> {
     const id = this.currentIds.badges++;
-    const badge: Badge = { 
-      ...insertBadge, 
+    const badge: Badge = {
       id,
+      name: insertBadge.name,
+      description: insertBadge.description,
+      category: insertBadge.category,
+      iconUrl: insertBadge.iconUrl,
+      level: insertBadge.level || null,
+      requiredPoints: insertBadge.requiredPoints || null,
+      isRare: insertBadge.isRare || null,
       createdAt: new Date()
     };
     this.badges.set(id, badge);
@@ -872,34 +882,36 @@ export class MemStorage implements IStorage {
   }
   
   async checkAndAwardBadges(userId: number): Promise<Badge[]> {
-    // Calculate user's total points from completed achievements
     const userAchievements = await this.getUserAchievements(userId);
-    const completedAchievements = userAchievements.filter(ua => ua.isComplete);
-    
-    let totalPoints = 0;
-    completedAchievements.forEach(ua => {
-      totalPoints += ua.achievement.points;
-    });
-    
-    // Get all badges the user doesn't have yet
-    const userBadges = await this.getUserBadges(userId);
-    const userBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
-    
+    const existingBadges = await this.getUserBadges(userId);
     const allBadges = await this.getBadges();
-    const eligibleBadges = allBadges.filter(badge => 
-      !userBadgeIds.has(badge.id) && 
-      totalPoints >= badge.requiredPoints
-    );
-    
-    // Award new badges
-    const newlyAwardedBadges: Badge[] = [];
-    
-    for (const badge of eligibleBadges) {
-      await this.awardBadgeToUser(userId, badge.id);
-      newlyAwardedBadges.push(badge);
+    const newBadges: Badge[] = [];
+
+    // Calculate total points from completed achievements
+    const totalPoints = userAchievements.reduce((sum, ua) => {
+      if (ua.isComplete && ua.achievement.points !== null) {
+        return sum + ua.achievement.points;
+      }
+      return sum;
+    }, 0);
+
+    // Check each badge to see if user qualifies
+    for (const badge of allBadges) {
+      // Skip if user already has this badge
+      if (existingBadges.some(ub => ub.badgeId === badge.id)) {
+        continue;
+      }
+
+      // Award badge if user has enough points and badge has valid requiredPoints
+      if (badge.requiredPoints !== null && totalPoints >= badge.requiredPoints) {
+        const userBadge = await this.awardBadgeToUser(userId, badge.id);
+        if (userBadge) {
+          newBadges.push(badge);
+        }
+      }
     }
-    
-    return newlyAwardedBadges;
+
+    return newBadges;
   }
 }
 

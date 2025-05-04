@@ -23,11 +23,13 @@ export default function AdviceCard({ article }: AdviceCardProps) {
     <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
       <div className="md:flex"> 
         <div className="md:w-1/3">
-          <img 
-            src={imageUrl} 
-            className="w-full h-full object-cover" 
-            alt={title} 
-          />
+          {imageUrl && (
+            <img 
+              src={imageUrl} 
+              className="w-full h-full object-cover" 
+              alt={title} 
+            />
+          )}
         </div>
         <div className="p-4 md:w-2/3">
           <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${getCategoryColor(category)} mb-2`}>

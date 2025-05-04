@@ -9,35 +9,31 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { registerWithEmail, signInWithGoogle } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslations } from "@/hooks/use-translations";
-
-const registerFormSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
-
-type RegisterFormValues = z.infer<typeof registerFormSchema>;
+import { useCallback, useMemo } from "react";
 
 export default function Register() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { login } = useAuthContext();
-  const { t } = useTranslations();
+  const { t, language } = useTranslations();
   
+  // Определяем типы без использования Zod и схем на этом этапе
+  type RegisterFormValues = {
+    username: string;
+    email: string;
+    firstName: string;
+    lastName?: string;
+    password: string;
+    confirmPassword: string;
+  };
+  
+  // Используем обычный валидатор вместо zodResolver
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerFormSchema),
     defaultValues: {
       username: "",
       email: "",
@@ -46,6 +42,64 @@ export default function Register() {
       password: "",
       confirmPassword: "",
     },
+    resolver: (values) => {
+      const errors: Record<string, { type: string; message: string }> = {};
+      
+      // Проверка username
+      if (values.username.length < 3) {
+        errors.username = {
+          type: "minLength",
+          message: "Username must be at least 3 characters"
+        };
+      }
+      
+      // Проверка email
+      if (!/\S+@\S+\.\S+/.test(values.email)) {
+        errors.email = {
+          type: "pattern",
+          message: "Please enter a valid email address"
+        };
+      }
+      
+      // Проверка firstName
+      if (values.firstName.length < 2) {
+        errors.firstName = {
+          type: "minLength",
+          message: "First name is required"
+        };
+      }
+      
+      // Проверка password
+      if (values.password.length < 8) {
+        errors.password = {
+          type: "minLength",
+          message: t('auth.password.requirements.length')
+        };
+      } else if (!/[A-Z]/.test(values.password)) {
+        errors.password = {
+          type: "pattern",
+          message: t('auth.password.requirements.uppercase')
+        };
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(values.password)) {
+        errors.password = {
+          type: "pattern",
+          message: t('auth.password.requirements.special')
+        };
+      }
+      
+      // Проверка confirmPassword
+      if (values.password !== values.confirmPassword) {
+        errors.confirmPassword = {
+          type: "validate",
+          message: t('auth.password.requirements.match')
+        };
+      }
+      
+      return {
+        values,
+        errors: Object.keys(errors).length > 0 ? errors : {}
+      };
+    }
   });
 
   const handleGoogleSignUp = async () => {
@@ -116,7 +170,6 @@ export default function Register() {
         <ThemeSwitcher />
         <LanguageSwitcher />
       </div>
-      
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
@@ -262,6 +315,18 @@ export default function Register() {
             </div>
           </CardFooter>
         </Card>
+      </div>
+      {/* Back Button снизу */}
+      <div className="flex justify-center pt-6 pb-8">
+        <button
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-background shadow-md border border-border text-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          onClick={() => setLocation('/')}
+          aria-label="Назад на главную"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
       </div>
     </div>
   );

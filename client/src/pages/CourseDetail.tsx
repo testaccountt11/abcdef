@@ -18,23 +18,24 @@ export default function CourseDetail() {
   const { t } = useTranslations();
 
   // Fetch course details
-  const { data: course, isLoading } = useQuery<Course>({
+  const { data: course, isLoading, error } = useQuery<Course>({
     queryKey: [`/api/courses/${id}`],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load course details",
-        variant: "destructive",
-      });
-    },
+    retry: 1,
   });
+
+  // Show error toast if query fails
+  if (error) {
+    toast({
+      title: "Error",
+      description: error instanceof ApiError ? error.message : "Failed to load course details",
+      variant: "destructive",
+    });
+  }
 
   // Handle enrollment
   const handleEnrollment = async () => {
     try {
-      await apiRequest(`/api/courses/${id}/enroll`, {
-        method: "POST",
-      });
+      await apiRequest("POST", `/api/courses/${id}/enroll`);
       
       toast({
         title: t('course.enrolled'),

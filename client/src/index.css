@@ -1,4 +1,4 @@
-
+/* tailwindcss */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -44,6 +44,8 @@
   
   --warning: 38 92% 50%;
   --warning-foreground: 48 96% 89%;
+
+  --primary-20: hsla(var(--primary), 0.2);
 }
 
 .dark {
@@ -74,6 +76,8 @@
   --border: 217.2 32.6% 20%;
   --input: 217.2 32.6% 20%;
   --ring: 224.3 76.3% 55%;
+
+  --primary-20: hsla(var(--primary), 0.3);
 }
 
 @layer base {
@@ -165,4 +169,47 @@
 
 .gradient-bg-light {
   background: radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 1) 0%, rgba(214, 240, 253, 1) 100%);
+}
+
+/* Custom scrollbar styles - без директив @apply */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  transition: all 0.3s;
+  background: hsl(221.2, 83.2%, 53.3%, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(221.2, 83.2%, 58.3%, 0.9);
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(221.2, 83.2%, 53.3%, 0.7) transparent;
+}
+
+/* Для темного режима */
+/* Вместо этого напишем обычное CSS-правило без @apply */
+.dark .bg-gradient-background {
+  background: hsl(222, 47%, 11%) !important;
+  background-image: none !important;
+}
+
+/* Добавьте это в ваш CSS файл */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

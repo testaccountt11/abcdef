@@ -23,9 +23,8 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-9 gap-1">
-          <Globe className="h-[1rem] w-[1rem]" />
-          <span>{currentLanguage}</span>
+        <Button variant="ghost" size="icon" className="hover:bg-primary/5 transition-all duration-300">
+          <Globe className="h-5 w-5 text-foreground/80 hover:text-primary transition-colors" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

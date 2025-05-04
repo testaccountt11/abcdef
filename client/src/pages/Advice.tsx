@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Article } from "@shared/schema";
 
 export default function Advice() {
   const { toast } = useToast();
@@ -13,19 +14,22 @@ export default function Advice() {
   const [categoryFilter, setCategoryFilter] = useState("all");
 
   // Fetch articles
-  const { data: articles, isLoading } = useQuery({
+  const { data: articles, isLoading, error } = useQuery<Article[]>({
     queryKey: ['/api/articles'],
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load articles",
-        variant: "destructive",
-      });
-    },
+    retry: 1
   });
 
+  // Show error toast if query fails
+  if (error) {
+    toast({
+      title: "Error",
+      description: error instanceof Error ? error.message : "Failed to load articles",
+      variant: "destructive",
+    });
+  }
+
   // Apply filters
-  const filteredArticles = articles?.filter(article => {
+  const filteredArticles = articles?.filter((article: Article) => {
     // Search filter
     const matchesSearch = searchTerm === "" || 
       article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,7 +43,9 @@ export default function Advice() {
   });
 
   // Get unique categories for filter
-  const uniqueCategories = [...new Set(articles?.map(article => article.category))];
+  const uniqueCategories = articles 
+    ? Array.from(new Set(articles.map((article: Article) => article.category))) 
+    : [];
 
   return (
     <AppLayout>
@@ -93,7 +99,7 @@ export default function Advice() {
               </div>
             ))
           ) : filteredArticles && filteredArticles.length > 0 ? (
-            filteredArticles.map((article) => (
+            filteredArticles.map((article: Article) => (
               <AdviceCard key={article.id} article={article} />
             ))
           ) : (

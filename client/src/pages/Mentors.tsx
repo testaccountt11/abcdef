@@ -7,6 +7,20 @@ import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
+// Define Mentor type
+interface Mentor {
+  id: number;
+  name: string;
+  title: string;
+  company: string;
+  skills: string[] | null;
+  rating?: number;
+  bio?: string;
+  profileImage: string | null;
+  contactInfo: string | null;
+  // Add other fields as needed
+}
+
 export default function Mentors() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,19 +28,21 @@ export default function Mentors() {
   const [companyFilter, setCompanyFilter] = useState("all");
 
   // Fetch mentors
-  const { data: mentors, isLoading } = useQuery({
+  const { data: mentors, isLoading, isError, error } = useQuery<Mentor[]>({
     queryKey: ['/api/mentors'],
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to load mentors",
-        variant: "destructive",
-      });
-    },
   });
 
+  // Show error toast if there was an error
+  if (isError && error instanceof Error) {
+    toast({
+      title: "Error",
+      description: error.message || "Failed to load mentors",
+      variant: "destructive",
+    });
+  }
+
   // Apply filters
-  const filteredMentors = mentors?.filter(mentor => {
+  const filteredMentors = mentors?.filter((mentor: Mentor) => {
     // Search filter
     const matchesSearch = searchTerm === "" || 
       mentor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,7 +50,7 @@ export default function Mentors() {
     
     // Skill filter
     const matchesSkill = skillFilter === "all" || 
-      mentor.skills.some(skill => skill.toLowerCase() === skillFilter.toLowerCase());
+      mentor.skills?.some((skill: string) => skill.toLowerCase() === skillFilter.toLowerCase()) || [];
     
     // Company filter
     const matchesCompany = companyFilter === "all" || 
@@ -44,10 +60,10 @@ export default function Mentors() {
   });
 
   // Get unique skills and companies for filters
-  const allSkills = mentors?.flatMap(mentor => mentor.skills) || [];
+  const allSkills = mentors?.flatMap((mentor: Mentor) => mentor.skills) || [];
   const uniqueSkills = [...new Set(allSkills)];
   
-  const uniqueCompanies = [...new Set(mentors?.map(mentor => mentor.company))];
+  const uniqueCompanies = Array.from(new Set(mentors?.map((mentor: Mentor) => mentor.company) || []));
 
   return (
     <AppLayout>
@@ -75,7 +91,7 @@ export default function Mentors() {
               <SelectContent>
                 <SelectItem value="all">All skills</SelectItem>
                 {uniqueSkills.map((skill, index) => (
-                  <SelectItem key={index} value={skill}>{skill}</SelectItem>
+                  <SelectItem key={index} value={String(skill)}>{String(skill)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -88,7 +104,7 @@ export default function Mentors() {
               <SelectContent>
                 <SelectItem value="all">All companies</SelectItem>
                 {uniqueCompanies.map((company, index) => (
-                  <SelectItem key={index} value={company}>{company}</SelectItem>
+                  <SelectItem key={index} value={String(company)}>{String(company)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

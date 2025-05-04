@@ -11,8 +11,18 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useTranslations } from "@/hooks/use-translations";
 import { Link } from "wouter";
-import { Course, Opportunity, Mentor, Article, Stats } from "@shared/schema";
+import { Course, Opportunity, Mentor, Article } from "@shared/schema";
 import { ApiError } from "@/lib/queryClient";
+
+// Define Stats interface to match the API response
+interface Stats {
+  id: number;
+  userId: number;
+  coursesInProgress: number | null;
+  certificatesEarned: number | null;
+  mentorSessions: number | null;
+  opportunitiesSaved: number | null;
+}
 
 export default function Dashboard() {
   const { user } = useAuthContext();
@@ -22,60 +32,61 @@ export default function Dashboard() {
   // Fetch user stats
   const { data: stats, isLoading: isLoadingStats } = useQuery<Stats>({
     queryKey: ['/api/stats'],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load stats",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch stats');
+      }
+      return response.json();
     },
+    retry: 1
   });
 
   // Fetch user courses
   const { data: courses, isLoading: isLoadingCourses } = useQuery<Course[]>({
     queryKey: ['/api/user/courses'],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load courses",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      return response.json();
     },
   });
 
   // Fetch opportunities
   const { data: opportunities, isLoading: isLoadingOpportunities } = useQuery<Opportunity[]>({
     queryKey: ['/api/opportunities'],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load opportunities",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch opportunities');
+      }
+      return response.json();
     },
   });
 
   // Fetch mentors
   const { data: mentors, isLoading: isLoadingMentors } = useQuery<Mentor[]>({
     queryKey: ['/api/mentors'],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load mentors",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch mentors');
+      }
+      return response.json();
     },
   });
 
   // Fetch articles
   const { data: articles, isLoading: isLoadingArticles } = useQuery<Article[]>({
     queryKey: ['/api/articles'],
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof ApiError ? error.message : "Failed to load articles",
-        variant: "destructive",
-      });
+    queryFn: async ({ queryKey }) => {
+      const response = await fetch(queryKey[0] as string);
+      if (!response.ok) {
+        throw new Error('Failed to fetch articles');
+      }
+      return response.json();
     },
   });
 
@@ -245,7 +256,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : courses && courses.length > 0 ? (
-              courses.map((course) => (
+              courses.map((course: Course) => (
                 <CourseCard key={course.id} course={course} />
               ))
             ) : (
@@ -285,7 +296,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : opportunities && opportunities.length > 0 ? (
-              opportunities.slice(0, 3).map((opportunity) => (
+              opportunities.slice(0, 3).map((opportunity: Opportunity) => (
                 <OpportunityCard key={opportunity.id} opportunity={opportunity} />
               ))
             ) : (
@@ -323,7 +334,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : mentors && mentors.length > 0 ? (
-              mentors.map((mentor) => (
+              mentors.map((mentor: Mentor) => (
                 <MentorCard key={mentor.id} mentor={mentor} />
               ))
             ) : (
@@ -362,7 +373,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : articles && articles.length > 0 ? (
-              articles.slice(0, 2).map((article) => (
+              articles.slice(0, 2).map((article: Article) => (
                 <ArticleCard key={article.id} article={article} />
               ))
             ) : (
