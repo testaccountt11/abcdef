@@ -4,8 +4,5 @@
       "path": "/api/refresh-cache",
       "schedule": "0 */3 * * *"
     }
-  ],
-  "images": {
-    "domains": ["hhcdn.ru", "via.placeholder.com"]
-  }
+  ]
 } 
