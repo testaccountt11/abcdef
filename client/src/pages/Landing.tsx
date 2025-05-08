@@ -774,7 +774,7 @@ export default function Landing() {
                     >
                       <div className="text-primary dark:text-primary/90 dark:drop-shadow(0 0 5px rgba(59, 130, 246, 0.5))">
                         {step.icon}
-                      </div>
+        </div>
                     </motion.div>
                     <div className="absolute -top-4 -right-4 bg-gradient-to-r from-primary/80 to-indigo-600/80 dark:from-primary/90 dark:to-indigo-500/90 text-white text-xl font-bold rounded-full w-10 h-10 flex items-center justify-center">
                       {step.number}
@@ -809,8 +809,8 @@ export default function Landing() {
               <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
                 {t('testimonials.subtitle')}
               </p>
-            </div>
-            
+        </div>
+
             {/* Автоматически прокручиваемая карусель - замедленная */}
             <div className="relative w-full mx-auto overflow-hidden">
               <motion.div
@@ -855,7 +855,7 @@ export default function Landing() {
                               {Array(5 - testimonial.rating).fill(0).map((_, j) => (
                                 <span key={j} className="text-primary/20">★</span>
                               ))}
-                            </div>
+        </div>
                           </div>
                           <p className="text-xs text-primary/60 mb-3">{testimonial.role}</p>
                           <blockquote className="text-sm text-foreground/80 italic">
@@ -893,7 +893,7 @@ export default function Landing() {
                               {Array(5 - testimonial.rating).fill(0).map((_, j) => (
                                 <span key={j} className="text-primary/20">★</span>
                               ))}
-                            </div>
+        </div>
                           </div>
                           <p className="text-xs text-primary/60 mb-3">{testimonial.role}</p>
                           <blockquote className="text-sm text-foreground/80 italic">
@@ -939,8 +939,8 @@ export default function Landing() {
                 {language === 'en' ? 'Flexible plans to match your educational journey - start free and upgrade as you grow' : 
                  language === 'ru' ? 'Гибкие планы для вашего образовательного пути - начните бесплатно и улучшайте по мере роста' : 
                  'Икемді жоспарлар сіздің білім жолыңызға сәйкес - тегін бастаңыз және өскен сайын жаңартыңыз'}
-              </p>
-            </div>
+                </p>
+              </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Бесплатный план */}
@@ -995,8 +995,8 @@ export default function Landing() {
                          'Қоғамдастық форумына қол жеткізу'}
                       </span>
                     </li>
-                  </ul>
-                </div>
+                </ul>
+              </div>
                 <div className="px-8 pb-8">
                   <Button 
                     className="w-full py-6 rounded-lg"
@@ -1083,8 +1083,8 @@ export default function Landing() {
                          'Айына 1 ментормен сессия'}
                       </span>
                     </li>
-                  </ul>
-                </div>
+                </ul>
+              </div>
                 <div className="px-8 pb-8">
                   <Button 
                     className="w-full py-6 rounded-lg bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white"
@@ -1094,7 +1094,7 @@ export default function Landing() {
                      language === 'ru' ? 'Выбрать Премиум' : 
                      'Премиум алу'}
                   </Button>
-                </div>
+            </div>
               </motion.div>
 
               {/* Про план */}
@@ -1118,7 +1118,7 @@ export default function Landing() {
                        language === 'kz' ? ' тг/ай' : 
                        ' тг/мес'}
                     </span>
-                  </div>
+            </div>
                   <p className="text-foreground/70 mb-6">
                     {language === 'en' ? 'For those who want professional growth and mentorship' : 
                      language === 'ru' ? 'Для тех, кто стремится к профессиональному росту и наставничеству' : 
@@ -1166,7 +1166,7 @@ export default function Landing() {
                       </span>
                     </li>
                   </ul>
-                </div>
+          </div>
                 <div className="px-8 pb-8">
                   <Button 
                     className="w-full py-6 rounded-lg"
@@ -1177,7 +1177,7 @@ export default function Landing() {
                      language === 'ru' ? 'Выбрать Профессиональный' : 
                      'Кәсіби алу'}
                   </Button>
-                </div>
+    </div>
               </motion.div>
             </div>
           </div>

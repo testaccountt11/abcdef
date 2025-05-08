@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/hooks/use-translations";
-import { ArrowRight, Users2, Lightbulb, Heart, Trophy, Rocket, ExternalLink, Github, Linkedin, Twitter } from "lucide-react";
+import { 
+  ArrowRight, Users2, Lightbulb, Heart, Trophy, Rocket, 
+  ExternalLink, Github, Linkedin, Twitter, 
+  Building, BookOpen, UserPlus, Star, Globe, Shield
+} from "lucide-react";
 import { useLocation } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
@@ -243,143 +247,199 @@ export default function PublicAboutUs() {
         { icon: <Github className="w-4 h-4" />, link: "#" }
       ]
     }
-  // INSERT_YOUR_REWRITE_HERE
   ];
+
+  // Функция для плавной прокрутки
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const navbarHeight = 64;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <PublicPageLayout>
-      {/* Hero Section - унифицированный стиль с Landing Page */}
-      <section className="relative h-screen min-h-[800px] flex items-center justify-center overflow-hidden" ref={heroRef}>
-        {/* Анимированный фон с плавающими элементами - приглушенные цвета, как на Landing Page */}
-        <div className="absolute inset-0 overflow-hidden">
+      {/* Добавляем глобальные градиентные фоны как на главной странице */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-50">
+        <div className="absolute top-0 left-0 right-0 h-[60vh] bg-gradient-to-br from-primary/5 via-transparent to-indigo-400/5 dark:from-primary/10 dark:via-transparent dark:to-indigo-400/10 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-[40vh] bg-gradient-to-tr from-blue-400/5 via-transparent to-primary/5 dark:from-blue-500/10 dark:via-transparent dark:to-primary/10 blur-3xl"></div>
+      </div>
+      
+      <main className="relative overflow-hidden">
+        {/* HERO SECTION - исправленная версия */}
+        <section className="min-h-[calc(100vh-4rem)] flex items-center justify-center relative pt-16 pb-24 px-6">
+          {/* Градиентные элементы */}
           <motion.div 
-            className="absolute top-10 right-10 w-64 h-64 rounded-full bg-gradient-to-r from-primary/10 to-indigo-600/10 dark:from-primary/20 dark:to-indigo-600/20 blur-3xl opacity-80 -z-10"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 0.3, scale: 1 }}
-            transition={{ duration: 2, ease: "easeOut" }}
-          />
-          <motion.div 
-            className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 blur-3xl opacity-80 -z-10"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 0.3, scale: 1 }}
-            transition={{ duration: 2, delay: 0.3, ease: "easeOut" }}
-          />
-          <motion.div
-            className="absolute w-20 h-20 top-1/4 left-[15%] rounded-full border border-primary/10 text-primary/10"
-            animate={{ 
-              y: ["-15px", "15px", "-15px"],
-              x: ["0px", "10px", "0px", "-10px", "0px"],
-              rotate: [0, 3, 0, -3, 0]
+            className="absolute top-20 left-[10%] w-96 h-96 bg-gradient-to-r from-indigo-400/10 to-primary/10 dark:from-indigo-400/20 dark:to-primary/20 blur-3xl -z-10"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.25, 0.2],
+              rotate: [0, 5, 0]
             }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute w-16 h-16 bottom-1/3 right-[20%] rounded-md border border-indigo-400/10 rotate-12 text-indigo-600/10"
-            animate={{ 
-              y: ["15px", "-15px", "15px"],
-              rotate: [12, 24, 12],
-              scale: [1, 1.05, 1]
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut"
             }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           />
-        </div>
-
-        <div className="container relative mx-auto px-4 max-w-7xl z-10 flex items-center justify-center -mt-16">
           <motion.div 
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            style={{ 
-              opacity: heroOpacity, 
-              scale: heroScale,
-              y: heroY
+            className="absolute bottom-40 right-[15%] w-72 h-72 bg-gradient-to-r from-purple-500/5 to-blue-500/5 dark:from-purple-500/15 dark:to-blue-500/15 blur-3xl -z-10"
+            animate={{
+              scale: [1.1, 0.9, 1.1],
+              opacity: [0.25, 0.3, 0.25],
+              rotate: [0, -5, 0]
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Плавающие иконки */}
+          <motion.div 
+            className="absolute top-[15%] left-[25%] text-primary/10 -z-10"
+            animate={{
+              y: [0, -20, 0],
+              x: [0, 10, 0],
+              rotate: [0, 10, 0]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
             }}
           >
+            <Building className="w-16 h-16" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute top-[30%] right-[20%] text-indigo-600/10 -z-10"
+            animate={{ 
+              y: [0, 15, 0],
+              x: [0, -10, 0],
+              rotate: [0, -5, 0]
+            }}
+            transition={{
+              duration: 9,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Star className="w-12 h-12" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute bottom-[25%] left-[30%] text-blue-500/10 -z-10"
+            animate={{ 
+              y: [0, 10, 0],
+              x: [0, -5, 0],
+              rotate: [0, 8, 0]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Globe className="w-14 h-14" />
+          </motion.div>
+          
+          <motion.div 
+            className="absolute bottom-[20%] right-[35%] text-purple-500/10 -z-10"
+            animate={{
+              y: [0, -8, 0],
+              x: [0, 5, 0],
+              rotate: [0, -7, 0]
+            }}
+            transition={{
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Shield className="w-10 h-10" />
+          </motion.div>
+
+          {/* Hero content - исправленный тайтл с дополнительным padding */}
+          <div className="max-w-7xl mx-auto text-center relative z-10">
             <motion.div
-              className="inline-block mb-4"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
+              className="inline-block mb-6"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, type: "spring", bounce: 0.5 }}
             >
-              <span className="px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4 inline-block backdrop-blur-sm">
-                Portfol.IO
+              <span className="px-4 py-2 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 inline-block backdrop-blur-sm">
+                {language === 'en' ? 'Portfol.IO Team' : 
+                 language === 'ru' ? 'Команда Portfol.IO' : 
+                 'Portfol.IO Командасы'}
               </span>
             </motion.div>
+            
             <motion.h1 
-              className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 dark:from-primary/95 dark:to-indigo-400/95"
+              className="text-5xl md:text-6xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 dark:from-primary/95 dark:to-indigo-400/95 leading-[1.2] py-4 px-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.7 }}
             >
-              {t('aboutUs.title')}
+              {language === 'en' ? t('aboutUs.title') : 
+               language === 'ru' ? 'О нас' : 
+               t('aboutUs.title')}
             </motion.h1>
             <motion.p 
-              className="text-xl md:text-2xl text-foreground/70 dark:text-foreground/80 max-w-3xl mx-auto mb-12"
+              className="text-xl md:text-2xl mb-14 max-w-2xl mx-auto text-foreground/70 dark:text-foreground/80 px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
             >
-              {t('aboutUs.subtitle')}
+              {language === 'en' ? t('aboutUs.subtitle') : 
+               language === 'ru' ? 'Знакомьтесь с командой, создающей вашу образовательную платформу' : 
+               t('aboutUs.subtitle')}
             </motion.p>
+
             <motion.div
+              className="flex flex-wrap justify-center gap-4 mb-16"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
             >
-              <Button 
-                size="lg" 
-                className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-primary/90 to-indigo-600/90 hover:from-primary/80 hover:to-indigo-600/80 shadow-lg hover:shadow-primary/10 text-white transition-all duration-500"
-                onClick={() => {
-                  const element = document.getElementById('mission');
-                  element?.scrollIntoView({ behavior: 'smooth' });
-                }}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
-                {language === 'en' ? 'Learn More' : 
-                 language === 'ru' ? 'Узнать больше' : 
-                 'Көбірек білу'}
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                <Button 
+                  className="rounded-full px-8 py-6 text-lg bg-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 shadow-lg"
+                  onClick={() => scrollToSection('mission')}
                 >
-                <ArrowRight className="ml-2 h-5 w-5" />
-                </motion.span>
+                  <span className="flex items-center">
+                    {language === 'en' ? 'Discover Our Story' : 
+                     language === 'ru' ? 'Узнать нашу историю' : 
+                     'Біздің оқиғамызбен танысу'}
+                    <motion.span
+                      animate={{ 
+                        y: [0, -3, 0],
+                        x: [0, 3, 0] 
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                    >
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </motion.span>
+                  </span>
               </Button>
             </motion.div>
           </motion.div>
-        </div>
+        </section>
 
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-        >
-          <motion.div 
-            className="w-8 h-12 border-2 border-primary/20 rounded-full flex items-center justify-center"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <motion.div 
-              className="w-1.5 h-3 bg-primary/80 rounded-full"
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.1 }}
-            />
-          </motion.div>
-        </motion.div>
-
-        {/* Gradient overlay */}
-        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background via-background/95 to-transparent pointer-events-none" />
-      </section>
-
-      {/* Our Mission - унифицированный стиль */}
-      <section id="mission" className="relative py-24" ref={missionRef}>
+        {/* Our Mission Section - с увеличенным пространством */}
+        <section id="mission" className="min-h-screen py-24 flex items-center">
         <div className="container mx-auto px-4 max-w-7xl">
-          {/* Визуальный разделитель секции */}
-          <div className="absolute top-0 left-0 right-0 flex justify-center">
-            <div className="w-24 h-1.5 bg-gradient-to-r from-primary/30 to-indigo-600/30 rounded-full" />
-          </div>
-          
           {isVisible.mission && (
             <motion.div 
               className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
@@ -389,110 +449,67 @@ export default function PublicAboutUs() {
             >
               <motion.div variants={itemVariants}>
                 <motion.span 
-                  className="inline-block px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4"
+                    className="inline-block px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4"
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {t('aboutUs.mission.title')}
+                  {language === 'en' ? t('aboutUs.mission.title') : 
+                   language === 'ru' ? 'Наша миссия' : 
+                   t('aboutUs.mission.title')}
                 </motion.span>
-                <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90">{t('aboutUs.mission.title')}</h2>
-                
-                {/* Content box */}
-                <motion.div 
-                  className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-lg p-6 shadow-sm dark:shadow-primary/5"
-                  whileHover={{ y: -5, boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.08)", transition: { duration: 0.4 } }}
-                >
+                  <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90">
+                    {language === 'en' ? t('aboutUs.mission.title') : 
+                     language === 'ru' ? 'Наша миссия' : 
+                     t('aboutUs.mission.title')}
+                  </h2>
+                  
+                  {/* Content box с увеличенным внутренним отступом */}
+                  <motion.div 
+                    className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-lg p-8 shadow-sm dark:shadow-primary/5"
+                    whileHover={{ y: -5, boxShadow: "0 10px 30px -5px rgba(0, 0, 0, 0.08)", transition: { duration: 0.4 } }}
+                  >
                 <motion.p 
-                    className="text-lg mb-6 text-foreground/70 leading-relaxed"
+                      className="text-lg mb-8 text-foreground/70 leading-relaxed"
                   variants={fadeInVariants}
                 >
-                  {t('aboutUs.mission.description1')}
+                  {language === 'en' ? t('aboutUs.mission.description1') : 
+                   language === 'ru' ? 'Мы стремимся демократизировать образование, создавая платформу, где каждый студент может найти свой индивидуальный путь обучения и профессионального развития.' : 
+                   t('aboutUs.mission.description1')}
                 </motion.p>
                 <motion.p 
-                    className="text-lg mb-8 text-foreground/70 leading-relaxed"
+                      className="text-lg mb-12 text-foreground/70 leading-relaxed"
                   variants={fadeInVariants}
                 >
-                  {t('aboutUs.mission.description2')}
+                  {language === 'en' ? t('aboutUs.mission.description2') : 
+                   language === 'ru' ? 'Наша цель - объединить образовательные ресурсы, менторов и возможности стажировок в единой экосистеме, которая поможет каждому раскрыть свой потенциал.' : 
+                   t('aboutUs.mission.description2')}
                 </motion.p>
+                  </motion.div>
                 </motion.div>
                 
-                <motion.div 
-                  className="flex flex-col sm:flex-row gap-4 mt-8"
-                  variants={staggerContainerVariants}
-                >
-                  <motion.div variants={fadeInVariants}>
-                    <Button 
-                      size="lg" 
-                      onClick={() => navigate('/register')}
-                      className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-primary/90 to-indigo-600/90 hover:from-primary/80 hover:to-indigo-600/80 shadow-lg hover:shadow-primary/10 text-white transition-all duration-500 w-full sm:w-auto"
-                    >
-                      {t('aboutUs.mission.joinButton')}
-                      <motion.span
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
-                      >
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                      </motion.span>
-                    </Button>
-                  </motion.div>
-                  <motion.div variants={fadeInVariants}>
-                    <Button 
-                      variant="outline" 
-                      size="lg"
-                      onClick={() => navigate('/publiccourses')}
-                      className="rounded-full px-8 py-6 text-lg border-primary/20 hover:bg-primary/5 transition-all duration-300 w-full sm:w-auto"
-                    >
-                      {t('aboutUs.mission.exploreButton')}
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-              
-              {/* Изображение справа */}
+                {/* Изображение справа */}
               <motion.div 
                 className="relative"
                 variants={itemVariants}
               >
                 <motion.div 
-                  className="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-primary/10 blur-xl z-0"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    opacity: [0.2, 0.3, 0.2]
-                  }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                ></motion.div>
-                
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-indigo-600/20 rounded-2xl blur-2xl opacity-20 transform -rotate-6 scale-95"
-                  animate={{ 
-                    rotate: [-6, 0, -6],
-                    scale: [0.95, 0.97, 0.95]
-                  }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                ></motion.div>
-                
-                <motion.div 
-                  className="rounded-2xl overflow-hidden shadow-sm border border-border/10 relative z-10"
-                  whileHover={{ 
-                    scale: 1.02,
-                    boxShadow: "0 15px 30px -5px rgba(0, 0, 0, 0.05)"
-                  }}
-                  transition={{ duration: 0.4 }}
+                    className="rounded-2xl overflow-hidden shadow-sm border border-border/10 relative z-10"
+                    whileHover={{ 
+                      scale: 1.02,
+                      boxShadow: "0 15px 30px -5px rgba(0, 0, 0, 0.05)"
+                    }}
+                    transition={{ duration: 0.4 }}
                 >
                   <img 
                     src="/assets/about/mission.jpg" 
-                    alt="Our Mission"
-                    className="w-full h-auto object-cover"
+                      alt="Our Mission"
+                      className="w-full h-auto object-cover"
                     onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
                     }}
                   />
-                  
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
-                    <p className="text-white text-sm font-medium">{t('aboutUs.mission.imageCaption')}</p>
-                  </div>
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -500,220 +517,208 @@ export default function PublicAboutUs() {
         </div>
       </section>
 
-      {/* Our Values - унифицированный стиль */}
-      <section id="values" className="relative py-24 bg-muted/20" ref={valuesRef}>
-        <div className="container mx-auto px-4 max-w-7xl">
-          {/* Animated background */}
-          <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-              className="absolute top-40 left-20 w-72 h-72 rounded-full bg-primary/10 blur-3xl"
-              animate={{ 
-                x: [0, 30, 0],
-                y: [0, -30, 0],
-                opacity: [0.3, 0.5, 0.3]
-              }}
-              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-            />
-        <motion.div
-              className="absolute bottom-20 right-40 w-96 h-96 rounded-full bg-indigo-500/10 blur-3xl"
-              animate={{ 
-                x: [0, -40, 0],
-                y: [0, 40, 0],
-                opacity: [0.2, 0.4, 0.2]
-              }}
-              transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            />
+        {/* Our Values Section - сдержанная, элегантная версия */}
+        <section id="values" className="py-24 relative">
+          {/* Один простой фоновый элемент */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-gradient-to-br from-primary/5 to-indigo-500/5 dark:from-primary/10 dark:to-indigo-500/10 blur-3xl opacity-50" />
           </div>
-          
-          <div className="text-center mb-16 relative z-10">
-                <motion.span 
-                  className="inline-block px-3 py-1 text-sm rounded-full border border-primary/30 bg-primary/5 text-primary mb-4"
-              initial={{ opacity: 0, y: -20 }}
-              animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }}
-            >
-              {t('aboutUs.values.subtitle')}
-                </motion.span>
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
-              initial={{ opacity: 0, y: -20 }}
-              animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-                  {t('aboutUs.values.title')}
-            </motion.h2>
-            <motion.p 
-              className="text-lg max-w-3xl mx-auto text-foreground/80"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              {t('aboutUs.values.description')}
-            </motion.p>
-          </div>
-          
-          {isVisible.values && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {valuesData.map((value, i) => (
-              <motion.div 
-                  key={i}
-                  className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-xl p-6 relative overflow-hidden group h-full dark:shadow-lg dark:shadow-primary/5"
-                  custom={i}
-                  variants={valueCardVariants}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    whileTap="tap"
+
+          <div className="container mx-auto px-4 max-w-7xl relative">
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-block px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4"
+                initial={{ opacity: 0, y: -20 }}
+                animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5 }}
+              >
+                {language === 'en' ? t('aboutUs.values.subtitle') : 
+                 language === 'ru' ? 'Принципы, которые нас направляют' : 
+                 t('aboutUs.values.subtitle')}
+              </motion.span>
+              
+              <motion.h2 
+                className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
+                initial={{ opacity: 0, y: -20 }}
+                animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-primary/60 to-indigo-600/60 dark:from-primary/80 dark:to-indigo-600/80"></div>
-                  
-                  <div className="flex items-center mb-5">
-                    <div className="mr-4 p-3 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:drop-shadow(0 0 5px rgba(59, 130, 246, 0.5))">
-                      {value.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground/90 dark:text-white">
-                      {value.title}
-                    </h3>
-                  </div>
-                  
-                  <p className="text-foreground/60 dark:text-gray-300/70">
-                    {value.description}
-                  </p>
-                </motion.div>
-                ))}
+                  {language === 'en' ? t('aboutUs.values.title') : 
+                   language === 'ru' ? 'Наши ценности' : 
+                   t('aboutUs.values.title')}
+              </motion.h2>
+              
+              <motion.p 
+                className="text-lg max-w-3xl mx-auto text-foreground/80 mb-12"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isVisible.values ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                {language === 'en' ? t('aboutUs.values.description') : 
+                 language === 'ru' ? 'Эти фундаментальные принципы определяют наш подход к созданию образовательной платформы, которая вдохновляет и поддерживает.' : 
+                 t('aboutUs.values.description')}
+              </motion.p>
             </div>
+            
+            {isVisible.values && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gap-y-10">
+                {valuesData.map((value, i) => {
+                  // Создаем локализованные данные для каждой ценности
+                  const localizedTitle = 
+                    language === 'ru' ? 
+                      (i === 0 ? 'Сообщество' :
+                       i === 1 ? 'Инновации' :
+                       i === 2 ? 'Инклюзивность' :
+                       i === 3 ? 'Качество' :
+                       i === 4 ? 'Развитие' : value.title) :
+                    value.title;
+                  
+                  const localizedDescription =
+                    language === 'ru' ? 
+                      (i === 0 ? 'Мы верим в силу сообщества и взаимной поддержки в образовательном процессе.' :
+                       i === 1 ? 'Постоянный поиск новых подходов к обучению для максимальной эффективности.' :
+                       i === 2 ? 'Образование должно быть доступным каждому, независимо от места проживания или финансовых возможностей.' :
+                       i === 3 ? 'Мы стремимся к высочайшему качеству контента и опыта пользователей на нашей платформе.' :
+                       i === 4 ? 'Поддержка непрерывного обучения и персонального роста на каждом этапе жизни.' : value.description) :
+                    value.description;
+                  
+                  return (
+                    <motion.div 
+                      key={i}
+                      className="bg-card/80 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-lg p-6 hover:shadow-md transition-shadow duration-300"
+                      custom={i}
+                      variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        visible: (i) => ({
+                          opacity: 1,
+                          y: 0,
+                          transition: {
+                            delay: i * 0.1,
+                            duration: 0.5,
+                            ease: "easeOut"
+                          }
+                        })
+                      }}
+                      initial="hidden"
+                      animate="visible"
+                      whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                    >
+                      <div className="flex items-center mb-4">
+                        <div className="mr-4 p-2.5 rounded-md bg-primary/10 dark:bg-primary/20 text-primary">
+                          {value.icon}
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground/90 dark:text-white/90">
+                          {localizedTitle}
+                        </h3>
+                      </div>
+                      
+                      <p className="text-foreground/70 dark:text-gray-300/70 leading-relaxed">
+                        {localizedDescription}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
           )}
         </div>
-        
-        {/* Zigzag divider */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-background" style={{ clipPath: "polygon(0% 100%, 4% 0%, 8% 100%, 12% 0%, 16% 100%, 20% 0%, 24% 100%, 28% 0%, 32% 100%, 36% 0%, 40% 100%, 44% 0%, 48% 100%, 52% 0%, 56% 100%, 60% 0%, 64% 100%, 68% 0%, 72% 100%, 76% 0%, 80% 100%, 84% 0%, 88% 100%, 92% 0%, 96% 100%, 100% 0%, 100% 100%)" }}></div>
       </section>
 
-      {/* Our Team - унифицированный стиль */}
-      <section id="team" className="relative py-24">
+        {/* Our Team Section */}
+        <section id="team" className="py-24">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center mb-16">
-                <motion.span 
-                  className="inline-block px-3 py-1 text-sm rounded-full border border-primary/30 bg-primary/5 text-primary mb-4"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={isVisible.team ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5 }}
-            >
-              {t('aboutUs.team.subtitle')}
-                </motion.span>
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-                  {t('aboutUs.team.title')}
-            </motion.h2>
-            <motion.p 
-              className="text-lg max-w-3xl mx-auto text-foreground/80"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              {t('aboutUs.team.description')}
-            </motion.p>
-          </div>
-          
-          {isVisible.team && (
+            <div className="text-center mb-16">
+              <motion.span 
+                className="inline-block px-3 py-1 text-sm rounded-full border border-primary/30 bg-primary/5 text-primary mb-4"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isVisible.team ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.5 }}
+              >
+                {language === 'en' ? t('aboutUs.team.subtitle') : 
+                 language === 'ru' ? 'Познакомьтесь с нами' : 
+                 t('aboutUs.team.subtitle')}
+              </motion.span>
+              <motion.h2 
+                className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  {language === 'en' ? t('aboutUs.team.title') : 
+                   language === 'ru' ? 'Наша команда' : 
+                   t('aboutUs.team.title')}
+              </motion.h2>
+              <motion.p 
+                className="text-lg max-w-3xl mx-auto text-foreground/80"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                {language === 'en' ? t('aboutUs.team.description') : 
+                 language === 'ru' ? 'Талантливые профессионалы, объединенные единой миссией создания лучшей образовательной платформы.' : 
+                 t('aboutUs.team.description')}
+              </motion.p>
+            </div>
+            
+            {isVisible.team && (
               <motion.div 
-              className="flex flex-wrap justify-center gap-x-8 gap-y-16"
-              variants={staggerContainerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {teamMembers.map((member, i) => (
+                className="flex flex-wrap justify-center gap-x-8 gap-y-16"
+                variants={staggerContainerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {teamMembers.map((member, i) => (
                   <motion.div 
-                  key={i}
-                  className="group relative overflow-hidden rounded-2xl bg-card dark:bg-gray-800/60 border border-border/40 dark:border-white/5 transition-all duration-300 h-full flex flex-col dark:shadow-lg dark:shadow-primary/5"
-                  custom={i}
+                    key={i}
+                    className="group relative overflow-hidden rounded-2xl bg-card dark:bg-gray-800/60 border border-border/40 dark:border-white/5 transition-all duration-300 h-full flex flex-col dark:shadow-lg dark:shadow-primary/5 w-64"
+                    custom={i}
                     variants={teamMemberVariants}
                     whileHover="hover"
                   >
-                  <div className="relative overflow-hidden h-64">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    <img 
-                      src={member.image} 
-                      alt={member.name} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = member.fallbackImage;
-                      }}
-                    />
-                    
-                    {/* Social links that appear on hover */}
-                    <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                      {member.socials.map((social, j) => (
-                        <a 
-                          key={j}
-                            href={social.link}
-                          className="bg-background/90 text-foreground p-2 rounded-full hover:bg-primary hover:text-white transition-colors duration-300"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          >
-                            {social.icon}
-                        </a>
-                        ))}
+                    <div className="relative overflow-hidden h-64">
+                      <img 
+                        src={member.image} 
+                        alt={member.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = member.fallbackImage;
+                        }}
+                      />
+                      
+                      {/* Social links */}
+                      <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+                        {member.socials.map((social, j) => (
+                          <a 
+                            key={j}
+                              href={social.link}
+                            className="bg-background/90 text-foreground p-2 rounded-full hover:bg-primary hover:text-white transition-colors duration-300"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >
+                              {social.icon}
+                          </a>
+                          ))}
                       </div>
                     </div>
-                  
-                  {/* Member details */}
-                  <div className="p-5 flex-grow flex flex-col">
-                    <h3 className="text-xl font-bold">{member.name}</h3>
-                    <p className="text-primary font-medium mb-3">{member.role}</p>
-                    <p className="text-foreground/70 text-sm flex-grow">{member.bio}</p>
                     
-                    <div className="mt-4 pt-4 border-t border-border/30">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-primary p-0 h-auto hover:bg-transparent hover:text-primary/80"
-                      >
-                        {t('aboutUs.team.connectButton')}
-                        <ExternalLink className="w-4 h-4 ml-1" />
-                      </Button>
+                    {/* Member details */}
+                    <div className="p-5 flex-grow flex flex-col">
+                      <h3 className="text-xl font-bold">{member.name}</h3>
+                      <p className="text-primary font-medium mb-3">{member.role}</p>
+                      <p className="text-foreground/70 text-sm flex-grow">{member.bio}</p>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
             </motion.div>
           )}
         </div>
       </section>
       
-      {/* CTA Section - унифицированный стиль с Landing Page */}
-      <section id="cta" className="relative py-24 overflow-hidden">
+      {/* CTA Section */}
+        <section id="cta" className="py-24 overflow-hidden">
+          <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <div className="border border-primary/10 dark:border-primary/20 rounded-3xl bg-card/60 dark:bg-gray-800/30 backdrop-blur-xl p-12 shadow-md dark:shadow-primary/10 relative overflow-hidden">
         <motion.div
-          className="absolute top-20 left-[10%] w-64 h-64 rounded-full bg-gradient-to-r from-primary/5 to-indigo-600/5 blur-[100px] -z-10"
-          animate={{ 
-            x: [0, 40, 0],
-            y: [0, -20, 0],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-[15%] w-80 h-80 rounded-full bg-gradient-to-r from-blue-500/5 to-primary/5 blur-[120px] -z-10"
-          animate={{ 
-            x: [0, -30, 0],
-            y: [0, 40, 0],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
-        />
-        
-        <div className="container mx-auto px-4 max-w-7xl relative z-10">
-          <div className="border border-primary/10 dark:border-primary/20 rounded-3xl bg-card/60 dark:bg-gray-800/30 backdrop-blur-xl p-12 shadow-md dark:shadow-primary/10 relative overflow-hidden">
-            <div className="absolute -inset-px bg-gradient-to-r from-primary/10 to-indigo-600/10 dark:from-primary/15 dark:to-indigo-600/15 rounded-3xl opacity-20 dark:opacity-30 blur-sm"></div>
-            
-            <div className="relative z-10">
-            <motion.div 
                 className="max-w-3xl mx-auto text-center"
               initial={{ opacity: 0, y: 30 }}
                 animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
@@ -725,7 +730,9 @@ export default function PublicAboutUs() {
                   animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  {t('aboutUs.cta.title')}
+                  {language === 'en' ? t('aboutUs.cta.title') : 
+                   language === 'ru' ? 'Присоединяйтесь к нам сегодня' : 
+                   t('aboutUs.cta.title')}
                 </motion.h2>
                 <motion.p 
                   className="text-xl text-foreground/70 mb-10"
@@ -733,7 +740,9 @@ export default function PublicAboutUs() {
                   animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  {t('aboutUs.cta.description')}
+                  {language === 'en' ? t('aboutUs.cta.description') : 
+                   language === 'ru' ? 'Начните свой образовательный путь с Portfol.IO и откройте новые возможности для своего будущего.' : 
+                   t('aboutUs.cta.description')}
                 </motion.p>
                 <motion.div
                   className="flex flex-col sm:flex-row gap-4 justify-center"
@@ -746,12 +755,14 @@ export default function PublicAboutUs() {
                     className="rounded-full px-8 py-6 text-lg bg-gradient-to-r from-primary/90 to-indigo-600/90 hover:from-primary/80 hover:to-indigo-600/80 shadow-lg hover:shadow-primary/10 text-white transition-all duration-500"
                     onClick={() => navigate('/register')}
                   >
-                    {t('aboutUs.cta.primaryButton')}
+                    {language === 'en' ? t('aboutUs.cta.primaryButton') : 
+                     language === 'ru' ? 'Зарегистрироваться' : 
+                     t('aboutUs.cta.primaryButton')}
                     <motion.span
                       animate={{ x: [0, 5, 0] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
                     >
-                      <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5" />
                     </motion.span>
                   </Button>
                   <Button 
@@ -793,11 +804,11 @@ export default function PublicAboutUs() {
                     <div className="text-sm text-foreground/60">{t('aboutUs.cta.stat3')}</div>
                   </motion.div>
                 </motion.div>
-              </motion.div>
+            </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </PublicPageLayout>
   );
-}
+} 
