@@ -1,6 +1,7 @@
 module.exports = {
   images: {
     domains: ['hhcdn.ru', 'via.placeholder.com'],
+    formats: ['image/avif', 'image/webp'],
   },
   async headers() {
     return [
