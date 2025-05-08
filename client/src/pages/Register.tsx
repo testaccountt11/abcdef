@@ -173,22 +173,6 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <div 
-              className="flex items-center justify-center mb-2 cursor-pointer"
-              onClick={() => setLocation('/')}
-            >
-              <div className="w-10 h-10 rounded-md bg-primary flex items-center justify-center text-primary-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-                  <path d="M16 6H3v12h13V6z" />
-                  <path d="M8 2v4" />
-                  <path d="M16 2v4" />
-                  <path d="M8 12h4" />
-                  <rect x="16" y="6" width="5" height="5" />
-                  <rect x="16" y="16" width="5" height="2" />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold text-foreground ml-2">Portfol.IO</span>
-            </div>
             <CardTitle className="text-xl text-center">{t('auth.register')}</CardTitle>
             <CardDescription className="text-center">
               {t('auth.register.desc')}

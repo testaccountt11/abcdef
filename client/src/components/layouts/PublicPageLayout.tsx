@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { Toaster } from "@/components/ui/toaster";
 
 interface PublicPageLayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export function PublicPageLayout({ children }: PublicPageLayoutProps) {
         {children}
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 } 

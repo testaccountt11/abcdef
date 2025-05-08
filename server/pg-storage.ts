@@ -22,7 +22,11 @@ import {
   achievements,
   userAchievements,
   badges,
-  userBadges
+  userBadges,
+  contactRequests,
+  insertContactRequestSchema,
+  ContactRequest,
+  InsertContactRequest
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
@@ -449,5 +453,10 @@ export class PgStorage implements IStorage {
     }
     
     return newlyAwardedBadges;
+  }
+
+  async createContactRequest(contactRequest: InsertContactRequest): Promise<ContactRequest> {
+    const [request] = await db.insert(contactRequests).values(contactRequest).returning();
+    return request;
   }
 }

@@ -9,7 +9,8 @@ import {
   insertMentorSchema,
   insertArticleSchema,
   insertCertificateSchema,
-  insertStatsSchema
+  insertStatsSchema,
+  contactRequests
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -799,6 +800,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(badge);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Contact request route
+  app.post('/api/db/contact', async (req, res) => {
+    const { name, email, phone, subject, message, status } = req.body;
+    
+    try {
+      // You need to add this method to your storage class
+      const contactRequest = await dbStorage.createContactRequest({
+        name,
+        email, 
+        phone,
+        subject,
+        message,
+        status,
+      });
+      
+      return res.status(201).json(contactRequest);
+    } catch (error: any) {
+      console.error('Error creating contact request:', error);
+      return res.status(500).json({ message: 'Failed to submit contact request' });
     }
   });
   

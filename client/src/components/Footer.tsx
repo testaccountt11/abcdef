@@ -1,15 +1,30 @@
 import { useTranslations } from "@/hooks/use-translations";
 import { Link } from "wouter";
+import logoLight from '@/img/light_version.svg';
+import logoDark from '@/img/dark_version.svg';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function Footer() {
   const { t, language } = useTranslations();
+  const { theme } = useTheme();
+  
+  // Determine which logo to use based on theme
+  const isDarkMode = theme === 'dark' || 
+    (theme === 'system' && typeof window !== 'undefined' && 
+     window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  const logoSrc = isDarkMode ? logoDark : logoLight;
   
   return (
     <footer className="bg-card/50 backdrop-blur-sm border-t border-border/50 py-16 mt-auto">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold mb-4 text-primary">Portfol.IO</h3>
+            <div className="mb-4">
+              <Link href="/">
+                <img src={logoSrc} alt="Portfol.IO" className="h-8 cursor-pointer" />
+              </Link>
+            </div>
             <p className="text-foreground/70 mb-6 max-w-md">
               {language === 'en' ? 'Innovative educational platform for building a successful future through a personal portfolio and skills development' : 
                language === 'ru' ? 'Инновационная образовательная платформа для построения успешного будущего через персональное портфолио и развитие навыков' : 
@@ -72,7 +87,7 @@ export function Footer() {
         </div>
 
         <div className="pt-8 border-t border-border/50 text-center text-foreground/60">
-          © {new Date().getFullYear()} <span className="text-primary">Portfol.IO</span> – 
+          © {new Date().getFullYear()} <Link href="/" className="text-primary hover:text-primary/80">Portfol.IO</Link> – 
           {language === 'en' ? 'All rights reserved.' : 
            language === 'ru' ? 'Все права защищены.' : 
            'Барлық құқықтар қорғалған.'}

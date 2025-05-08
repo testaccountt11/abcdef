@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "@/hooks/use-translations";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   TargetIcon, GraduationCapIcon, TrophyIcon, Users2Icon, 
   BrainIcon, BookOpenIcon, AwardIcon, BadgeIcon, 
@@ -59,6 +60,7 @@ export default function Landing() {
   const [, setLocation] = useLocation();
   const { t, language } = useTranslations();
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
   
   // Определяем, используется ли темная тема
   const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -577,9 +579,9 @@ export default function Landing() {
         {/* Hero content */}
           <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.h1 
-              className="text-5xl md:text-6xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 dark:from-primary/95 dark:to-indigo-400/95 leading-[1.2] py-1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+              className="hero-title text-5xl md:text-6xl font-bold mb-10 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 dark:from-primary/95 dark:to-indigo-400/95 py-2 px-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
           >
             {t('hero.title')}
@@ -599,21 +601,22 @@ export default function Landing() {
             animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
           >
-            <Button 
-                className="relative overflow-hidden group rounded-full px-8 py-6 text-lg bg-gradient-to-r from-primary/90 to-indigo-600/90 hover:from-primary/80 hover:to-indigo-600/80 shadow-lg text-white hover:shadow-primary/10 transition-all duration-500"
-              onClick={() => setLocation("/register")}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <span className="relative z-10 flex items-center font-medium">
-                {t('hero.start')}
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
-                  >
-                    <ArrowRight className="ml-2 w-5 h-5" />
+              <Button 
+                className={`rounded-full ${isMobile ? 'px-6 py-4 text-base' : 'px-8 py-6 text-lg'} bg-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 shadow-lg`}
+                onClick={() => setLocation("/register")}
+              >
+                <span className="flex items-center">
+                  {t('hero.start')}
+                  <motion.span aria-hidden="true">
+                    <ArrowRight className={`ml-2 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                   </motion.span>
-              </span>
-                <div className="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-            </Button>
+                </span>
+              </Button>
+            </motion.div>
           </motion.div>
 
             {/* Статистика */}

@@ -329,6 +329,27 @@ export const usersRelationsWithAchievements = relations(users, ({ many, one }) =
   badges: many(userBadges),
 }));
 
+// Contact request schema
+export const contactRequests = pgTable("contact_requests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertContactRequestSchema = createInsertSchema(contactRequests).pick({
+  name: true,
+  email: true,
+  phone: true,
+  subject: true,
+  message: true,
+  status: true,
+});
+
 // Export all types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -365,3 +386,6 @@ export type InsertBadge = z.infer<typeof insertBadgeSchema>;
 
 export type UserBadge = typeof userBadges.$inferSelect;
 export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
+
+export type ContactRequest = typeof contactRequests.$inferSelect;
+export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;

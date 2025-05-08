@@ -5,11 +5,21 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useTranslations } from '@/hooks/use-translations';
 import { Menu, X, User } from 'lucide-react';
 import { useState } from 'react';
+import logoLight from '@/img/light_version.svg';
+import logoDark from '@/img/dark_version.svg';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function Navbar() {
   const { t } = useTranslations();
+  const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [, navigate] = useLocation();
+
+  const isDarkMode = theme === 'dark' || 
+    (theme === 'system' && typeof window !== 'undefined' && 
+     window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  const logoSrc = isDarkMode ? logoDark : logoLight;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,9 +32,7 @@ export function Navbar() {
           className="flex items-center cursor-pointer" 
           onClick={() => navigate('/')}
         >
-          <span className="font-bold text-2xl md:text-3xl text-primary transition-colors duration-300">
-            Portfol.IO
-          </span>
+          <img src={logoSrc} alt="Portfol.IO" className="h-8" />
         </div>
 
         {/* Desktop Menu */}

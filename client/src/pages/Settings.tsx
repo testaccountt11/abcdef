@@ -50,16 +50,47 @@ export default function Settings() {
       newPassword: "",
       confirmPassword: ""
     },
-    validate: {
-      currentPassword: (value) => value.length > 0 || "Current password is required",
-      newPassword: (value) => {
-        if (value.length < 8) return getTranslation('auth.password.requirements.length', language);
-        if (!/[A-Z]/.test(value)) return getTranslation('auth.password.requirements.uppercase', language);
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) return getTranslation('auth.password.requirements.special', language);
-        return true;
-      },
-      confirmPassword: (value, formValues) => 
-        value === formValues.newPassword || getTranslation('auth.password.requirements.match', language)
+    resolver: (data, context, options) => {
+      const errors: Record<string, { type: string; message: string }> = {};
+      
+      // Валидация currentPassword
+      if (!data.currentPassword || data.currentPassword.length === 0) {
+        errors.currentPassword = {
+          type: 'required',
+          message: "Current password is required"
+        };
+      }
+      
+      // Валидация newPassword
+      if (data.newPassword.length < 8) {
+        errors.newPassword = {
+          type: 'minLength',
+          message: getTranslation('auth.password.requirements.length', language)
+        };
+      } else if (!/[A-Z]/.test(data.newPassword)) {
+        errors.newPassword = {
+          type: 'pattern',
+          message: getTranslation('auth.password.requirements.uppercase', language)
+        };
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(data.newPassword)) {
+        errors.newPassword = {
+          type: 'pattern',
+          message: getTranslation('auth.password.requirements.special', language)
+        };
+      }
+      
+      // Валидация confirmPassword
+      if (data.newPassword !== data.confirmPassword) {
+        errors.confirmPassword = {
+          type: 'validate',
+          message: getTranslation('auth.password.requirements.match', language)
+        };
+      }
+      
+      return {
+        values: Object.keys(errors).length === 0 ? data : {},
+        errors: Object.keys(errors).length === 0 ? {} : errors
+      };
     }
   });
 
@@ -190,8 +221,12 @@ export default function Settings() {
             <TabsContent value="profile">
               <Card>
                 <CardHeader>
-                  <CardTitle>{getTranslation('settings.profileSettings', language)}</CardTitle>
-                  <CardDescription>{getTranslation('settings.profileSettingsDesc', language)}</CardDescription>
+                  <CardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                    {getTranslation('settings.profileSettings', language)}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">
+                    {getTranslation('settings.profileSettingsDesc', language)}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...profileForm}>
@@ -295,8 +330,12 @@ export default function Settings() {
             <TabsContent value="security">
               <Card>
                 <CardHeader>
-                  <CardTitle>{getTranslation('settings.securitySettings', language)}</CardTitle>
-                  <CardDescription>{getTranslation('settings.securitySettingsDesc', language)}</CardDescription>
+                  <CardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                    {getTranslation('settings.securitySettings', language)}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">
+                    {getTranslation('settings.securitySettingsDesc', language)}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...passwordForm}>
