@@ -4,7 +4,6 @@ const nextConfig = {
   
   // Указываем где находятся исходники
   distDir: 'dist',
-  dir: 'client',
   
   // Конфигурация изображений
   images: {
