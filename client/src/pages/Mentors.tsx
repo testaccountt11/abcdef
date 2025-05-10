@@ -61,7 +61,7 @@ export default function Mentors() {
 
   // Get unique skills and companies for filters
   const allSkills = mentors?.flatMap((mentor: Mentor) => mentor.skills) || [];
-  const uniqueSkills = [...new Set(allSkills)];
+  const uniqueSkills = Array.from(new Set(allSkills));
   
   const uniqueCompanies = Array.from(new Set(mentors?.map((mentor: Mentor) => mentor.company) || []));
 

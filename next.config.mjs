@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   
-  // Указываем где находятся исходники
+  // Удаляем неподдерживаемую опцию dir
   distDir: 'dist',
   
   // Конфигурация изображений
