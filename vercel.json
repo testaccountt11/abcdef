@@ -6,7 +6,8 @@
     }
   ],
   "images": {
-    "domains": ["hhcdn.ru", "via.placeholder.com"]
+    "domains": ["hhcdn.ru", "via.placeholder.com"],
+    "sizes": [16, 32, 48, 64, 96, 128, 256, 384]
   },
   "buildCommand": "node vercel-build.js && next build"
 } 
