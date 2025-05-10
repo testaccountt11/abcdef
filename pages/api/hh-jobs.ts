@@ -7,63 +7,87 @@ const HH_API_BASE_URL = 'https://api.hh.ru/vacancies';
 const rateLimit = new Map<string, { count: number, timestamp: number }>();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    // Получаем параметры из запроса с валидацией
-    let { text, employment, area } = req.query;
-    
-    // Валидация параметров
-    text = typeof text === 'string' ? text : 'стажировка';
-    employment = typeof employment === 'string' ? employment : 'probation';
-    area = typeof area === 'string' ? area : '159';
-
-    // Формируем URL для запроса к API HeadHunter
-    const url = new URL(HH_API_BASE_URL);
-    url.searchParams.append('text', text);
-    url.searchParams.append('employment', employment);
-    url.searchParams.append('area', area);
-    url.searchParams.append('per_page', '20');
-    url.searchParams.append('page', '0');
-    url.searchParams.append('host', 'hh.kz');
-
-    // Добавляем заголовки для API HeadHunter
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (compatible; YourAppName/1.0; +https://example.com)',
-      'HH-User-Agent': 'YourAppName/1.0 (example@example.com)',
-    };
-
-    console.log(`Выполняем запрос к HeadHunter API: ${url.toString()}`);
-
-    try {
-      // Выполняем запрос к API HeadHunter
-      const response = await fetch(url.toString(), { headers });
-      
-      if (!response.ok) {
-        throw new Error(`HeadHunter API error: ${response.status}`);
+  // Для начала всегда возвращаем тестовые данные
+  const sampleData = {
+    items: [
+      {
+        id: "123456",
+        name: "Frontend стажер",
+        employer: {
+          name: "ТехноКомпания",
+          logo_urls: {
+            original: "https://via.placeholder.com/150"
+          }
+        },
+        area: {
+          name: "Астана"
+        },
+        salary: {
+          from: 100000,
+          to: 200000,
+          currency: "KZT" 
+        },
+        snippet: {
+          requirement: "Знание JavaScript, React",
+          responsibility: "Разработка веб-приложений"
+        },
+        schedule: {
+          id: "remote",
+          name: "Удаленно"
+        },
+        experience: {
+          id: "noExperience",
+          name: "Нет опыта"
+        },
+        key_skills: [
+          { name: "JavaScript" },
+          { name: "React" }
+        ],
+        published_at: "2023-05-01",
+        alternate_url: "https://hh.ru/vacancy/123456"
+      },
+      {
+        id: "789012",
+        name: "Intern Java Developer",
+        employer: {
+          name: "ITSolutions",
+          logo_urls: {
+            original: "https://via.placeholder.com/150" 
+          }
+        },
+        area: {
+          name: "Алматы"
+        },
+        salary: null,
+        snippet: {
+          requirement: "Базовые знания Java, Spring",
+          responsibility: "Помощь в разработке серверной части"
+        },
+        schedule: {
+          id: "fullDay",
+          name: "Полный день"
+        },
+        experience: {
+          id: "noExperience",
+          name: "Нет опыта"
+        },
+        key_skills: [
+          { name: "Java" },
+          { name: "Spring" }
+        ],
+        published_at: "2023-05-05",
+        alternate_url: "https://hh.ru/vacancy/789012"
       }
+    ],
+    found: 2,
+    pages: 1,
+    per_page: 20,
+    page: 0
+  };
 
-      const data = await response.json();
-
-      // Устанавливаем заголовки кэширования
-      res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
-      
-      // Отправляем данные клиенту
-      return res.status(200).json(data);
-    } catch (error: unknown) {
-      // Проверяем тип ошибки
-      if (error instanceof Error) {
-        throw new Error(`API request failed: ${error.message}`);
-      }
-      throw error;
-    }
-  } catch (error) {
-    console.error('Error fetching HeadHunter vacancies:', error);
-    return res.status(500).json({ 
-      error: 'Failed to fetch vacancies',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
+  // Устанавливаем заголовки кэширования
+  res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+  
+  // Отправляем данные клиенту
+  return res.status(200).json(sampleData);
 }
