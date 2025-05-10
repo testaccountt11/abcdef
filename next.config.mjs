@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  
+  // Указываем где находятся исходники
+  distDir: 'dist',
+  dir: 'client',
+  
+  // Конфигурация изображений
   images: {
     domains: ['hhcdn.ru', 'via.placeholder.com'],
   },
+  
+  // Заголовки
   async headers() {
     return [
       {
