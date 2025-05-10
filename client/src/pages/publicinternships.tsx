@@ -783,7 +783,7 @@ export default function PublicInternships() {
     setHHLoading(true);
     try {
       // Исправить URL API
-      const response = await fetch('/api/hh-vacancies?text=стажировка+стажер+intern+практика&employment=probation&area=159');
+      const response = await fetch('/api/hh-jobs?text=стажировка+стажер+intern+практика&employment=probation&area=159');
       const data = await response.json();
       
       if (!data.items || data.items.length === 0) {
@@ -886,7 +886,7 @@ export default function PublicInternships() {
     
     try {
       // Запрос к нашему API эндпоинту
-      const response = await fetch('/api/hh-vacancies?text=стажировка+стажер+intern+практика&employment=probation&area=159');
+      const response = await fetch('/api/hh-jobs?text=стажировка+стажер+intern+практика&employment=probation&area=159');
       const data = await response.json();
       
       if (!data.items || data.items.length === 0) {
