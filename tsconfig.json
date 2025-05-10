@@ -1,8 +1,6 @@
 {
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -20,11 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["client/src/*"],
-      "@shared/*": ["shared/*"],
-      "@components/*": ["client/src/components/*"],
-      "@hooks/*": ["client/src/hooks/*"],
-      "@contexts/*": ["client/src/contexts/*"],
-      "@ui/*": ["client/src/components/ui/*"]
+      "@shared/*": ["shared/*"]
     }
-  }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "pages/**/*.js", "pages/**/*.jsx"],
+  "exclude": ["node_modules"]
 }
