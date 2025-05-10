@@ -604,18 +604,18 @@ export default function Landing() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-            >
-              <Button 
+          >
+            <Button 
                 className={`rounded-full ${isMobile ? 'px-6 py-4 text-base' : 'px-8 py-6 text-lg'} bg-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 shadow-lg`}
-                onClick={() => setLocation("/register")}
-              >
+              onClick={() => setLocation("/register")}
+            >
                 <span className="flex items-center">
-                  {t('hero.start')}
+                {t('hero.start')}
                   <motion.span aria-hidden="true">
                     <ArrowRight className={`ml-2 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                   </motion.span>
-                </span>
-              </Button>
+              </span>
+            </Button>
             </motion.div>
           </motion.div>
 

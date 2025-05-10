@@ -103,6 +103,7 @@ export default function PublicMentors() {
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [showHHInternships, setShowHHInternships] = useState<boolean>(true);
   
   // Filter mentors based on search query and category
   const filteredMentors = dummyMentors.filter(mentor => {
@@ -219,7 +220,7 @@ export default function PublicMentors() {
                   placeholder={t('mentors.searchPlaceholder')}
                   className="pl-10"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 />
               </div>
               

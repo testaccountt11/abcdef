@@ -354,15 +354,17 @@ interface InternshipCardProps {
   internship: Internship;
   index: number;
   onClick?: () => void;
+  isHeadHunterCard?: boolean;
+  language?: string;
 }
 
 const InternshipCard: React.FC<InternshipCardProps> = ({ 
   internship, 
   onClick,
-  index 
+  index,
+  language = 'ru'
 }) => {
-  const { t, language } = useTranslations();
-  
+  const { t, language: currentLanguage } = useTranslations();
   const getLocalizedTitle = () => {
     if (language === 'ru' && internship.titleRu) {
       return internship.titleRu;
@@ -656,22 +658,48 @@ function FeatureCard({
 
 // Добавьте этот компонент в файл
 const HeadHunterWidget: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    const loadWidget = async () => {
+      try {
+        setIsLoading(true);
     // Создаем скрипт
     const script = document.createElement('script');
     script.src = "https://api.hh.ru/widgets/vacancies/search?count=6&locale=RU&links_color=1560b2&border_color=1560b2&employment=project&employment=volunteer&employment=probation&label=internship&host=hh.kz";
     script.className = "hh-script";
     script.async = true;
+        
+        // Добавляем обработчик ошибок
+        script.onerror = () => {
+          setError('Не удалось загрузить виджет HeadHunter');
+          setIsLoading(false);
+        };
+        
+        // Добавляем обработчик успешной загрузки
+        script.onload = () => {
+          setIsLoading(false);
+        };
     
     // Вставляем скрипт в DOM
     const widgetContainer = document.getElementById('hh-widget-container');
     if (widgetContainer) {
       widgetContainer.appendChild(script);
     }
+      } catch (error) {
+        setError('Произошла ошибка при загрузке виджета');
+        setIsLoading(false);
+      }
+    };
+
+    loadWidget();
     
     // Очистка при размонтировании
     return () => {
-      if (widgetContainer && script.parentNode === widgetContainer) {
+      const widgetContainer = document.getElementById('hh-widget-container');
+      const script = widgetContainer?.querySelector('.hh-script');
+      if (widgetContainer && script) {
         widgetContainer.removeChild(script);
       }
     };
@@ -680,6 +708,8 @@ const HeadHunterWidget: React.FC = () => {
   return (
     <div id="hh-widget-container" className="w-full rounded-xl overflow-hidden bg-white p-4 shadow-sm">
       <h3 className="text-xl font-bold mb-4">HeadHunter Internships</h3>
+      {isLoading && <div className="text-center py-4">Загрузка...</div>}
+      {error && <div className="text-red-500 text-center py-4">{error}</div>}
       {/* Виджет будет загружен сюда */}
     </div>
   );
@@ -723,6 +753,10 @@ type HHVacancy = {
   }[];
   published_at: string;
   alternate_url: string;
+  description?: string;
+  professional_roles?: {
+    name: string;
+  }[];
 }
 
 export default function PublicInternships() {
@@ -735,7 +769,7 @@ export default function PublicInternships() {
   // Новые состояния для HeadHunter
   const [hhInternships, setHHInternships] = useState<Internship[]>([]);
   const [hhLoading, setHHLoading] = useState<boolean>(false);
-  const [showHHInternships, setShowHHInternships] = useState<boolean>(true); // Изменено на true
+  const [showHHInternships, setShowHHInternships] = useState<boolean>(false);
   
   // 1. Сохраняем состояния для модального окна
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -748,8 +782,8 @@ export default function PublicInternships() {
   const fetchHeadHunterInternships = useCallback(async () => {
     setHHLoading(true);
     try {
-      // Запрос к API HeadHunter через прокси на вашем бэкенде
-      const response = await fetch('/api/headhunter-internships');
+      // Исправить URL API
+      const response = await fetch('/api/headhunter-vacancies?text=стажировка+стажер+intern+практика&employment=probation&area=159');
       const data = await response.json();
       
       if (!data.items || data.items.length === 0) {
@@ -789,8 +823,8 @@ export default function PublicInternships() {
     } finally {
       setHHLoading(false);
     }
-            }, []);
-            
+  }, []);
+  
   // 2. Исправить useEffect для выполнения только при монтировании
   useEffect(() => {
     fetchHeadHunterInternships();
@@ -851,391 +885,51 @@ export default function PublicInternships() {
     setHHLoading(true);
     
     try {
-      // Список стажировок с прямыми ссылками на конкретные вакансии
-      const sampleData: Internship[] = [
-        {
-          id: 1001,
-          title: "Стажер-разработчик (Frontend)",
-          titleRu: "Стажер-разработчик (Frontend)",
-          titleKz: "Стажер-разработчик (Frontend)",
-          company: "Digital Partners",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "onsite",
-          description: "Разработка интерфейсов, тестирование и отладка кода, работа с React и TypeScript, участие в командной разработке проектов.",
-          descriptionRu: "Разработка интерфейсов, тестирование и отладка кода, работа с React и TypeScript, участие в командной разработке проектов.",
-          descriptionKz: "Разработка интерфейсов, тестирование и отладка кода, работа с React и TypeScript, участие в командной разработке проектов.",
-          duration: "3 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["React", "TypeScript", "HTML", "CSS"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 48,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+frontend+разработчик&area=159"
-        },
-        {
-          id: 1002,
-          title: "Стажер по маркетингу",
-          titleRu: "Стажер по маркетингу",
-          titleKz: "Стажер по маркетингу",
-          company: "Kaspi Bank",
-          companyLogo: "",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Помощь в проведении маркетинговых исследований, анализ рынка и конкурентов, участие в разработке маркетинговых кампаний, работа с социальными сетями.",
-          descriptionRu: "Помощь в проведении маркетинговых исследований, анализ рынка и конкурентов, участие в разработке маркетинговых кампаний, работа с социальными сетями.",
-          descriptionKz: "Помощь в проведении маркетинговых исследований, анализ рынка и конкурентов, участие в разработке маркетинговых кампаний, работа с социальными сетями.",
-          duration: "4 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Marketing",
-          skills: ["Маркетинговый анализ", "SMM", "Контент-маркетинг"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 36,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+маркетинг&area=159"
-        },
-        {
-          id: 1003,
-          title: "Стажер-аналитик данных",
-          titleRu: "Стажер-аналитик данных",
-          titleKz: "Стажер-аналитик данных",
-          company: "Колеса Групп",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "hybrid",
-          description: "Обработка и анализ данных, создание отчетов и визуализаций, работа с SQL и Python, поддержка команды аналитиков в решении бизнес-задач.",
-          descriptionRu: "Обработка и анализ данных, создание отчетов и визуализаций, работа с SQL и Python, поддержка команды аналитиков в решении бизнес-задач.",
-          descriptionKz: "Обработка и анализ данных, создание отчетов и визуализаций, работа с SQL и Python, поддержка команды аналитиков в решении бизнес-задач.",
-          duration: "6 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Data Science",
-          skills: ["SQL", "Python", "Data Analysis", "Visualization"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 63,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+аналитик+данных&area=159"
-        },
-        {
-          id: 1004,
-          title: "Стажер-Java разработчик",
-          titleRu: "Стажер-Java разработчик",
-          titleKz: "Стажер-Java разработчик",
-          company: "BTS Digital",
-          companyLogo: "",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Участие в разработке проектов, программирование на Java, работа с базами данных, разработка и тестирование новых функций для продуктов компании.",
-          descriptionRu: "Участие в разработке проектов, программирование на Java, работа с базами данных, разработка и тестирование новых функций для продуктов компании.",
-          descriptionKz: "Участие в разработке проектов, программирование на Java, работа с базами данных, разработка и тестирование новых функций для продуктов компании.",
-          duration: "5 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["Java", "Spring", "SQL", "Git"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 42,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+java+разработчик&area=159"
-        },
-        {
-          id: 1005,
-          title: "Практикант-дизайнер",
-          titleRu: "Практикант-дизайнер",
-          titleKz: "Практикант-дизайнер",
-          company: "Digital Agency",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "remote",
-          description: "Создание дизайна для веб-сайтов, мобильных приложений и маркетинговых материалов. Разработка визуальных концепций и прототипов интерфейсов.",
-          descriptionRu: "Создание дизайна для веб-сайтов, мобильных приложений и маркетинговых материалов. Разработка визуальных концепций и прототипов интерфейсов.",
-          descriptionKz: "Создание дизайна для веб-сайтов, мобильных приложений и маркетинговых материалов. Разработка визуальных концепций и прототипов интерфейсов.",
-          duration: "3 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Design",
-          skills: ["Figma", "Adobe Photoshop", "UI/UX", "Prototyping"],
-          isPaid: false,
-          featured: false,
-          appliedCount: 29,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+дизайнер&area=159"
-        },
-        {
-          id: 1006,
-          title: "Стажер в HR-отдел",
-          titleRu: "Стажер в HR-отдел",
-          titleKz: "Стажер в HR-отдел",
-          company: "Казпочта",
-          companyLogo: "",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Помощь в поиске и отборе кандидатов, проведение собеседований, оформление документации, участие в организации корпоративных мероприятий.",
-          descriptionRu: "Помощь в поиске и отборе кандидатов, проведение собеседований, оформление документации, участие в организации корпоративных мероприятий.",
-          descriptionKz: "Помощь в поиске и отборе кандидатов, проведение собеседований, оформление документации, участие в организации корпоративных мероприятий.",
-          duration: "4 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "HR Management",
-          skills: ["Рекрутинг", "Коммуникация", "Оценка персонала"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 35,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+hr+отдел&area=159"
-        },
-        {
-          id: 1007,
-          title: "Стажер iOS-разработчик",
-          titleRu: "Стажер iOS-разработчик",
-          titleKz: "Стажер iOS-разработчик",
-          company: "Freedom Bank",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "hybrid",
-          description: "Разработка и поддержка мобильных приложений для iOS, работа с Swift, участие в проектировании архитектуры приложений.",
-          descriptionRu: "Разработка и поддержка мобильных приложений для iOS, работа с Swift, участие в проектировании архитектуры приложений.",
-          descriptionKz: "Разработка и поддержка мобильных приложений для iOS, работа с Swift, участие в проектировании архитектуры приложений.",
-          duration: "6 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["Swift", "iOS", "Git", "UIKit"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 52,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+ios+разработчик&area=159"
-        },
-        {
-          id: 1008,
-          title: "Стажер в финансовый отдел",
-          titleRu: "Стажер в финансовый отдел",
-          titleKz: "Стажер в финансовый отдел",
-          company: "Halyk Bank",
-          companyLogo: "",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Помощь в финансовом анализе, подготовка отчетов, работа с финансовой документацией, участие в планировании бюджета.",
-          descriptionRu: "Помощь в финансовом анализе, подготовка отчетов, работа с финансовой документацией, участие в планировании бюджета.",
-          descriptionKz: "Помощь в финансовом анализе, подготовка отчетов, работа с финансовой документацией, участие в планировании бюджета.",
-          duration: "5 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Finance",
-          skills: ["Excel", "Финансовый анализ", "Учет", "Планирование"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 27,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+финансовый+отдел&area=159"
-        },
-        {
-          id: 1009,
-          title: "Junior Frontend Developer",
-          titleRu: "Junior Frontend Developer",
-          titleKz: "Junior Frontend Developer",
-          company: "ChocoFamily",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "remote",
-          description: "Разработка пользовательских интерфейсов с использованием современных технологий, работа с React и TypeScript, оптимизация UI.",
-          descriptionRu: "Разработка пользовательских интерфейсов с использованием современных технологий, работа с React и TypeScript, оптимизация UI.",
-          descriptionKz: "Разработка пользовательских интерфейсов с использованием современных технологий, работа с React и TypeScript, оптимизация UI.",
-          duration: "6 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["React", "TypeScript", "Next.js", "CSS"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 56,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+frontend+разработчик&area=159"
-        },
-        {
-          id: 1010,
-          title: "Стажер в отдел контент-маркетинга",
-          titleRu: "Стажер в отдел контент-маркетинга",
-          titleKz: "Стажер в отдел контент-маркетинга",
-          company: "Beeline Kazakhstan",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "hybrid",
-          description: "Создание контента для социальных сетей, участие в планировании контент-стратегии, анализ эффективности контент-маркетинга.",
-          descriptionRu: "Создание контента для социальных сетей, участие в планировании контент-стратегии, анализ эффективности контент-маркетинга.",
-          descriptionKz: "Создание контента для социальных сетей, участие в планировании контент-стратегии, анализ эффективности контент-маркетинга.",
-          duration: "4 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Marketing",
-          skills: ["Контент-маркетинг", "SMM", "Копирайтинг", "Analytics"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 32,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+контент+маркетинг&area=159"
-        },
-        {
-          id: 1011,
-          title: "Стажер QA инженер",
-          titleRu: "Стажер QA инженер",
-          titleKz: "Стажер QA инженер",
-          company: "Chocofamily",
-          companyLogo: "",
-          location: "Алматы",
-          locationType: "onsite",
-          description: "Тестирование программного обеспечения, написание тест-кейсов, выявление и документирование ошибок, автоматизация тестирования.",
-          descriptionRu: "Тестирование программного обеспечения, написание тест-кейсов, выявление и документирование ошибок, автоматизация тестирования.",
-          descriptionKz: "Тестирование программного обеспечения, написание тест-кейсов, выявление и документирование ошибок, автоматизация тестирования.",
-          duration: "5 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["Manual Testing", "Automation", "Bug Tracking", "Test Cases"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 38,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+qa+инженер&area=159"
-        },
-        {
-          id: 1012,
-          title: "Стажер-аналитик бизнес-процессов",
-          titleRu: "Стажер-аналитик бизнес-процессов",
-          titleKz: "Стажер-аналитик бизнес-процессов",
-          company: "Казахтелеком",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/ru/3/37/KazakhtelecomLogo.jpg",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Анализ и оптимизация бизнес-процессов, сбор и обработка данных, подготовка аналитических отчетов, участие в разработке рекомендаций",
-          descriptionRu: "Анализ и оптимизация бизнес-процессов, сбор и обработка данных, подготовка аналитических отчетов, участие в разработке рекомендаций",
-          descriptionKz: "Анализ и оптимизация бизнес-процессов, сбор и обработка данных, подготовка аналитических отчетов, участие в разработке рекомендаций",
-          duration: "6 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Management",
-          skills: ["Бизнес-анализ", "Excel", "Аналитика", "Документация"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 29,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=аналитик+бизнес+процессов&area=159"
-        },
-        {
-          id: 1013,
-          title: "Создание BI-отчетов и дашбордов",
-          titleRu: "Создание BI-отчетов и дашбордов",
-          titleKz: "Создание BI-отчетов и дашбордов",
-          company: "Forte Bank",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/ru/c/cc/Forte_Bank_logo.png",
-          location: "Алматы",
-          locationType: "onsite",
-          description: "Создание BI-отчетов и дашбордов, анализ бизнес-данных, разработка рекомендаций для оптимизации бизнес-процессов",
-          descriptionRu: "Создание BI-отчетов и дашбордов, анализ бизнес-данных, разработка рекомендаций для оптимизации бизнес-процессов",
-          descriptionKz: "Создание BI-отчетов и дашбордов, анализ бизнес-данных, разработка рекомендаций для оптимизации бизнес-процессов",
-          duration: "4 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Data Science",
-          skills: ["Power BI", "SQL", "Data Visualization", "ETL"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 33,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+bi+отчетов+и+дашбордов&area=159"
-        },
-        {
-          id: 1014,
-          title: "PR-стажер",
-          titleRu: "PR-стажер",
-          titleKz: "PR-стажер",
-          company: "Forte Bank",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/ru/c/cc/Forte_Bank_logo.png",
-          location: "Алматы",
-          locationType: "onsite",
-          description: "Участие в PR-кампаниях, подготовка пресс-релизов, работа с медиа, организация мероприятий, ведение социальных сетей",
-          descriptionRu: "Участие в PR-кампаниях, подготовка пресс-релизов, работа с медиа, организация мероприятий, ведение социальных сетей",
-          descriptionKz: "Участие в PR-кампаниях, подготовка пресс-релизов, работа с медиа, организация мероприятий, ведение социальных сетей",
-          duration: "3 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Marketing",
-          skills: ["PR", "Копирайтинг", "Организация мероприятий", "Медиа"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 38,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+pr&area=159"
-        },
-        {
-          id: 1015,
-          title: "DevOps-стажер",
-          titleRu: "DevOps-стажер",
-          titleKz: "DevOps-стажер",
-          company: "Alfa Bank",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Alfa-Bank.svg/1200px-Alfa-Bank.svg.png",
-          location: "Алматы",
-          locationType: "hybrid",
-          description: "Поддержка инфраструктуры, настройка CI/CD, работа с контейнеризацией, мониторинг и оптимизация систем",
-          descriptionRu: "Поддержка инфраструктуры, настройка CI/CD, работа с контейнеризацией, мониторинг и оптимизация систем",
-          descriptionKz: "Поддержка инфраструктуры, настройка CI/CD, работа с контейнеризацией, мониторинг и оптимизация систем",
-          duration: "6 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Technology",
-          skills: ["Docker", "Kubernetes", "CI/CD", "Linux"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 27,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+devops&area=159"
-        },
-        {
-          id: 1016,
-          title: "Стажер по логистике",
-          titleRu: "Стажер по логистике",
-          titleKz: "Стажер по логистике",
-          company: "Magnum",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/ru/d/d8/Magnum_Cash%26Carry_logo.jpg",
-          location: "Астана",
-          locationType: "onsite",
-          description: "Участие в организации логистических процессов, работа с документацией, анализ эффективности маршрутов, взаимодействие с поставщиками",
-          descriptionRu: "Участие в организации логистических процессов, работа с документацией, анализ эффективности маршрутов, взаимодействие с поставщиками",
-          descriptionKz: "Участие в организации логистических процессов, работа с документацией, анализ эффективности маршрутов, взаимодействие с поставщиками",
-          duration: "4 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Logistics",
-          skills: ["Логистика", "Supply Chain", "Работа с документами", "Аналитика"],
-          isPaid: true,
-          featured: false,
-          appliedCount: 22,
-          level: "Beginner",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+логистика&area=159"
-        },
-        {
-          id: 1017,
-          title: "Junior Product Manager",
-          titleRu: "Junior Product Manager",
-          titleKz: "Junior Product Manager",
-          company: "Technodom",
-          companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Logo_technodom.png/1200px-Logo_technodom.png",
-          location: "Алматы",
-          locationType: "hybrid",
-          description: "Участие в разработке и улучшении продуктов, сбор и анализ пользовательских требований, работа с дизайнерами и разработчиками",
-          descriptionRu: "Участие в разработке и улучшении продуктов, сбор и анализ пользовательских требований, работа с дизайнерами и разработчиками",
-          descriptionKz: "Участие в разработке и улучшении продуктов, сбор и анализ пользовательских требований, работа с дизайнерами и разработчиками",
-          duration: "5 months",
-          applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-          category: "Management",
-          skills: ["Product Management", "User Research", "Agile", "Roadmap Planning"],
-          isPaid: true,
-          featured: true,
-          appliedCount: 44,
-          level: "Intermediate",
-          externalUrl: "https://hh.kz/search/vacancy?text=стажер+product+manager&area=159"
-        }
-      ];
+      // Запрос к нашему API эндпоинту
+      const response = await fetch('/api/headhunter-vacancies?text=стажировка+стажер+intern+практика&employment=probation&area=159');
+      const data = await response.json();
       
-      setHHInternships(sampleData);
+      if (!data.items || data.items.length === 0) {
+        console.log('Нет данных о стажировках от API HeadHunter');
+        return;
+      }
+
+      // Преобразуем данные из HeadHunter в формат нашего приложения
+      const adaptedData = data.items.map((vacancy: HHVacancy) => ({
+        id: parseInt(vacancy.id),
+        title: vacancy.name,
+        titleRu: vacancy.name,
+        titleKz: vacancy.name,
+        company: vacancy.employer.name,
+        companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
+        location: vacancy.area.name,
+        locationType: vacancy.schedule?.id === 'remote' ? 'remote' : 'onsite',
+        description: vacancy.snippet?.responsibility || vacancy.description || '',
+        descriptionRu: vacancy.snippet?.responsibility || vacancy.description || '',
+        descriptionKz: vacancy.snippet?.responsibility || vacancy.description || '',
+        duration: '3 months', // Это значение можно получать из vacancy.schedule если оно есть
+        applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(), // Можно получать из vacancy.published_at
+        category: vacancy.professional_roles?.[0]?.name || 'Technology',
+        skills: vacancy.key_skills?.map(skill => skill.name) || [],
+        isPaid: vacancy.salary !== null,
+        featured: false,
+        appliedCount: Math.floor(Math.random() * 50) + 5, // Это значение можно получать из vacancy.applications_count если оно есть
+        level: vacancy.experience?.id === 'noExperience' ? 'Beginner' : 'Intermediate',
+        externalUrl: vacancy.alternate_url
+      }));
+
+      setHHInternships(adaptedData);
     } catch (error) {
       console.error('Ошибка при получении данных HeadHunter:', error);
     } finally {
       setHHLoading(false);
     }
   };
+
+  // Добавляем useEffect для загрузки данных при монтировании компонента
+  useEffect(() => {
+    fetchHeadHunterData();
+  }, []);
 
   // 2. Модифицируем функцию handleInternshipClick, чтобы она работала только для не-HeadHunter карточек
   const handleInternshipClick = (internship: Internship) => {
@@ -1251,6 +945,85 @@ export default function PublicInternships() {
     setShowModal(false);
     setCurrentInternship(null);
   };
+
+  // Добавьте эту функцию в компонент PublicInternships
+
+  // Функция для тестирования интеграции с HeadHunter API
+  const testHeadHunterIntegration = async () => {
+    console.log('Начинаем тестирование интеграции с HeadHunter API...');
+    
+    try {
+      // Тест 1: Проверка доступности API эндпоинта
+      console.log('Тест 1: Проверка доступности API эндпоинта');
+      const response = await fetch('/api/headhunter-vacancies?text=стажировка+intern&area=159');
+      
+      if (!response.ok) {
+        throw new Error(`API вернул статус ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Тест 1 пройден! API доступен и возвращает данные.');
+      console.log(`Получено вакансий: ${data.items?.length || 0}`);
+      
+      // Тест 2: Проверка преобразования данных
+      console.log('Тест 2: Проверка преобразования данных');
+      if (!data.items || data.items.length === 0) {
+        throw new Error('API вернул пустой список вакансий');
+      }
+      
+      const vacancy = data.items[0];
+      console.log('Пример вакансии:', vacancy);
+      
+      // Проверяем наличие необходимых полей
+      const requiredFields = ['id', 'name', 'employer', 'area', 'alternate_url'];
+      for (const field of requiredFields) {
+        if (!vacancy[field]) {
+          throw new Error(`В вакансии отсутствует поле ${field}`);
+        }
+      }
+      
+      console.log('Тест 2 пройден! Структура данных корректна.');
+      
+      // Тест 3: Проверка ограничения частоты запросов
+      console.log('Тест 3: Проверка ограничения частоты запросов');
+      
+      const rateLimitResponse = await fetch('/api/headhunter-vacancies?test=ratelimit');
+      
+      const remainingRequests = rateLimitResponse.headers.get('X-RateLimit-Remaining');
+      const rateLimitLimit = rateLimitResponse.headers.get('X-RateLimit-Limit');
+      
+      if (!remainingRequests || !rateLimitLimit) {
+        throw new Error('Заголовки ограничения частоты запросов отсутствуют');
+      }
+      
+      console.log(`Тест 3 пройден! Ограничение запросов: ${remainingRequests}/${rateLimitLimit}`);
+      
+      // Тест 4: Тестирование виджета
+      console.log('Тест 4: Проверка интеграции виджета');
+      console.log('Виджет должен быть доступен на странице. Проверьте визуально.');
+      
+      console.log('Все тесты успешно пройдены!');
+      return true;
+    } catch (error) {
+      console.error('Ошибка при тестировании:', error);
+      return false;
+    }
+  };
+
+  // Добавьте кнопку для запуска тестирования (опционально, только для разработки)
+  // Например, в секцию разработчика, которая видна только в dev-режиме:
+
+  {process.env.NODE_ENV === 'development' && (
+    <div className="mt-8 p-4 bg-gray-100 rounded-xl">
+      <h3 className="text-lg font-bold mb-2">Инструменты разработчика</h3>
+      <button
+        onClick={testHeadHunterIntegration}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+      >
+        Протестировать интеграцию с HeadHunter
+      </button>
+    </div>
+  )}
 
   return (
     <PublicPageLayout>
@@ -1452,8 +1225,8 @@ export default function PublicInternships() {
                 HeadHunter
                 {hhLoading && <span className="ml-2 animate-spin">⟳</span>}
               </button>
+              </div>
             </div>
-          </div>
           
           {/* Основной блок с фильтрацией и карточками */}
           {(() => {

@@ -1800,7 +1800,7 @@ export default function PublicCourses() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-          >
+            >
             <Layers className="w-14 h-14" />
           </motion.div>
           
@@ -1832,7 +1832,7 @@ export default function PublicCourses() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-          >
+            >
             <PenTool className="w-12 h-12" />
           </motion.div>
           
@@ -1848,7 +1848,7 @@ export default function PublicCourses() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-          >
+                  >
             <Star className="w-10 h-10" />
           </motion.div>
 
@@ -1863,8 +1863,8 @@ export default function PublicCourses() {
               duration: 11.2,
               repeat: Infinity,
               ease: "easeInOut"
-            }}
-          >
+                }}
+              >
             <BarChart className="w-13 h-13" />
             </motion.div>
       </section>

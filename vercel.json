@@ -2,7 +2,10 @@
   "crons": [
     {
       "path": "/api/refresh-cache",
-      "schedule": "0 12 * * *"
+      "schedule": "0 */3 * * *"
     }
-  ]
+  ],
+  "images": {
+    "domains": ["hhcdn.ru", "via.placeholder.com"]
+  }
 } 

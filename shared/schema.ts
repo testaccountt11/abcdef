@@ -389,3 +389,134 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 
 export type ContactRequest = typeof contactRequests.$inferSelect;
 export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
+
+// Общие схемы
+export const userSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  name: z.string(),
+  avatar: z.string().optional(),
+  bio: z.string().optional(),
+  password: z.string(),
+  createdAt: z.date().or(z.string())
+});
+
+export const courseSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  level: z.string(),
+  price: z.number(),
+  category: z.string(),
+  author: z.string(),
+  duration: z.number(),
+  materials: z.array(z.string()).optional()
+});
+
+export const projectSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  userId: z.string().min(1),
+  imageUrl: z.string().optional(),
+  githubUrl: z.string().optional(),
+  liveUrl: z.string().optional(),
+  technologies: z.array(z.string())
+}).strict();
+
+export const internshipSchema = z.object({
+  id: z.string().min(1),
+  company: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  location: z.string().min(1),
+  duration: z.string().min(1),
+  isPaid: z.boolean(),
+  applicationDeadline: z.date()
+}).strict();
+
+export const mentorSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  skills: z.array(z.string()),
+  rate: z.number(),
+  bio: z.string(),
+  availability: z.string(),
+  experience: z.number()
+});
+
+export const portfolioItemSchema = z.object({
+  id: z.string().min(1),
+  userId: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  imageUrl: z.string().min(1),
+  projectUrl: z.string().optional(),
+  skills: z.array(z.string()),
+  category: z.string().min(1)
+}).strict();
+
+export const skillSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().min(1),
+  description: z.string().min(1),
+  level: z.number().min(1).max(5),
+  userId: z.string().min(1)
+}).strict();
+
+export const contactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  message: z.string().min(10),
+  subject: z.string().min(1),
+  phone: z.string().optional(),
+  companyName: z.string().optional()
+}).strict();
+
+export const resumeSchema = z.object({
+  id: z.string().min(1),
+  userId: z.string().min(1),
+  education: z.array(z.object({
+    institution: z.string(),
+    degree: z.string(),
+    field: z.string(),
+    startDate: z.date(),
+    endDate: z.date().optional(),
+    description: z.string().optional()
+  })),
+  experience: z.array(z.object({
+    company: z.string(),
+    position: z.string(),
+    startDate: z.date(),
+    endDate: z.date().optional(),
+    description: z.string()
+  })),
+  skills: z.array(z.string()),
+  languages: z.array(z.object({
+    name: z.string(),
+    level: z.string()
+  })),
+  additionalInfo: z.string().optional()
+}).strict();
+
+export const eventSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  startDate: z.date(),
+  endDate: z.date(),
+  location: z.string().min(1),
+  organizerId: z.string().min(1),
+  imageUrl: z.string().optional(),
+  maxParticipants: z.number().positive().optional()
+}).strict();
+
+// Типы, выведенные из схем
+export type Project = z.infer<typeof projectSchema>;
+export type Internship = z.infer<typeof internshipSchema>;
+export type PortfolioItem = z.infer<typeof portfolioItemSchema>;
+export type Skill = z.infer<typeof skillSchema>;
+export type Contact = z.infer<typeof contactSchema>;
+export type Resume = z.infer<typeof resumeSchema>;
+export type Event = z.infer<typeof eventSchema>;
