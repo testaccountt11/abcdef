@@ -1,12 +1,8 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-
 export default function Home() {
-  const router = useRouter();
-  
-  useEffect(() => {
-    router.push('/publicinternships');
-  }, [router]);
-  
-  return <div>Redirecting...</div>;
+  return (
+    <div>
+      <h1>Main Page</h1>
+      <p>This is a placeholder page for Next.js</p>
+    </div>
+  );
 }
