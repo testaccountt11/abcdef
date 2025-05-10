@@ -93,9 +93,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Отправляем данные клиенту
       return res.status(200).json(data);
-    } catch (fetchError) {
-      if (fetchError.name === 'AbortError') {
-        throw new Error('HeadHunter API request timed out');
+    } catch (fetchError: unknown) {
+      // Проверяем тип ошибки
+      if (fetchError instanceof Error) {
+        if (fetchError.name === 'AbortError') {
+          throw new Error('HeadHunter API request timed out');
+        }
       }
       throw fetchError;
     }
