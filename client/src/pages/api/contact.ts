@@ -1,6 +1,6 @@
 import { contactRequests, insertContactRequestSchema } from '@shared/schema';
 import { NextApiRequest, NextApiResponse } from 'next';
-import z from 'node_modules/zod/lib';
+import z from 'zod';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
