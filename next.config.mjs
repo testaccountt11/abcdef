@@ -10,6 +10,20 @@ const nextConfig = {
     domains: ['hhcdn.ru', 'via.placeholder.com'],
   },
   
+  // Настройка алиасов
+  webpack(config) {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': '/client/src',
+      '@shared': '/shared',
+      '@components': '/client/src/components',
+      '@hooks': '/client/src/hooks',
+      '@contexts': '/client/src/contexts',
+      '@ui': '/client/src/components/ui'
+    };
+    return config;
+  },
+  
   // Заголовки
   async headers() {
     return [
