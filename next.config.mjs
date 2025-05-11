@@ -1,60 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  typescript: {
-    // Игнорируем ошибки TypeScript при сборке
-    ignoreBuildErrors: true,
+  swcMinify: true,
+  // Указываем, где находятся страницы
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  experimental: {
+    // Указываем корневой каталог для страниц
+    appDir: false,
+    pagesDir: './client/src/pages'
   },
-  eslint: {
-    // Игнорируем ошибки ESLint
-    ignoreDuringBuilds: true,
-  },
-  
-  // Удаляем неподдерживаемую опцию dir
-  distDir: 'dist',
-  
-  // Конфигурация изображений
-  images: {
-    domains: ['hhcdn.ru', 'via.placeholder.com'],
-  },
-  
-  // Настройка алиасов
-  webpack(config) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': '/client/src',
-      '@shared': '/shared',
-      '@components': '/client/src/components',
-      '@hooks': '/client/src/hooks',
-      '@contexts': '/client/src/contexts',
-      '@ui': '/client/src/components/ui'
-    };
-    return config;
-  },
-  
-  // Заголовки
-  async headers() {
+  output: 'standalone',
+  // Указываем, что Next.js отвечает только за эти пути
+  async rewrites() {
     return [
       {
-        source: '/api/headhunter-internships',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
-          },
-        ],
-      },
-      {
-        source: '/api/hh-vacancies',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, s-maxage=3600, stale-while-revalidate=86400',
-          },
-        ],
+        source: '/api/:path*',
+        destination: 'http://localhost:3000/api/:path*', // Локальный прокси для API
       }
     ]
-  },
-}
+  }
+};
 
-export default nextConfig 
+export default nextConfig; 
