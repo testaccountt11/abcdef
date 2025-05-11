@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3000/api/:path*', // API прокси
+        destination: 'http://localhost:3000/api/:path*'
       }
     ]
   }
