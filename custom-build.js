@@ -1,6 +1,10 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('Starting custom build process...');
 
@@ -10,17 +14,16 @@ if (!fs.existsSync('dist')) {
 }
 
 try {
-  // Устанавливаем esbuild, если нужно
-  console.log('Making sure esbuild is installed...');
-  execSync('npm install esbuild --no-save', { stdio: 'inherit' });
-  
-  // Сборка серверной части
-  console.log('Building server...');
-  execSync('npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist', { stdio: 'inherit' });
+  // Создаем простой серверный файл без зависимостей от rollup
+  console.log('Creating server wrapper...');
+  fs.copyFileSync(
+    path.join(__dirname, 'server-wrapper.js'),
+    path.join(__dirname, 'dist', 'index.js')
+  );
   
   // Создаем простую статическую страницу
   console.log('Creating simple client static page...');
-  const clientDistDir = path.join(process.cwd(), 'dist', 'public');
+  const clientDistDir = path.join(__dirname, 'dist', 'public');
   if (!fs.existsSync(clientDistDir)) {
     fs.mkdirSync(clientDistDir, { recursive: true });
   }
@@ -37,7 +40,8 @@ try {
       </head>
       <body>
         <h1>Server is running!</h1>
-        <p>The application is up and running.</p>
+        <p>The application is currently in maintenance mode.</p>
+        <p>Full functionality will be restored soon.</p>
       </body>
     </html>
   `);

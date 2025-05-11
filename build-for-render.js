@@ -6,43 +6,22 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log('Starting build for Render...');
+console.log('Подготовка к деплою на Render...');
+
+// Проверяем наличие директорий
+if (!fs.existsSync(path.join(__dirname, 'public'))) {
+  fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true });
+}
+
+console.log('Подготовка завершена успешно!');
 
 try {
-  // Создаем директорию для сборки, если её нет
-  if (!fs.existsSync(path.join(__dirname, 'client/dist'))) {
-    fs.mkdirSync(path.join(__dirname, 'client/dist'), { recursive: true });
-  }
+  // Компилируем React-приложение с помощью Vite
+  console.log('Компиляция клиентского приложения...');
+  execSync('npx vite build', { stdio: 'inherit' });
   
-  // Копируем pre-built файлы в директорию client/dist
-  console.log('Copying pre-built client files...');
-  
-  // Если локально собранных файлов нет, создаем простую HTML страницу
-  if (!fs.existsSync(path.join(__dirname, 'client/dist/index.html'))) {
-    console.log('Creating placeholder index.html...');
-    fs.writeFileSync(path.join(__dirname, 'client/dist/index.html'), `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Portfol.io</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-            h1 { color: #333; }
-          </style>
-        </head>
-        <body>
-          <h1>Portfol.io</h1>
-          <p>Сайт находится в процессе развертывания.</p>
-          <p>Пожалуйста, загрузите собранную версию клиента в директорию client/dist.</p>
-        </body>
-      </html>
-    `);
-  }
-  
-  console.log('Build completed successfully!');
+  console.log('Сборка успешно завершена!');
 } catch (error) {
-  console.error('Build failed:', error);
+  console.error('Ошибка сборки:', error);
   process.exit(1);
 }
