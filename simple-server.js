@@ -9,8 +9,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Статические файлы
-app.use(express.static(path.join(__dirname, 'public')));
+// Обслуживаем статические файлы из client/dist
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// API маршруты
+app.use(express.json());
 
 // Создаем директорию public, если её нет
 if (!fs.existsSync('public')) {
@@ -33,14 +36,14 @@ if (!fs.existsSync('public')) {
   `);
 }
 
-// Базовый маршрут
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// API маршрут для проверки
+// Базовый API для проверки
 app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'API is working' });
+});
+
+// Для всех остальных маршрутов возвращаем index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
 });
 
 // Запуск сервера
