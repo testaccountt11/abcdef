@@ -79,4 +79,18 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
+
+  app.get('/', (_req, res) => {
+    res.send(`
+      <html>
+        <head>
+          <title>App is running</title>
+        </head>
+        <body>
+          <h1>Server is running!</h1>
+          <p>This is a temporary page while we fix the build process.</p>
+        </body>
+      </html>
+    `);
+  });
 })();
