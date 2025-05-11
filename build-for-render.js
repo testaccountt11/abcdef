@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,20 @@ if (!fs.existsSync(distDir)) {
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
+
+// Создаем package.json для директории dist
+fs.writeFileSync(path.join(distDir, 'package.json'), `{
+  "name": "portfol-io-server",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}`);
+
+// Устанавливаем зависимости
+console.log('Установка зависимостей...');
+execSync('npm install', { cwd: distDir, stdio: 'inherit' });
 
 // Создаем HTML страницу
 const htmlContent = `
