@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Обслуживаем статические файлы из client/dist
-app.use(express.static(path.join(__dirname, 'client/dist')));
+// Обслуживаем статические файлы из dist/public
+app.use(express.static(path.join(__dirname, 'dist/public')));
 
 // API маршруты
 app.use(express.json());
@@ -41,9 +41,9 @@ app.get('/api/status', (req, res) => {
   res.json({ status: 'ok', message: 'API is working' });
 });
 
-// Для всех остальных маршрутов возвращаем index.html
+// Для клиентских маршрутов
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist/public', 'index.html'));
 });
 
 // Запуск сервера
