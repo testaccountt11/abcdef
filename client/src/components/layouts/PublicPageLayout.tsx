@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
+import { Footer } from "@/components/Footer";
 
 interface PublicPageLayoutProps {
   children: ReactNode;
@@ -13,6 +14,7 @@ export function PublicPageLayout({ children }: PublicPageLayoutProps) {
       <main className="flex-grow flex flex-col">
         {children}
       </main>
+      <Footer />
       <Toaster />
     </div>
   );
