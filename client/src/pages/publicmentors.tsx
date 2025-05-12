@@ -611,7 +611,7 @@ export default function PublicMentors() {
     // Сбрасываем выбранного ментора не сразу, а после закрытия анимации
     setTimeout(() => setSelectedMentor(null), 300);
   };
-
+  
   return (
     <PublicPageLayout>
       {/* Градиентный фон */}
@@ -661,9 +661,9 @@ export default function PublicMentors() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Button 
+              <Button 
                     className="rounded-full px-8 py-6 text-lg bg-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 shadow-lg"
-                    onClick={() => {
+                onClick={() => {
                       const section = document.getElementById('mentors-section');
                       if (section) {
                         section.scrollIntoView({ behavior: 'smooth' });
@@ -674,7 +674,7 @@ export default function PublicMentors() {
                       {t.findMentor}
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </span>
-                  </Button>
+              </Button>
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -774,10 +774,10 @@ export default function PublicMentors() {
                   <FeatureCard {...feature} />
                 </motion.div>
               ))}
-            </div>
           </div>
-        </section>
-        
+        </div>
+      </section>
+
         {/* Main Mentors Section */}
         <section id="mentors-section" className="py-24">
           <div className="container mx-auto px-4 max-w-7xl">
@@ -805,18 +805,18 @@ export default function PublicMentors() {
                   </label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
+                <Input
                       id="search"
                       type="text"
                       placeholder={t.searchPlaceholder}
-                      className="pl-10"
-                      value={searchQuery}
+                  className="pl-10"
+                  value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                />
                   </div>
-                </div>
-                
-                <div className="w-full md:w-48">
+              </div>
+              
+              <div className="w-full md:w-48">
                   <label htmlFor="category-filter" className="text-sm font-medium mb-2 block">
                     {t.category}
                   </label>
@@ -835,8 +835,8 @@ export default function PublicMentors() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                
+          </div>
+          
                 <div className="w-full md:w-48">
                   <label htmlFor="availability-filter" className="text-sm font-medium mb-2 block">
                     {t.availability}
@@ -912,7 +912,7 @@ export default function PublicMentors() {
                     />
                   </motion.div>
                 ))}
-              </div>
+                  </div>
             ) : (
               <div className="text-center py-12">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
@@ -944,8 +944,8 @@ export default function PublicMentors() {
                 </h2>
                 <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-8">
                   {t.becomeMentorDesc}
-                </p>
-                <Button 
+            </p>
+            <Button 
                   className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-md shadow-primary/20 transition-all duration-300"
                   onClick={() => navigate('/become-mentor')}
                 >
@@ -953,11 +953,11 @@ export default function PublicMentors() {
                     {t.applyNow}
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </span>
-                </Button>
+            </Button>
               </div>
             </motion.div>
-          </div>
-        </section>
+        </div>
+      </section>
       </main>
       
       <Footer />
@@ -1042,29 +1042,29 @@ export default function PublicMentors() {
                       {selectedMentor.experience}
                     </div>
                   </div>
-                </div>
               </div>
-              
+            </div>
+            
               {/* Основное содержимое */}
               <div className="p-6 md:p-8">
                 {/* Рейтинг и статус доступности */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star 
-                        key={star} 
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star 
+                    key={star} 
                         className={`w-5 h-5 ${star <= Math.floor(selectedMentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
+                  />
+                ))}
                     <span className="ml-2 text-foreground/80 font-medium">
                       {selectedMentor.rating.toFixed(1)}
                     </span>
                     <span className="mx-2 text-muted-foreground">•</span>
                     <span className="text-muted-foreground">
                       {selectedMentor.reviewCount} {language === 'ru' ? 'отзывов' : language === 'kz' ? 'пікір' : 'reviews'}
-                    </span>
-                  </div>
-                  
+              </span>
+            </div>
+            
                   {selectedMentor.available ? (
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
                       <BadgeCheck className="w-4 h-4 mr-2" /> {language === 'ru' ? 'Доступен для менторства' : language === 'kz' ? 'Тәлімгерлікке қол жетімді' : 'Available for mentoring'}
@@ -1093,17 +1093,17 @@ export default function PublicMentors() {
                   <h3 className="text-xl font-bold mb-4 text-foreground">
                     {language === 'ru' ? 'Экспертиза' : language === 'kz' ? 'Мамандану' : 'Expertise'}
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                     {(language === 'ru' && selectedMentor.skillsRu ? selectedMentor.skillsRu : 
                       language === 'kz' && selectedMentor.skillsKz ? selectedMentor.skillsKz : 
                       selectedMentor.skills).map((skill, index) => (
                       <Badge key={index} className="px-3 py-1 bg-primary/10 text-primary border-primary/20">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
                 {/* Языки */}
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4 text-foreground">
@@ -1114,9 +1114,9 @@ export default function PublicMentors() {
                     <span className="text-foreground/80">
                       {selectedMentor.languages.join(', ')}
                     </span>
-                  </div>
-                </div>
-                
+          </div>
+        </div>
+        
                 {/* Кнопка действия */}
                 <div className="mt-8">
                   <Button 
@@ -1125,7 +1125,7 @@ export default function PublicMentors() {
                   >
                     <MessageCircle className="w-5 h-5 mr-2" />
                     {language === 'ru' ? 'Связаться с ментором' : language === 'kz' ? 'Тәлімгермен байланысу' : 'Connect with Mentor'}
-                  </Button>
+          </Button>
                   
                   <p className="text-center text-muted-foreground mt-3 text-sm">
                     {language === 'ru' ? 'Для связи с ментором необходимо зарегистрироваться или войти' : 
@@ -1133,7 +1133,7 @@ export default function PublicMentors() {
                      'You need to sign up or login to connect with mentors'}
                   </p>
                 </div>
-              </div>
+        </div>
             </motion.div>
           </motion.div>
         )}
