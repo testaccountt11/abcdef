@@ -49,11 +49,22 @@ const Login: React.FC = () => {
     try {
       console.log("Attempting to login with email:", values.email);
       
-      // Login directly with our backend
-      const response = await apiRequest('POST', '/api/login/direct', {
-        email: values.email,
-        password: values.password
+      // Используем fetch напрямую вместо apiRequest
+      const response = await fetch('/api/login/direct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password
+        }),
+        credentials: 'include'
       });
+      
+      // Проверяем успешность ответа
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || response.statusText || 'Ошибка входа');
+      }
       
       const data = await response.json();
       
@@ -68,7 +79,6 @@ const Login: React.FC = () => {
     } catch (error: any) {
       console.error("Login error:", error);
       
-      // Show detailed error message
       toast({
         title: "Login Failed",
         description: error.message || "Failed to login. Please check your credentials and try again.",
