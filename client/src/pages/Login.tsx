@@ -49,7 +49,6 @@ const Login: React.FC = () => {
     try {
       console.log("Attempting to login with email:", values.email);
       
-      // Используем fetch напрямую вместо apiRequest
       const response = await fetch('/api/login/direct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -60,7 +59,6 @@ const Login: React.FC = () => {
         credentials: 'include'
       });
       
-      // Проверяем успешность ответа
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || response.statusText || 'Ошибка входа');

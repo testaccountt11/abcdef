@@ -1060,7 +1060,7 @@ export default function PublicInternships() {
               transition={{ duration: 0.7, delay: 0.2 }}
             >
               <Button 
-                className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-md shadow-primary/20 transition-all duration-300"
+                className="rounded-full px-8 py-6 text-lg bg-card border-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-500 shadow-lg"
                 onClick={() => {
                   const section = document.getElementById('opportunities-section');
                   if (section) {
@@ -1068,10 +1068,12 @@ export default function PublicInternships() {
                   }
                 }}
               >
-                {language === 'ru' ? 'Найти стажировку' : 
-                 language === 'kz' ? 'Тағылымдама табу' : 
-                 'Find an Internship'}
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <span className="flex items-center">
+                  {language === 'ru' ? 'Найти стажировку' : 
+                   language === 'kz' ? 'Тағылымдама табу' : 
+                   'Find an Internship'}
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </span>
               </Button>
             </motion.div>
             </div>
