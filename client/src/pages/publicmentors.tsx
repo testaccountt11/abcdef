@@ -7,7 +7,7 @@ import { useLocation } from "wouter";
 import { 
   Search, Filter, Star, ArrowRight, MessageCircle, Calendar, Award, Globe, 
   BookOpen, Users, GraduationCap, CheckCircle2, Briefcase, UserPlus, Building2,
-  MapPin, BadgeCheck, LucideIcon
+  MapPin, BadgeCheck, LucideIcon, X
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +18,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AnimatePresence } from "framer-motion";
 
 // Тип данных ментора
 interface Mentor {
@@ -326,7 +327,7 @@ function FeatureCard({ icon: Icon, title, titleRu, titleKz, description, descrip
 }
 
 // Компонент карточки ментора
-function MentorCard({ mentor }: { mentor: Mentor }) {
+function MentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (mentor: Mentor) => void }) {
   const { language } = useTranslations();
   const [, navigate] = useLocation();
   
@@ -484,10 +485,10 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
             className="w-full gap-2 rounded-full"
             variant={mentor.available ? "default" : "outline"}
             disabled={!mentor.available}
-            onClick={() => navigate(`/mentors/${mentor.id}`)}
+            onClick={() => onSelect(mentor)}
           >
             <MessageCircle className="w-4 h-4" />
-            {language === 'ru' ? 'Связаться' : language === 'kz' ? 'Байланысу' : 'Connect'}
+            {language === 'ru' ? 'Подробнее' : language === 'kz' ? 'Толығырақ' : 'Details'}
           </Button>
         </div>
       </div>
@@ -592,6 +593,23 @@ export default function PublicMentors() {
     setCategoryFilter("all");
     setAvailabilityFilter("all");
     setLanguageFilter("all");
+  };
+
+  // В начало компонента PublicMentors добавим состояние для модального окна:
+  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Функция для открытия модального окна
+  const openMentorModal = (mentor: Mentor) => {
+    setSelectedMentor(mentor);
+    setIsModalOpen(true);
+  };
+
+  // Функция для закрытия модального окна
+  const closeMentorModal = () => {
+    setIsModalOpen(false);
+    // Сбрасываем выбранного ментора не сразу, а после закрытия анимации
+    setTimeout(() => setSelectedMentor(null), 300);
   };
 
   return (
@@ -888,7 +906,10 @@ export default function PublicMentors() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <MentorCard mentor={mentor} />
+                    <MentorCard 
+                      mentor={mentor} 
+                      onSelect={openMentorModal} 
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -940,6 +961,183 @@ export default function PublicMentors() {
       </main>
       
       <Footer />
+
+      {/* Модальное окно с деталями ментора */}
+      <AnimatePresence>
+        {isModalOpen && selectedMentor && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            onClick={closeMentorModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-auto relative animate-in fade-in duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header с изображением */}
+              <div className="h-64 md:h-80 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30 z-10"></div>
+                <img 
+                  src={selectedMentor.profileImage} 
+                  alt={selectedMentor.name} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback при ошибке загрузки изображения
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      const gradientDiv = document.createElement('div');
+                      gradientDiv.className = "absolute inset-0 bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center";
+                      const text = document.createElement('span');
+                      text.className = "text-white text-5xl font-bold text-center";
+                      text.textContent = selectedMentor.name.split(' ').map(word => word[0]).join('');
+                      gradientDiv.appendChild(text);
+                      parent.appendChild(gradientDiv);
+                    }
+                  }} 
+                />
+                
+                {/* Кнопка закрытия */}
+                <button 
+                  onClick={closeMentorModal} 
+                  className="absolute top-4 right-4 z-50 bg-white/20 backdrop-blur-sm rounded-full p-2 hover:bg-white/30 transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+                
+                {/* Информация о менторе поверх изображения */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                  {/* Категория */}
+                  <Badge className="bg-blue-600 text-white mb-2">
+                    {language === 'ru' && selectedMentor.categoryRu ? selectedMentor.categoryRu : 
+                     language === 'kz' && selectedMentor.categoryKz ? selectedMentor.categoryKz : 
+                     selectedMentor.category}
+                  </Badge>
+                  
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{selectedMentor.name}</h2>
+                  
+                  <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 text-white/90">
+                    <div className="flex items-center">
+                      <Building2 className="w-4 h-4 mr-2" />
+                      {selectedMentor.title} {selectedMentor.company && `at ${selectedMentor.company}`}
+                    </div>
+                    
+                    <div className="hidden md:block text-white/50">•</div>
+                    
+                    <div className="flex items-center">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {selectedMentor.location}
+                    </div>
+                    
+                    <div className="hidden md:block text-white/50">•</div>
+                    
+                    <div className="flex items-center">
+                      <Briefcase className="w-4 h-4 mr-2" />
+                      {selectedMentor.experience}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Основное содержимое */}
+              <div className="p-6 md:p-8">
+                {/* Рейтинг и статус доступности */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star 
+                        key={star} 
+                        className={`w-5 h-5 ${star <= Math.floor(selectedMentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                      />
+                    ))}
+                    <span className="ml-2 text-foreground/80 font-medium">
+                      {selectedMentor.rating.toFixed(1)}
+                    </span>
+                    <span className="mx-2 text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">
+                      {selectedMentor.reviewCount} {language === 'ru' ? 'отзывов' : language === 'kz' ? 'пікір' : 'reviews'}
+                    </span>
+                  </div>
+                  
+                  {selectedMentor.available ? (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
+                      <BadgeCheck className="w-4 h-4 mr-2" /> {language === 'ru' ? 'Доступен для менторства' : language === 'kz' ? 'Тәлімгерлікке қол жетімді' : 'Available for mentoring'}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
+                      {language === 'ru' ? 'Временно недоступен' : language === 'kz' ? 'Уақытша қол жетімсіз' : 'Temporarily unavailable'}
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* Биография */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-foreground">
+                    {language === 'ru' ? 'О менторе' : language === 'kz' ? 'Тәлімгер туралы' : 'About the Mentor'}
+                  </h3>
+                  <p className="text-foreground/80">
+                    {language === 'ru' && selectedMentor.bioRu ? selectedMentor.bioRu : 
+                     language === 'kz' && selectedMentor.bioKz ? selectedMentor.bioKz : 
+                     selectedMentor.bio}
+                  </p>
+                </div>
+                
+                {/* Навыки */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-foreground">
+                    {language === 'ru' ? 'Экспертиза' : language === 'kz' ? 'Мамандану' : 'Expertise'}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(language === 'ru' && selectedMentor.skillsRu ? selectedMentor.skillsRu : 
+                      language === 'kz' && selectedMentor.skillsKz ? selectedMentor.skillsKz : 
+                      selectedMentor.skills).map((skill, index) => (
+                      <Badge key={index} className="px-3 py-1 bg-primary/10 text-primary border-primary/20">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Языки */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold mb-4 text-foreground">
+                    {language === 'ru' ? 'Языки' : language === 'kz' ? 'Тілдер' : 'Languages'}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-foreground/70" />
+                    <span className="text-foreground/80">
+                      {selectedMentor.languages.join(', ')}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Кнопка действия */}
+                <div className="mt-8">
+                  <Button 
+                    className="w-full py-6 text-lg rounded-full"
+                    disabled={!selectedMentor.available}
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    {language === 'ru' ? 'Связаться с ментором' : language === 'kz' ? 'Тәлімгермен байланысу' : 'Connect with Mentor'}
+                  </Button>
+                  
+                  <p className="text-center text-muted-foreground mt-3 text-sm">
+                    {language === 'ru' ? 'Для связи с ментором необходимо зарегистрироваться или войти' : 
+                     language === 'kz' ? 'Тәлімгермен байланысу үшін тіркелу немесе кіру қажет' : 
+                     'You need to sign up or login to connect with mentors'}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </PublicPageLayout>
   );
 } 
