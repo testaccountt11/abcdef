@@ -194,7 +194,7 @@ const htmlContent = `
 fs.writeFileSync(path.join(publicDir, 'index.html'), htmlContent);
 
 // Создаем серверный файл для запуска
-fs.writeFileSync(path.join(distDir, 'index.js'), `
+fs.writeFileSync(path.join(distDir, 'server.js'), `
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';

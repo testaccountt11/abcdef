@@ -9,49 +9,64 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Create public directory if it doesn't exist
+// Создаем директорию для файлов сайта, если её нет
 const publicDir = path.join(__dirname, 'public');
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
   
-  // Create a simple index.html if it doesn't exist
-  const indexPath = path.join(publicDir, 'index.html');
-  if (!fs.existsSync(indexPath)) {
-    fs.writeFileSync(indexPath, `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Portfol.io</title>
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-            h1 { color: #333; }
-          </style>
-        </head>
-        <body>
-          <h1>Portfol.io</h1>
-          <p>Application is online and working!</p>
-        </body>
-      </html>
-    `);
-  }
+  // Создаем временную HTML страницу
+  fs.writeFileSync(path.join(publicDir, 'index.html'), `
+    <!DOCTYPE html>
+    <html lang="ru">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Portfol.io</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          text-align: center;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        h1 { color: #0070f3; }
+        .container {
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          padding: 20px;
+          margin-top: 30px;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Portfol.io</h1>
+      <div class="container">
+        <h2>Ваш сайт скоро будет готов!</h2>
+        <p>Мы работаем над его настройкой.</p>
+      </div>
+    </body>
+    </html>
+  `);
 }
 
-// API middleware
+// Middleware
 app.use(express.json());
 
-// Serve static files
+// Статические файлы
 app.use(express.static(publicDir));
 
 // API endpoint
 app.get('/api/status', (req, res) => {
-  res.json({ status: 'ok', message: 'API is working' });
+  res.json({ status: 'ok', message: 'Сервер работает' });
 });
 
-// Serve frontend for all other routes
+// Все остальные маршруты
 app.get('*', (req, res) => {
   res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Сервер запущен на порту ${PORT}`);
 });
