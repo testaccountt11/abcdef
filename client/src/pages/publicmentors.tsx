@@ -329,7 +329,6 @@ function FeatureCard({ icon: Icon, title, titleRu, titleKz, description, descrip
 function MentorCard({ mentor }: { mentor: Mentor }) {
   const { language } = useTranslations();
   const [, navigate] = useLocation();
-  const isMobile = useIsMobile();
   
   const getText = (lang: string) => {
     return translations[lang as keyof typeof translations];
@@ -357,9 +356,9 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
   };
   
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md transition-all duration-300 flex flex-col h-full group hover:shadow-lg hover:translate-y-[-5px]">
-      {/* Карточка в новом стиле как у курсов/стажировок */}
-      <div className="relative h-48 overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col h-[550px]">
+      {/* Верхняя часть карточки с изображением и градиентом */}
+      <div className="h-64 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
         <img 
           src={mentor.profileImage} 
@@ -382,7 +381,7 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
           }}
         />
         
-        {/* Категория */}
+        {/* Категория и бейдж */}
         <Badge className="absolute top-4 left-4 z-20 bg-blue-600 text-white border-none">
           {getCategory()}
         </Badge>
@@ -391,33 +390,34 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
         {mentor.featured && (
           <div className="absolute top-4 right-4 z-20 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full flex items-center">
             <Award className="w-3 h-3 mr-1" />
-            <span>{t.featured}</span>
+            <span>{language === 'ru' ? 'Рекомендуемый' : language === 'kz' ? 'Ұсынылған' : 'Featured'}</span>
           </div>
         )}
         
-        {/* Данные о менторе на фоне изображения */}
+        {/* Информация о менторе поверх изображения */}
         <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
           <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
           <div className="flex items-center text-white/80 text-sm mt-1">
             <Building2 className="w-4 h-4 mr-1" />
-            <span>{mentor.title}</span>
+            <span className="truncate">{mentor.title}</span>
+          </div>
+          <div className="flex items-center text-white/80 text-sm mt-1">
             {mentor.company && (
               <>
-                <span className="mx-1">•</span>
-                <span>{mentor.company}</span>
+                <Building2 className="w-4 h-4 mr-1" />
+                <span className="truncate">{mentor.company}</span>
               </>
             )}
           </div>
           <div className="flex items-center text-white/80 text-sm mt-1">
             <MapPin className="w-4 h-4 mr-1" />
-            <span>{mentor.location}</span>
-            <span className="mx-1">•</span>
-            <span>{mentor.experience}</span>
+            <span className="truncate">{mentor.location}</span>
           </div>
         </div>
       </div>
       
-      <div className="p-5">
+      {/* Контентная часть карточки */}
+      <div className="p-5 flex-1 flex flex-col">
         {/* Рейтинг */}
         <div className="flex items-center text-sm mb-3">
           <div className="flex items-center">
@@ -428,20 +428,24 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
               />
             ))}
             <span className="ml-2 text-foreground/80">
-              {mentor.rating.toFixed(1)} {t.rating} • {mentor.reviewCount} {t.reviews}
+              {mentor.rating.toFixed(1)} • {mentor.reviewCount} {language === 'ru' ? 'отзывов' : language === 'kz' ? 'пікір' : 'reviews'}
             </span>
           </div>
         </div>
         
-        {/* Доступность */}
-        <div className="mb-3">
+        {/* Опыт и доступность */}
+        <div className="flex justify-between items-center mb-3">
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
+            {mentor.experience}
+          </Badge>
+          
           {mentor.available ? (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
-              <BadgeCheck className="w-3 h-3 mr-1" /> {t.available}
+              <BadgeCheck className="w-3 h-3 mr-1" /> {language === 'ru' ? 'Доступен' : language === 'kz' ? 'Қол жетімді' : 'Available'}
             </Badge>
           ) : (
             <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
-              {t.unavailable}
+              {language === 'ru' ? 'Недоступен' : language === 'kz' ? 'Қол жетімсіз' : 'Unavailable'}
             </Badge>
           )}
         </div>
@@ -451,7 +455,9 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
         
         {/* Навыки */}
         <div className="mb-4">
-          <h4 className="text-sm font-medium text-foreground mb-2">{t.expertise}:</h4>
+          <h4 className="text-sm font-medium text-foreground mb-2">
+            {language === 'ru' ? 'Экспертиза' : language === 'kz' ? 'Мамандану' : 'Expertise'}:
+          </h4>
           <div className="flex flex-wrap gap-1.5">
             {getSkills().slice(0, 4).map((skill, index) => (
               <Badge key={index} variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
@@ -472,16 +478,18 @@ function MentorCard({ mentor }: { mentor: Mentor }) {
           {mentor.languages.join(', ')}
         </div>
         
-        {/* Кнопка */}
-        <Button 
-          className="w-full gap-2"
-          variant={mentor.available ? "default" : "outline"}
-          disabled={!mentor.available}
-          onClick={() => navigate(`/mentors/${mentor.id}`)}
-        >
-          <MessageCircle className="w-4 h-4" />
-          {t.connect}
-        </Button>
+        {/* Кнопка (внизу карточки) */}
+        <div className="mt-auto">
+          <Button 
+            className="w-full gap-2 rounded-full"
+            variant={mentor.available ? "default" : "outline"}
+            disabled={!mentor.available}
+            onClick={() => navigate(`/mentors/${mentor.id}`)}
+          >
+            <MessageCircle className="w-4 h-4" />
+            {language === 'ru' ? 'Связаться' : language === 'kz' ? 'Байланысу' : 'Connect'}
+          </Button>
+        </div>
       </div>
     </div>
   );
