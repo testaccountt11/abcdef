@@ -6,7 +6,8 @@ import { useTranslations } from "@/hooks/use-translations";
 import { useLocation } from "wouter";
 import { 
   Search, Filter, Star, ArrowRight, MessageCircle, Calendar, Award, Globe, 
-  BookOpen, Users, GraduationCap, CheckCircle2, Briefcase, UserPlus
+  BookOpen, Users, GraduationCap, CheckCircle2, Briefcase, UserPlus, Building2,
+  MapPin, BadgeCheck, LucideIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,15 +25,23 @@ interface Mentor {
   name: string;
   title: string;
   company: string;
+  location: string;
   profileImage: string;
   bio: string;
+  bioRu?: string;
+  bioKz?: string;
   category: string;
+  categoryRu?: string;
+  categoryKz?: string;
   skills: string[];
+  skillsRu?: string[];
+  skillsKz?: string[];
   languages: string[];
   rating: number;
   reviewCount: number;
   featured: boolean;
   available?: boolean;
+  experience: string;
 }
 
 // Демо-данные менторов
@@ -42,209 +51,445 @@ const dummyMentors = [
     name: "Arman Bekov",
     title: "Senior Software Engineer",
     company: "TechCorp",
+    location: "Almaty, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Experienced software engineer with 10+ years in full-stack development. I specialize in React, Node.js, and cloud architecture. I enjoy mentoring junior developers and helping them grow their skills.",
+    bioRu: "Опытный инженер-программист с более чем 10-летним стажем в full-stack разработке. Я специализируюсь на React, Node.js и облачной архитектуре. Мне нравится наставлять начинающих разработчиков и помогать им развивать свои навыки.",
+    bioKz: "Full-stack әзірлеуде 10 жылдан астам тәжірибесі бар тәжірибелі бағдарламалық инженер. Мен React, Node.js және бұлтты архитектурада маманданамын. Маған жас әзірлеушілерге тәлімгерлік ету және олардың дағдыларын дамытуға көмектесу ұнайды.",
     category: "Software Development",
+    categoryRu: "Разработка ПО",
+    categoryKz: "БҚ әзірлеу",
     skills: ["React", "Node.js", "AWS", "System Design", "Career Guidance"],
+    skillsRu: ["React", "Node.js", "AWS", "Системный дизайн", "Карьерные советы"],
+    skillsKz: ["React", "Node.js", "AWS", "Жүйелік дизайн", "Мансаптық кеңес"],
     languages: ["English", "Russian", "Kazakh"],
     rating: 4.9,
     reviewCount: 47,
     featured: true,
-    available: true
+    available: true,
+    experience: "10+ years"
   },
   {
     id: 2,
     name: "Aizhan Nurmagambetova",
     title: "Data Scientist",
     company: "Analytics Co",
+    location: "Nur-Sultan, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Data scientist with expertise in machine learning, statistical analysis, and data visualization. I love helping students make sense of data and build compelling portfolios.",
+    bioRu: "Специалист по данным с опытом в машинном обучении, статистическом анализе и визуализации данных. Я люблю помогать студентам понимать данные и создавать убедительные портфолио.",
+    bioKz: "Машиналық оқыту, статистикалық талдау және деректерді визуализациялау саласындағы тәжірибесі бар деректер ғалымы. Мен студенттерге деректерді түсінуге және тартымды портфолиолар жасауға көмектескенді жақсы көремін.",
     category: "Data Science",
+    categoryRu: "Наука о данных",
+    categoryKz: "Деректер ғылымы",
     skills: ["Python", "Machine Learning", "Statistics", "Data Visualization", "SQL"],
+    skillsRu: ["Python", "Машинное обучение", "Статистика", "Визуализация данных", "SQL"],
+    skillsKz: ["Python", "Машиналық оқыту", "Статистика", "Деректерді визуализациялау", "SQL"],
     languages: ["English", "Russian"],
     rating: 4.8,
     reviewCount: 32,
     featured: true,
-    available: true
+    available: true,
+    experience: "7 years"
   },
   {
     id: 3,
     name: "Daulet Kenesbek",
     title: "UX/UI Designer",
     company: "Design Studio",
+    location: "Almaty, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Passionate designer with a focus on creating intuitive user experiences. I believe in design thinking and user-centered approaches to product development.",
+    bioRu: "Увлеченный дизайнер, ориентированный на создание интуитивно понятного пользовательского опыта. Я верю в дизайн-мышление и подходы, ориентированные на пользователя, в разработке продуктов.",
+    bioKz: "Интуитивті пайдаланушы тәжірибесін жасауға бағытталған құмар дизайнер. Мен өнімді әзірлеуде дизайнерлік ойлау мен пайдаланушыға бағытталған тәсілдерге сенемін.",
     category: "Design",
+    categoryRu: "Дизайн",
+    categoryKz: "Дизайн",
     skills: ["UX Design", "UI Design", "Figma", "Design Systems", "Prototyping"],
+    skillsRu: ["UX дизайн", "UI дизайн", "Figma", "Системы дизайна", "Прототипирование"],
+    skillsKz: ["UX дизайн", "UI дизайн", "Figma", "Дизайн жүйелері", "Прототиптеу"],
     languages: ["English", "Kazakh"],
     rating: 4.7,
     reviewCount: 23,
     featured: false,
-    available: true
+    available: true,
+    experience: "5 years"
   },
   {
     id: 4,
     name: "Nurlan Abdrakhmanov",
     title: "Marketing Manager",
     company: "Brand Solutions",
+    location: "Nur-Sultan, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Marketing professional focused on digital strategies, branding, and growth marketing. I help new businesses establish their presence and grow their audience.",
+    bioRu: "Маркетолог, специализирующийся на цифровых стратегиях, брендинге и маркетинге роста. Я помогаю новым компаниям утвердить свое присутствие и увеличить свою аудиторию.",
+    bioKz: "Сандық стратегияларға, брендингке және өсу маркетингіне бағытталған маркетинг маманы. Мен жаңа компанияларға өз қатысуын бекітуге және аудиториясын кеңейтуге көмектесемін.",
     category: "Marketing",
+    categoryRu: "Маркетинг",
+    categoryKz: "Маркетинг",
     skills: ["Digital Marketing", "SEO", "Content Strategy", "Social Media", "Analytics"],
+    skillsRu: ["Цифровой маркетинг", "SEO", "Стратегия контента", "Соц. сети", "Аналитика"],
+    skillsKz: ["Сандық маркетинг", "SEO", "Контент стратегиясы", "Әлеум. желілер", "Аналитика"],
     languages: ["English", "Russian"],
     rating: 4.6,
     reviewCount: 18,
     featured: false,
-    available: false
+    available: false,
+    experience: "8 years"
   },
   {
     id: 5,
     name: "Kanat Zhumabekov",
     title: "Product Manager",
     company: "Product House",
+    location: "Shymkent, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Product manager with experience leading teams and launching successful products. I focus on user-centered design and agile methodologies.",
+    bioRu: "Продакт-менеджер с опытом руководства командами и запуска успешных продуктов. Я концентрируюсь на дизайне, ориентированном на пользователя, и гибких методологиях.",
+    bioKz: "Командаларды басқару және табысты өнімдерді шығару тәжірибесі бар өнім менеджері. Мен пайдаланушыға бағытталған дизайнға және икемді әдістемелерге назар аударамын.",
     category: "Product Management",
+    categoryRu: "Управление продуктом",
+    categoryKz: "Өнімді басқару",
     skills: ["Product Strategy", "Agile", "User Research", "Roadmapping", "Product Analytics"],
+    skillsRu: ["Продуктовая стратегия", "Agile", "Пользовательские исследования", "Роадмаппинг", "Продуктовая аналитика"],
+    skillsKz: ["Өнім стратегиясы", "Agile", "Пайдаланушы зерттеулері", "Жол картасы", "Өнім аналитикасы"],
     languages: ["English", "Russian", "Kazakh"],
     rating: 4.9,
     reviewCount: 27,
     featured: true,
-    available: true
+    available: true,
+    experience: "6 years"
   },
   {
     id: 6,
     name: "Aliya Nurmukhambetova",
     title: "Financial Analyst",
     company: "Finance Group",
+    location: "Almaty, Kazakhstan",
     profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
     bio: "Finance professional with experience in investment analysis, financial modeling, and strategic planning. I provide guidance on finance careers and skill development.",
+    bioRu: "Финансовый специалист с опытом в области инвестиционного анализа, финансового моделирования и стратегического планирования. Я предоставляю рекомендации по финансовым карьерам и развитию навыков.",
+    bioKz: "Инвестициялық талдау, қаржылық модельдеу және стратегиялық жоспарлау саласындағы тәжірибесі бар қаржы маманы. Мен қаржылық мансап және дағдыларды дамыту бойынша кеңес беремін.",
     category: "Finance",
+    categoryRu: "Финансы",
+    categoryKz: "Қаржы",
     skills: ["Financial Modeling", "Valuation", "Excel", "Investment Analysis", "Financial Planning"],
+    skillsRu: ["Финансовое моделирование", "Оценка", "Excel", "Инвестиционный анализ", "Финансовое планирование"],
+    skillsKz: ["Қаржылық модельдеу", "Бағалау", "Excel", "Инвестициялық талдау", "Қаржылық жоспарлау"],
     languages: ["English", "Kazakh"],
     rating: 4.8,
     reviewCount: 21,
     featured: false,
-    available: true
+    available: true,
+    experience: "9 years"
   }
 ];
 
 // Преимущества работы с менторами
 interface Feature {
-  icon: any;
+  icon: LucideIcon;
   title: string;
+  titleRu: string;
+  titleKz: string;
   description: string;
+  descriptionRu: string;
+  descriptionKz: string;
   color: string;
 }
 
+// Локализованные данные
+const translations = {
+  en: {
+    pageTitle: "Mentors & Experts",
+    pageSubtitle: "Find your mentor for personal guidance and accelerate your professional growth",
+    findMentor: "Find a Mentor",
+    whyChoose: "Why Choose Our Mentors",
+    whyChooseDesc: "Get personalized guidance from leading industry experts",
+    findPerfect: "Find Your Perfect Mentor",
+    findPerfectDesc: "Browse profiles of our qualified mentors and find the right match for you",
+    search: "Search",
+    searchPlaceholder: "Search by name, specialty, or skills...",
+    category: "Category",
+    allCategories: "All categories",
+    availability: "Availability",
+    all: "All",
+    available: "Available",
+    unavailable: "Unavailable",
+    language: "Language",
+    allLanguages: "All languages",
+    clearFilters: "Clear filters",
+    found: "Found",
+    mentor: "mentor",
+    mentors: "mentors",
+    noMentors: "No mentors found",
+    noMentorsDesc: "Try changing your filter parameters or search query.",
+    clearFiltersBtn: "Clear filters",
+    becomeMentor: "Become a Mentor",
+    becomeMentorDesc: "Share your knowledge, grow your leadership skills, and help build the community",
+    applyNow: "Apply Now",
+    expertise: "Expertise",
+    connect: "Connect",
+    years: "years",
+    rating: "rating",
+    reviews: "reviews",
+    featured: "Featured"
+  },
+  ru: {
+    pageTitle: "Менторы и эксперты",
+    pageSubtitle: "Найдите своего ментора для персонального руководства и ускорьте свой профессиональный рост",
+    findMentor: "Найти ментора",
+    whyChoose: "Почему стоит выбрать наших менторов",
+    whyChooseDesc: "Получите персональное руководство от ведущих экспертов отрасли",
+    findPerfect: "Найдите идеального ментора",
+    findPerfectDesc: "Просматривайте профили наших квалифицированных менторов и найдите подходящего для вас",
+    search: "Поиск",
+    searchPlaceholder: "Поиск по имени, специальности или навыкам...",
+    category: "Категория",
+    allCategories: "Все категории",
+    availability: "Доступность",
+    all: "Все",
+    available: "Доступны",
+    unavailable: "Недоступны",
+    language: "Язык",
+    allLanguages: "Все языки",
+    clearFilters: "Сбросить",
+    found: "Найдено",
+    mentor: "ментор",
+    mentors: "менторов",
+    noMentors: "Менторы не найдены",
+    noMentorsDesc: "Попробуйте изменить параметры фильтрации или поискового запроса.",
+    clearFiltersBtn: "Сбросить фильтры",
+    becomeMentor: "Станьте ментором",
+    becomeMentorDesc: "Делитесь своими знаниями, развивайте свои навыки лидерства и помогайте строить сообщество",
+    applyNow: "Подать заявку",
+    expertise: "Экспертиза",
+    connect: "Связаться",
+    years: "лет опыта",
+    rating: "рейтинг",
+    reviews: "отзывов",
+    featured: "Рекомендуемый"
+  },
+  kz: {
+    pageTitle: "Тәлімгерлер мен сарапшылар",
+    pageSubtitle: "Жеке басшылық үшін өз тәлімгеріңізді табыңыз және кәсіби өсуіңізді жеделдетіңіз",
+    findMentor: "Тәлімгерді табу",
+    whyChoose: "Неліктен біздің тәлімгерлерді таңдау керек",
+    whyChooseDesc: "Жетекші сала мамандарынан жеке басшылық алыңыз",
+    findPerfect: "Мінсіз тәлімгерді табыңыз",
+    findPerfectDesc: "Біздің білікті тәлімгерлердің профильдерін қарап шығыңыз және өзіңізге сәйкес келетінін табыңыз",
+    search: "Іздеу",
+    searchPlaceholder: "Аты, мамандығы немесе дағдылары бойынша іздеу...",
+    category: "Санат",
+    allCategories: "Барлық санаттар",
+    availability: "Қол жетімділік",
+    all: "Барлығы",
+    available: "Қол жетімді",
+    unavailable: "Қол жетімсіз",
+    language: "Тіл",
+    allLanguages: "Барлық тілдер",
+    clearFilters: "Тазалау",
+    found: "Табылды",
+    mentor: "тәлімгер",
+    mentors: "тәлімгер",
+    noMentors: "Тәлімгерлер табылмады",
+    noMentorsDesc: "Сүзгі параметрлерін немесе іздеу сұрауын өзгертіп көріңіз.",
+    clearFiltersBtn: "Сүзгілерді тазалау",
+    becomeMentor: "Тәлімгер болыңыз",
+    becomeMentorDesc: "Білімімен бөлісіңіз, көшбасшылық дағдыларыңызды дамытыңыз және қоғамдастық құруға көмектесіңіз",
+    applyNow: "Өтініш беру",
+    expertise: "Мамандану",
+    connect: "Байланысу",
+    years: "жыл тәжірибе",
+    rating: "рейтинг",
+    reviews: "пікір",
+    featured: "Ұсынылған"
+  }
+};
+
 // Компонент карточки преимуществ
-function FeatureCard({ icon: Icon, title, description, color }: Feature) {
+function FeatureCard({ icon: Icon, title, titleRu, titleKz, description, descriptionRu, descriptionKz, color }: Feature) {
+  const { language } = useTranslations();
+  
+  const localizedTitle = language === 'ru' ? titleRu : language === 'kz' ? titleKz : title;
+  const localizedDescription = language === 'ru' ? descriptionRu : language === 'kz' ? descriptionKz : description;
+  
   return (
     <div className="bg-card dark:bg-card rounded-xl p-6 shadow-sm border border-border relative h-full">
       <div className={`${color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 text-white`}>
         <Icon className="w-6 h-6" />
       </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-foreground/70">{description}</p>
+      <h3 className="text-xl font-semibold mb-2">{localizedTitle}</h3>
+      <p className="text-foreground/70">{localizedDescription}</p>
     </div>
   );
 }
 
 // Компонент карточки ментора
 function MentorCard({ mentor }: { mentor: Mentor }) {
-  const { t } = useTranslations();
+  const { language } = useTranslations();
   const [, navigate] = useLocation();
+  const isMobile = useIsMobile();
+  
+  const getText = (lang: string) => {
+    return translations[lang as keyof typeof translations];
+  };
+  
+  const t = getText(language || 'en');
+  
+  // Получение локализованных данных
+  const getBio = () => {
+    if (language === 'ru' && mentor.bioRu) return mentor.bioRu;
+    if (language === 'kz' && mentor.bioKz) return mentor.bioKz;
+    return mentor.bio;
+  };
+  
+  const getCategory = () => {
+    if (language === 'ru' && mentor.categoryRu) return mentor.categoryRu;
+    if (language === 'kz' && mentor.categoryKz) return mentor.categoryKz;
+    return mentor.category;
+  };
+  
+  const getSkills = () => {
+    if (language === 'ru' && mentor.skillsRu) return mentor.skillsRu;
+    if (language === 'kz' && mentor.skillsKz) return mentor.skillsKz;
+    return mentor.skills;
+  };
   
   return (
-    <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow duration-300">
-      <CardContent className="p-6 flex-1 flex flex-col">
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden mr-4 border-2 border-primary/10">
-                <img 
-                  src={mentor.profileImage} 
-                  alt={mentor.name} 
-                  className="w-full h-full object-cover"
-                />
-                {mentor.featured && (
-                  <div className="absolute -top-1 -right-1 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center">
-                    <Award className="w-3 h-3" />
-                  </div>
-                )}
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">{mentor.name}</h3>
-                <p className="text-foreground/60 text-sm">{mentor.title} {mentor.company && `at ${mentor.company}`}</p>
-              </div>
-            </div>
-            
-            {mentor.available ? (
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                {t('mentors.available')}
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-foreground/60">
-                {t('mentors.unavailable')}
-              </Badge>
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md transition-all duration-300 flex flex-col h-full group hover:shadow-lg hover:translate-y-[-5px]">
+      {/* Карточка в новом стиле как у курсов/стажировок */}
+      <div className="relative h-48 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
+        <img 
+          src={mentor.profileImage} 
+          alt={mentor.name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onError={(e) => {
+            // При ошибке загрузки используем градиентный фон с инициалами
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const parent = target.parentElement;
+            if (parent) {
+              const gradientDiv = document.createElement('div');
+              gradientDiv.className = "absolute inset-0 bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center";
+              const text = document.createElement('span');
+              text.className = "text-white text-3xl font-bold text-center";
+              text.textContent = mentor.name.split(' ').map(word => word[0]).join('');
+              gradientDiv.appendChild(text);
+              parent.appendChild(gradientDiv);
+            }
+          }}
+        />
+        
+        {/* Категория */}
+        <Badge className="absolute top-4 left-4 z-20 bg-blue-600 text-white border-none">
+          {getCategory()}
+        </Badge>
+        
+        {/* Выделенный ментор */}
+        {mentor.featured && (
+          <div className="absolute top-4 right-4 z-20 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full flex items-center">
+            <Award className="w-3 h-3 mr-1" />
+            <span>{t.featured}</span>
+          </div>
+        )}
+        
+        {/* Данные о менторе на фоне изображения */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
+          <div className="flex items-center text-white/80 text-sm mt-1">
+            <Building2 className="w-4 h-4 mr-1" />
+            <span>{mentor.title}</span>
+            {mentor.company && (
+              <>
+                <span className="mx-1">•</span>
+                <span>{mentor.company}</span>
+              </>
             )}
           </div>
-          
-          <div className="flex items-center text-sm mb-3">
-            <div className="flex">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star 
-                  key={star} 
-                  className={`w-4 h-4 ${star <= Math.floor(mentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                />
-              ))}
-            </div>
-            <span className="ml-2 text-foreground/60">
-              {mentor.rating.toFixed(1)} ({mentor.reviewCount})
+          <div className="flex items-center text-white/80 text-sm mt-1">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span>{mentor.location}</span>
+            <span className="mx-1">•</span>
+            <span>{mentor.experience}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="p-5">
+        {/* Рейтинг */}
+        <div className="flex items-center text-sm mb-3">
+          <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star 
+                key={star} 
+                className={`w-4 h-4 ${star <= Math.floor(mentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+              />
+            ))}
+            <span className="ml-2 text-foreground/80">
+              {mentor.rating.toFixed(1)} {t.rating} • {mentor.reviewCount} {t.reviews}
             </span>
-          </div>
-          
-          <p className="text-foreground/80 line-clamp-3 mb-4">{mentor.bio}</p>
-          
-          <div className="mb-4">
-            <h4 className="font-medium mb-2 text-sm text-foreground/70">{t('mentors.expertise')}</h4>
-            <div className="flex flex-wrap gap-2">
-              {mentor.skills.slice(0, 3).map((skill, index) => (
-                <Badge key={index} variant="secondary" className="font-normal">
-                  {skill}
-                </Badge>
-              ))}
-              {mentor.skills.length > 3 && (
-                <Badge variant="outline" className="font-normal">
-                  +{mentor.skills.length - 3}
-                </Badge>
-              )}
-            </div>
-          </div>
-          
-          <div className="flex items-center text-sm text-foreground/60 mb-4">
-            <Globe className="w-4 h-4 mr-1" />
-            {mentor.languages.join(', ')}
           </div>
         </div>
         
+        {/* Доступность */}
+        <div className="mb-3">
+          {mentor.available ? (
+            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
+              <BadgeCheck className="w-3 h-3 mr-1" /> {t.available}
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
+              {t.unavailable}
+            </Badge>
+          )}
+        </div>
+        
+        {/* Биография */}
+        <p className="text-foreground/80 text-sm line-clamp-3 mb-4">{getBio()}</p>
+        
+        {/* Навыки */}
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-foreground mb-2">{t.expertise}:</h4>
+          <div className="flex flex-wrap gap-1.5">
+            {getSkills().slice(0, 4).map((skill, index) => (
+              <Badge key={index} variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
+                {skill}
+              </Badge>
+            ))}
+            {getSkills().length > 4 && (
+              <Badge variant="outline" className="text-xs">
+                +{getSkills().length - 4}
+              </Badge>
+            )}
+          </div>
+        </div>
+        
+        {/* Языки */}
+        <div className="flex items-center text-xs text-foreground/70 mb-4">
+          <Globe className="w-3 h-3 mr-1" />
+          {mentor.languages.join(', ')}
+        </div>
+        
+        {/* Кнопка */}
         <Button 
-          className="w-full mt-4" 
+          className="w-full gap-2"
           variant={mentor.available ? "default" : "outline"}
           disabled={!mentor.available}
           onClick={() => navigate(`/mentors/${mentor.id}`)}
         >
-          <MessageCircle className="w-4 h-4 mr-2" />
-          {t('mentors.connect')}
+          <MessageCircle className="w-4 h-4" />
+          {t.connect}
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 // Основной компонент страницы
 export default function PublicMentors() {
-  const { t, language } = useTranslations();
+  const { language } = useTranslations();
   const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -252,7 +497,6 @@ export default function PublicMentors() {
   const [languageFilter, setLanguageFilter] = useState("all");
   const isMobile = useIsMobile();
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
   
   // Refs для анимации
   const heroRef = useRef<HTMLDivElement>(null);
@@ -263,30 +507,53 @@ export default function PublicMentors() {
   const heroScale = useTransform(scrollYProgress, [0, 0.1], [1, 0.95]);
   const heroY = useTransform(scrollYProgress, [0, 0.1], [0, 50]);
   
+  // Получение текстов в зависимости от языка
+  const getText = (lang: string) => {
+    return translations[lang as keyof typeof translations];
+  };
+  
+  const t = getText(language || 'en');
+  
   // Features array
   const features: Feature[] = [
     {
       icon: UserPlus,
-      title: language === 'ru' ? 'Индивидуальная поддержка' : language === 'kz' ? 'Жеке қолдау' : 'Personal Support',
-      description: language === 'ru' ? 'Персональное руководство от опытных профессионалов в вашей области' : language === 'kz' ? 'Сіздің саладағы тәжірибелі мамандардан жеке басшылық' : 'Get personalized guidance from experienced professionals in your field',
+      title: "Personal Support",
+      titleRu: "Индивидуальная поддержка",
+      titleKz: "Жеке қолдау",
+      description: "Get personalized guidance from experienced professionals in your field",
+      descriptionRu: "Персональное руководство от опытных профессионалов в вашей области",
+      descriptionKz: "Сіздің саладағы тәжірибелі мамандардан жеке басшылық",
       color: 'bg-primary'
     },
     {
       icon: GraduationCap,
-      title: language === 'ru' ? 'Знания из первых рук' : language === 'kz' ? 'Бірінші қолдан білім' : 'First-hand Knowledge',
-      description: language === 'ru' ? 'Получите ценные знания от специалистов, работающих в индустрии' : language === 'kz' ? 'Индустрияда жұмыс істейтін мамандардан құнды білім алыңыз' : 'Gain valuable insights from specialists working in the industry',
+      title: "First-hand Knowledge",
+      titleRu: "Знания из первых рук",
+      titleKz: "Бірінші қолдан білім",
+      description: "Gain valuable insights from specialists working in the industry",
+      descriptionRu: "Получите ценные знания от специалистов, работающих в индустрии",
+      descriptionKz: "Индустрияда жұмыс істейтін мамандардан құнды білім алыңыз",
       color: 'bg-primary'
     },
     {
       icon: Briefcase,
-      title: language === 'ru' ? 'Карьерное развитие' : language === 'kz' ? 'Мансаптық даму' : 'Career Development',
-      description: language === 'ru' ? 'Получите советы о карьере, проверку резюме и подготовку к собеседованиям' : language === 'kz' ? 'Мансап туралы кеңестер, түйіндеме тексеру және сұхбаттарға дайындық алыңыз' : 'Get career advice, resume reviews, and interview preparation',
+      title: "Career Development",
+      titleRu: "Карьерное развитие",
+      titleKz: "Мансаптық даму",
+      description: "Get career advice, resume reviews, and interview preparation",
+      descriptionRu: "Получите советы о карьере, проверку резюме и подготовку к собеседованиям",
+      descriptionKz: "Мансап туралы кеңестер, түйіндеме тексеру және сұхбаттарға дайындық алыңыз",
       color: 'bg-primary'
     },
     {
       icon: CheckCircle2,
-      title: language === 'ru' ? 'Проверенные эксперты' : language === 'kz' ? 'Тексерілген сарапшылар' : 'Verified Experts',
-      description: language === 'ru' ? 'Все наши менторы проходят тщательный отбор и проверку квалификации' : language === 'kz' ? 'Біздің барлық тәлімгерлер мұқият іріктеуден және біліктілікті тексеруден өтеді' : 'All our mentors undergo thorough vetting and qualification checks',
+      title: "Verified Experts",
+      titleRu: "Проверенные эксперты",
+      titleKz: "Тексерілген сарапшылар",
+      description: "All our mentors undergo thorough vetting and qualification checks",
+      descriptionRu: "Все наши менторы проходят тщательный отбор и проверку квалификации",
+      descriptionKz: "Біздің барлық тәлімгерлер мұқият іріктеуден және біліктілікті тексеруден өтеді",
       color: 'bg-primary'
     }
   ];
@@ -322,7 +589,7 @@ export default function PublicMentors() {
   return (
     <PublicPageLayout>
       {/* Градиентный фон */}
-      <div className={`fixed inset-0 overflow-hidden pointer-events-none -z-50 ${isDark ? 'bg-gradient-background' : ''}`}>
+      <div className={`fixed inset-0 overflow-hidden pointer-events-none -z-50 ${theme === 'dark' ? 'bg-gradient-background' : ''}`}>
         <div className="absolute top-0 left-0 right-0 h-[60vh] bg-gradient-to-br from-primary/5 via-transparent to-indigo-400/5 dark:from-primary/10 dark:via-transparent dark:to-indigo-400/10 blur-3xl"></div>
         <div className="absolute bottom-0 left-0 right-0 h-[40vh] bg-gradient-to-tr from-blue-400/5 via-transparent to-primary/5 dark:from-blue-500/10 dark:via-transparent dark:to-primary/10 blur-3xl"></div>
       </div>
@@ -346,9 +613,7 @@ export default function PublicMentors() {
                 transition={{ duration: 0.7 }}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 pt-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 leading-tight"
               >
-                {language === 'ru' ? 'Менторы и эксперты' : 
-                language === 'kz' ? 'Тәлімгерлер мен сарапшылар' : 
-                'Mentors & Experts'}
+                {t.pageTitle}
               </motion.h1>
               
               <motion.p 
@@ -357,9 +622,7 @@ export default function PublicMentors() {
                 transition={{ duration: 0.7, delay: 0.1 }}
                 className="text-xl text-foreground/80 mb-10"
               >
-                {language === 'ru' ? 'Найдите своего ментора для персонального руководства и ускорьте свой профессиональный рост' : 
-                language === 'kz' ? 'Жеке басшылық үшін өз тәлімгеріңізді табыңыз және кәсіби өсуіңізді жеделдетіңіз' : 
-                'Find your mentor for personal guidance and accelerate your professional growth'}
+                {t.pageSubtitle}
               </motion.p>
               
               <motion.div
@@ -382,9 +645,7 @@ export default function PublicMentors() {
                     }}
                   >
                     <span className="flex items-center">
-                      {language === 'ru' ? 'Найти ментора' : 
-                      language === 'kz' ? 'Тәлімгерді табу' : 
-                      'Find a Mentor'}
+                      {t.findMentor}
                       <ArrowRight className="ml-2 w-5 h-5" />
                     </span>
                   </Button>
@@ -468,14 +729,10 @@ export default function PublicMentors() {
               className="text-center mb-16"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90">
-                {language === 'ru' ? 'Почему стоит выбрать наших менторов' : 
-                language === 'kz' ? 'Неліктен біздің тәлімгерлерді таңдау керек' : 
-                'Why Choose Our Mentors'}
+                {t.whyChoose}
               </h2>
               <p className="text-lg text-foreground/70 max-w-2xl mx-auto">
-                {language === 'ru' ? 'Получите персональное руководство от ведущих экспертов отрасли' : 
-                language === 'kz' ? 'Жетекші сала мамандарынан жеке басшылық алыңыз' : 
-                'Get personalized guidance from leading industry experts'}
+                {t.whyChooseDesc}
               </p>
             </motion.div>
             
@@ -506,14 +763,10 @@ export default function PublicMentors() {
               className="mb-12"
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                {language === 'ru' ? 'Найдите идеального ментора' : 
-                language === 'kz' ? 'Мінсіз тәлімгерді табыңыз' : 
-                'Find Your Perfect Mentor'}
+                {t.findPerfect}
               </h2>
               <p className="text-lg text-foreground/70">
-                {language === 'ru' ? 'Просматривайте профили наших квалифицированных менторов и найдите подходящего для вас' : 
-                language === 'kz' ? 'Біздің білікті тәлімгерлердің профильдерін қарап шығыңыз және өзіңізге сәйкес келетінін табыңыз' : 
-                'Browse profiles of our qualified mentors and find the right match for you'}
+                {t.findPerfectDesc}
               </p>
             </motion.div>
             
@@ -522,18 +775,14 @@ export default function PublicMentors() {
               <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
                 <div className="flex-1">
                   <label htmlFor="search" className="text-sm font-medium mb-2 block">
-                    {language === 'ru' ? 'Поиск' : language === 'kz' ? 'Іздеу' : 'Search'}
+                    {t.search}
                   </label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                     <Input
                       id="search"
                       type="text"
-                      placeholder={
-                        language === 'ru' ? 'Поиск по имени, специальности или навыкам...' : 
-                        language === 'kz' ? 'Аты, мамандығы немесе дағдылары бойынша іздеу...' : 
-                        'Search by name, specialty, or skills...'
-                      }
+                      placeholder={t.searchPlaceholder}
                       className="pl-10"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -543,21 +792,15 @@ export default function PublicMentors() {
                 
                 <div className="w-full md:w-48">
                   <label htmlFor="category-filter" className="text-sm font-medium mb-2 block">
-                    {language === 'ru' ? 'Категория' : language === 'kz' ? 'Санат' : 'Category'}
+                    {t.category}
                   </label>
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger id="category-filter">
-                      <SelectValue placeholder={
-                        language === 'ru' ? 'Все категории' : 
-                        language === 'kz' ? 'Барлық санаттар' : 
-                        'All categories'
-                      } />
+                      <SelectValue placeholder={t.allCategories} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">
-                        {language === 'ru' ? 'Все категории' : 
-                        language === 'kz' ? 'Барлық санаттар' : 
-                        'All categories'}
+                        {t.allCategories}
                       </SelectItem>
                       {categories.filter(cat => cat !== "all").map(category => (
                         <SelectItem key={category} value={category}>
@@ -570,31 +813,21 @@ export default function PublicMentors() {
                 
                 <div className="w-full md:w-48">
                   <label htmlFor="availability-filter" className="text-sm font-medium mb-2 block">
-                    {language === 'ru' ? 'Доступность' : language === 'kz' ? 'Қол жетімділік' : 'Availability'}
+                    {t.availability}
                   </label>
                   <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
                     <SelectTrigger id="availability-filter">
-                      <SelectValue placeholder={
-                        language === 'ru' ? 'Все' : 
-                        language === 'kz' ? 'Барлығы' : 
-                        'All'
-                      } />
+                      <SelectValue placeholder={t.all} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">
-                        {language === 'ru' ? 'Все' : 
-                        language === 'kz' ? 'Барлығы' : 
-                        'All'}
+                        {t.all}
                       </SelectItem>
                       <SelectItem value="available">
-                        {language === 'ru' ? 'Доступны' : 
-                        language === 'kz' ? 'Қол жетімді' : 
-                        'Available'}
+                        {t.available}
                       </SelectItem>
                       <SelectItem value="unavailable">
-                        {language === 'ru' ? 'Недоступны' : 
-                        language === 'kz' ? 'Қол жетімсіз' : 
-                        'Unavailable'}
+                        {t.unavailable}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -602,21 +835,15 @@ export default function PublicMentors() {
                 
                 <div className="w-full md:w-48">
                   <label htmlFor="language-filter" className="text-sm font-medium mb-2 block">
-                    {language === 'ru' ? 'Язык' : language === 'kz' ? 'Тіл' : 'Language'}
+                    {t.language}
                   </label>
                   <Select value={languageFilter} onValueChange={setLanguageFilter}>
                     <SelectTrigger id="language-filter">
-                      <SelectValue placeholder={
-                        language === 'ru' ? 'Все языки' : 
-                        language === 'kz' ? 'Барлық тілдер' : 
-                        'All languages'
-                      } />
+                      <SelectValue placeholder={t.allLanguages} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">
-                        {language === 'ru' ? 'Все языки' : 
-                        language === 'kz' ? 'Барлық тілдер' : 
-                        'All languages'}
+                        {t.allLanguages}
                       </SelectItem>
                       {languages.filter(lang => lang !== "all").map(lang => (
                         <SelectItem key={lang} value={lang}>
@@ -633,20 +860,14 @@ export default function PublicMentors() {
                   onClick={clearFilters}
                 >
                   <Filter className="mr-2 h-4 w-4" />
-                  {language === 'ru' ? 'Сбросить' : 
-                  language === 'kz' ? 'Тазалау' : 
-                  'Clear filters'}
+                  {t.clearFilters}
                 </Button>
               </div>
             </div>
             
             {/* Results count */}
             <div className="mb-6 text-foreground/70">
-              {language === 'ru' 
-                ? `Найдено: ${filteredMentors.length} ${filteredMentors.length === 1 ? 'ментор' : filteredMentors.length >= 2 && filteredMentors.length <= 4 ? 'ментора' : 'менторов'}`
-                : language === 'kz'
-                ? `Табылды: ${filteredMentors.length} тәлімгер`
-                : `Found: ${filteredMentors.length} ${filteredMentors.length === 1 ? 'mentor' : 'mentors'}`}
+              {t.found}: {filteredMentors.length} {filteredMentors.length === 1 ? t.mentor : t.mentors}
             </div>
             
             {/* Mentors Grid */}
@@ -669,19 +890,13 @@ export default function PublicMentors() {
                   <UserPlus className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">
-                  {language === 'ru' ? 'Менторы не найдены' : 
-                  language === 'kz' ? 'Тәлімгерлер табылмады' : 
-                  'No mentors found'}
+                  {t.noMentors}
                 </h3>
                 <p className="text-foreground/70 max-w-md mx-auto mb-6">
-                  {language === 'ru' ? 'Попробуйте изменить параметры фильтрации или поискового запроса.' : 
-                  language === 'kz' ? 'Сүзгі параметрлерін немесе іздеу сұрауын өзгертіп көріңіз.' : 
-                  'Try changing your filter parameters or search query.'}
+                  {t.noMentorsDesc}
                 </p>
                 <Button onClick={clearFilters}>
-                  {language === 'ru' ? 'Сбросить фильтры' : 
-                  language === 'kz' ? 'Сүзгілерді тазалау' : 
-                  'Clear filters'}
+                  {t.clearFiltersBtn}
                 </Button>
               </div>
             )}
@@ -696,23 +911,17 @@ export default function PublicMentors() {
             >
               <div className="bg-gradient-to-r from-primary/10 to-indigo-600/10 rounded-2xl p-10 md:p-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  {language === 'ru' ? 'Станьте ментором' : 
-                  language === 'kz' ? 'Тәлімгер болыңыз' : 
-                  'Become a Mentor'}
+                  {t.becomeMentor}
                 </h2>
                 <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-8">
-                  {language === 'ru' ? 'Делитесь своими знаниями, развивайте свои навыки лидерства и помогайте строить сообщество' : 
-                  language === 'kz' ? 'Білімімен бөлісіңіз, көшбасшылық дағдыларыңызды дамытыңыз және қоғамдастық құруға көмектесіңіз' : 
-                  'Share your knowledge, grow your leadership skills, and help build the community'}
+                  {t.becomeMentorDesc}
                 </p>
                 <Button 
                   className="rounded-full px-8 py-6 text-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-md shadow-primary/20 transition-all duration-300"
                   onClick={() => navigate('/become-mentor')}
                 >
                   <span className="flex items-center">
-                    {language === 'ru' ? 'Подать заявку' : 
-                    language === 'kz' ? 'Өтініш беру' : 
-                    'Apply Now'}
+                    {t.applyNow}
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </span>
                 </Button>
