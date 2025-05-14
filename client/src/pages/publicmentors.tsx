@@ -7,7 +7,8 @@ import { useLocation } from "wouter";
 import { 
   Search, Filter, Star, ArrowRight, MessageCircle, Calendar, Award, Globe, 
   BookOpen, Users, GraduationCap, CheckCircle2, Briefcase, UserPlus, Building2,
-  MapPin, BadgeCheck, LucideIcon, X
+  MapPin, BadgeCheck, LucideIcon, X, Trophy, Code, Lightbulb, PenTool, CheckCircle,
+  User, Send, MessageSquare, Mail
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -53,7 +54,7 @@ const dummyMentors = [
     title: "Senior Software Engineer",
     company: "TechCorp",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Experienced software engineer with 10+ years in full-stack development. I specialize in React, Node.js, and cloud architecture. I enjoy mentoring junior developers and helping them grow their skills.",
     bioRu: "Опытный инженер-программист с более чем 10-летним стажем в full-stack разработке. Я специализируюсь на React, Node.js и облачной архитектуре. Мне нравится наставлять начинающих разработчиков и помогать им развивать свои навыки.",
     bioKz: "Full-stack әзірлеуде 10 жылдан астам тәжірибесі бар тәжірибелі бағдарламалық инженер. Мен React, Node.js және бұлтты архитектурада маманданамын. Маған жас әзірлеушілерге тәлімгерлік ету және олардың дағдыларын дамытуға көмектесу ұнайды.",
@@ -76,7 +77,7 @@ const dummyMentors = [
     title: "Data Scientist",
     company: "Analytics Co",
     location: "Nur-Sultan, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Data scientist with expertise in machine learning, statistical analysis, and data visualization. I love helping students make sense of data and build compelling portfolios.",
     bioRu: "Специалист по данным с опытом в машинном обучении, статистическом анализе и визуализации данных. Я люблю помогать студентам понимать данные и создавать убедительные портфолио.",
     bioKz: "Машиналық оқыту, статистикалық талдау және деректерді визуализациялау саласындағы тәжірибесі бар деректер ғалымы. Мен студенттерге деректерді түсінуге және тартымды портфолиолар жасауға көмектескенді жақсы көремін.",
@@ -99,7 +100,7 @@ const dummyMentors = [
     title: "UX/UI Designer",
     company: "Design Studio",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Passionate designer with a focus on creating intuitive user experiences. I believe in design thinking and user-centered approaches to product development.",
     bioRu: "Увлеченный дизайнер, ориентированный на создание интуитивно понятного пользовательского опыта. Я верю в дизайн-мышление и подходы, ориентированные на пользователя, в разработке продуктов.",
     bioKz: "Интуитивті пайдаланушы тәжірибесін жасауға бағытталған құмар дизайнер. Мен өнімді әзірлеуде дизайнерлік ойлау мен пайдаланушыға бағытталған тәсілдерге сенемін.",
@@ -122,7 +123,7 @@ const dummyMentors = [
     title: "Marketing Manager",
     company: "Brand Solutions",
     location: "Nur-Sultan, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Marketing professional focused on digital strategies, branding, and growth marketing. I help new businesses establish their presence and grow their audience.",
     bioRu: "Маркетолог, специализирующийся на цифровых стратегиях, брендинге и маркетинге роста. Я помогаю новым компаниям утвердить свое присутствие и увеличить свою аудиторию.",
     bioKz: "Сандық стратегияларға, брендингке және өсу маркетингіне бағытталған маркетинг маманы. Мен жаңа компанияларға өз қатысуын бекітуге және аудиториясын кеңейтуге көмектесемін.",
@@ -131,7 +132,7 @@ const dummyMentors = [
     categoryKz: "Маркетинг",
     skills: ["Digital Marketing", "SEO", "Content Strategy", "Social Media", "Analytics"],
     skillsRu: ["Цифровой маркетинг", "SEO", "Стратегия контента", "Соц. сети", "Аналитика"],
-    skillsKz: ["Сандық маркетинг", "SEO", "Контент стратегиясы", "Әлеум. желілер", "Аналитика"],
+    skillsKz: ["Сандық маркетинг", "SEO", "Контент стратегиясы", "Әлеуметтік желілер", "Аналитика"],
     languages: ["English", "Russian"],
     rating: 4.6,
     reviewCount: 18,
@@ -145,7 +146,7 @@ const dummyMentors = [
     title: "Product Manager",
     company: "Product House",
     location: "Shymkent, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Product manager with experience leading teams and launching successful products. I focus on user-centered design and agile methodologies.",
     bioRu: "Продакт-менеджер с опытом руководства командами и запуска успешных продуктов. Я концентрируюсь на дизайне, ориентированном на пользователя, и гибких методологиях.",
     bioKz: "Командаларды басқару және табысты өнімдерді шығару тәжірибесі бар өнім менеджері. Мен пайдаланушыға бағытталған дизайнға және икемді әдістемелерге назар аударамын.",
@@ -168,7 +169,7 @@ const dummyMentors = [
     title: "Financial Analyst",
     company: "Finance Group",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=256&h=256&q=80",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
     bio: "Finance professional with experience in investment analysis, financial modeling, and strategic planning. I provide guidance on finance careers and skill development.",
     bioRu: "Финансовый специалист с опытом в области инвестиционного анализа, финансового моделирования и стратегического планирования. Я предоставляю рекомендации по финансовым карьерам и развитию навыков.",
     bioKz: "Инвестициялық талдау, қаржылық модельдеу және стратегиялық жоспарлау саласындағы тәжірибесі бар қаржы маманы. Мен қаржылық мансап және дағдыларды дамыту бойынша кеңес беремін.",
@@ -186,6 +187,358 @@ const dummyMentors = [
     experience: "9 years"
   }
 ];
+
+// Дополнительные 15 менторов для пагинации
+const additionalMentors = [
+  {
+    id: 7,
+    name: "Maksat Ospanov",
+    title: "DevOps Engineer",
+    company: "CloudTech Solutions",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "DevOps engineer focused on automating infrastructure and optimizing deployment pipelines. I help teams implement CI/CD and cloud-native solutions.",
+    bioRu: "DevOps-инженер, специализирующийся на автоматизации инфраструктуры и оптимизации процессов развертывания. Я помогаю командам внедрять CI/CD и облачные решения.",
+    bioKz: "Инфрақұрылымды автоматтандыруға және орналастыру процестерін оңтайландыруға бағытталған DevOps инженері. Мен командаларға CI/CD және бұлтты шешімдерді енгізуге көмектесемін.",
+    category: "DevOps",
+    categoryRu: "DevOps",
+    categoryKz: "DevOps",
+    skills: ["Docker", "Kubernetes", "AWS", "Terraform", "CI/CD"],
+    skillsRu: ["Docker", "Kubernetes", "AWS", "Terraform", "CI/CD"],
+    skillsKz: ["Docker", "Kubernetes", "AWS", "Terraform", "CI/CD"],
+    languages: ["English", "Russian"],
+    rating: 4.7,
+    reviewCount: 19,
+    featured: false,
+    available: true,
+    experience: "6 years"
+  },
+  {
+    id: 8,
+    name: "Saule Tulegenova",
+    title: "Front-end Developer",
+    company: "WebDev Agency",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Front-end developer with expertise in modern JavaScript frameworks. I love creating beautiful, accessible, and performant user interfaces.",
+    bioRu: "Front-end разработчик с опытом работы с современными JavaScript-фреймворками. Мне нравится создавать красивые, доступные и производительные пользовательские интерфейсы.",
+    bioKz: "Заманауи JavaScript фреймворктерімен жұмыс тәжірибесі бар Front-end әзірлеуші. Маған әдемі, қолжетімді және өнімді пайдаланушы интерфейстерін жасау ұнайды.",
+    category: "Software Development",
+    categoryRu: "Разработка ПО",
+    categoryKz: "БҚ әзірлеу",
+    skills: ["React", "TypeScript", "CSS", "Responsive Design", "Web Performance"],
+    skillsRu: ["React", "TypeScript", "CSS", "Адаптивный дизайн", "Производительность веб-сайтов"],
+    skillsKz: ["React", "TypeScript", "CSS", "Бейімделгіш дизайн", "Веб-сайт өнімділігі"],
+    languages: ["English", "Kazakh", "Russian"],
+    rating: 4.9,
+    reviewCount: 28,
+    featured: true,
+    available: true,
+    experience: "4 years"
+  },
+  {
+    id: 9,
+    name: "Rustem Bayzakov",
+    title: "Cybersecurity Specialist",
+    company: "SecureNet",
+    location: "Karaganda, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Cybersecurity expert with a focus on penetration testing and security assessments. I help companies strengthen their security posture and protect their assets.",
+    bioRu: "Эксперт по кибербезопасности, специализирующийся на тестировании на проникновение и оценке безопасности. Я помогаю компаниям укрепить их безопасность и защитить их активы.",
+    bioKz: "Енуді тестілеу және қауіпсіздікті бағалауға маманданған киберқауіпсіздік сарапшысы. Мен компанияларға олардың қауіпсіздігін нығайтуға және активтерін қорғауға көмектесемін.",
+    category: "Security",
+    categoryRu: "Безопасность",
+    categoryKz: "Қауіпсіздік",
+    skills: ["Penetration Testing", "Network Security", "Security Audits", "Security Tools", "OWASP"],
+    skillsRu: ["Тестирование на проникновение", "Сетевая безопасность", "Аудит безопасности", "Инструменты безопасности", "OWASP"],
+    skillsKz: ["Енуді тестілеу", "Желілік қауіпсіздік", "Қауіпсіздік аудиті", "Қауіпсіздік құралдары", "OWASP"],
+    languages: ["English", "Russian"],
+    rating: 4.8,
+    reviewCount: 22,
+    featured: false,
+    available: false,
+    experience: "7 years"
+  },
+  {
+    id: 10,
+    name: "Aidana Iskakova",
+    title: "Business Analyst",
+    company: "Consulting Partners",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Business analyst with expertise in requirements gathering, process modeling, and data analysis. I bridge the gap between business needs and technical solutions.",
+    bioRu: "Бизнес-аналитик с опытом в сборе требований, моделировании процессов и анализе данных. Я связываю бизнес-потребности с техническими решениями.",
+    bioKz: "Талаптарды жинау, процестерді модельдеу және деректерді талдау саласындағы тәжірибесі бар бизнес-аналитик. Мен бизнес қажеттіліктері мен техникалық шешімдер арасындағы алшақтықты жоямын.",
+    category: "Business",
+    categoryRu: "Бизнес",
+    categoryKz: "Бизнес",
+    skills: ["Requirements Analysis", "Business Process Modeling", "Data Analysis", "Stakeholder Management", "Agile"],
+    skillsRu: ["Анализ требований", "Моделирование бизнес-процессов", "Анализ данных", "Управление стейкхолдерами", "Agile"],
+    skillsKz: ["Талаптарды талдау", "Бизнес-процестерді модельдеу", "Деректерді талдау", "Стейкхолдерлерді басқару", "Agile"],
+    languages: ["English", "Russian", "Kazakh"],
+    rating: 4.7,
+    reviewCount: 15,
+    featured: false,
+    available: true,
+    experience: "5 years"
+  },
+  {
+    id: 11,
+    name: "Bolat Nurpeisov",
+    title: "Mobile Developer",
+    company: "AppMaker",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Mobile app developer with experience in native and cross-platform development. I create user-friendly and performant mobile applications for iOS and Android.",
+    bioRu: "Разработчик мобильных приложений с опытом в нативной и кросс-платформенной разработке. Я создаю удобные и производительные мобильные приложения для iOS и Android.",
+    bioKz: "Нативті және кросс-платформалық әзірлеу тәжірибесі бар мобильді қосымшалар әзірлеушісі. Мен iOS және Android үшін ыңғайлы және өнімді мобильді қосымшалар жасаймын.",
+    category: "Mobile Development",
+    categoryRu: "Мобильная разработка",
+    categoryKz: "Мобильді әзірлеу",
+    skills: ["iOS", "Android", "React Native", "Flutter", "Mobile UX"],
+    skillsRu: ["iOS", "Android", "React Native", "Flutter", "Мобильный UX"],
+    skillsKz: ["iOS", "Android", "React Native", "Flutter", "Мобильді UX"],
+    languages: ["English", "Kazakh"],
+    rating: 4.6,
+    reviewCount: 17,
+    featured: false,
+    available: true,
+    experience: "6 years"
+  },
+  {
+    id: 12,
+    name: "Gulmira Satenova",
+    title: "QA Engineer",
+    company: "Quality Solutions",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Quality assurance engineer with experience in manual and automated testing. I ensure software quality through comprehensive testing strategies and processes.",
+    bioRu: "Инженер по обеспечению качества с опытом в ручном и автоматизированном тестировании. Я обеспечиваю качество программного обеспечения с помощью комплексных стратегий и процессов тестирования.",
+    bioKz: "Қолмен және автоматтандырылған тестілеу тәжірибесі бар сапаны қамтамасыз ету инженері. Мен кешенді тестілеу стратегиялары мен процестері арқылы бағдарламалық жасақтама сапасын қамтамасыз етемін.",
+    category: "Quality Assurance",
+    categoryRu: "Обеспечение качества",
+    categoryKz: "Сапаны қамтамасыз ету",
+    skills: ["Manual Testing", "Automated Testing", "Selenium", "Test Planning", "QA Processes"],
+    skillsRu: ["Ручное тестирование", "Автоматизированное тестирование", "Selenium", "Планирование тестирования", "QA-процессы"],
+    skillsKz: ["Қолмен тестілеу", "Автоматтандырылған тестілеу", "Selenium", "Тестілеуді жоспарлау", "QA процестері"],
+    languages: ["English", "Russian"],
+    rating: 4.8,
+    reviewCount: 24,
+    featured: false,
+    available: true,
+    experience: "7 years"
+  },
+  {
+    id: 13,
+    name: "Zhanat Musabekov",
+    title: "Backend Developer",
+    company: "ServerTech",
+    location: "Shymkent, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Backend developer with expertise in building scalable and secure APIs and services. I specialize in Python, Go, and microservices architecture.",
+    bioRu: "Backend-разработчик с опытом создания масштабируемых и безопасных API и сервисов. Я специализируюсь на Python, Go и микросервисной архитектуре.",
+    bioKz: "Масштабталатын және қауіпсіз API мен қызметтерді құру тәжірибесі бар Backend әзірлеуші. Мен Python, Go және микросервистік архитектурада маманданамын.",
+    category: "Software Development",
+    categoryRu: "Разработка ПО",
+    categoryKz: "БҚ әзірлеу",
+    skills: ["Python", "Go", "Microservices", "REST APIs", "Databases"],
+    skillsRu: ["Python", "Go", "Микросервисы", "REST APIs", "Базы данных"],
+    skillsKz: ["Python", "Go", "Микросервистер", "REST APIs", "Дерекқорлар"],
+    languages: ["English", "Russian", "Kazakh"],
+    rating: 4.9,
+    reviewCount: 31,
+    featured: true,
+    available: true,
+    experience: "8 years"
+  },
+  {
+    id: 14,
+    name: "Dana Bekturova",
+    title: "Project Manager",
+    company: "Project Solutions",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Experienced project manager with a track record of delivering complex technology projects on time and within budget. I mentor aspiring project managers.",
+    bioRu: "Опытный проектный менеджер с опытом реализации сложных технологических проектов вовремя и в рамках бюджета. Я наставляю начинающих проектных менеджеров.",
+    bioKz: "Күрделі технологиялық жобаларды уақытында және бюджет шеңберінде жүзеге асыру тәжірибесі бар тәжірибелі жоба менеджері. Мен жаңадан бастаған жоба менеджерлеріне тәлімгерлік етемін.",
+    category: "Project Management",
+    categoryRu: "Управление проектами",
+    categoryKz: "Жобаларды басқару",
+    skills: ["Agile", "Scrum", "Risk Management", "Stakeholder Management", "Project Planning"],
+    skillsRu: ["Agile", "Scrum", "Управление рисками", "Управление стейкхолдерами", "Планирование проектов"],
+    skillsKz: ["Agile", "Scrum", "Тәуекелдерді басқару", "Стейкхолдерлерді басқару", "Жобаларды жоспарлау"],
+    languages: ["English", "Russian"],
+    rating: 4.7,
+    reviewCount: 19,
+    featured: false,
+    available: true,
+    experience: "9 years"
+  },
+  {
+    id: 15,
+    name: "Aslan Mukhamedov",
+    title: "Machine Learning Engineer",
+    company: "AI Solutions",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Machine learning engineer with experience in building AI-powered products and solutions. I specialize in computer vision and natural language processing.",
+    bioRu: "Инженер по машинному обучению с опытом создания продуктов и решений на базе ИИ. Я специализируюсь на компьютерном зрении и обработке естественного языка.",
+    bioKz: "ЖИ негізіндегі өнімдер мен шешімдерді жасау тәжірибесі бар машиналық оқыту инженері. Мен компьютерлік көру және табиғи тілді өңдеуде маманданамын.",
+    category: "Data Science",
+    categoryRu: "Наука о данных",
+    categoryKz: "Деректер ғылымы",
+    skills: ["Machine Learning", "Computer Vision", "NLP", "Deep Learning", "TensorFlow"],
+    skillsRu: ["Машинное обучение", "Компьютерное зрение", "NLP", "Глубокое обучение", "TensorFlow"],
+    skillsKz: ["Машиналық оқыту", "Компьютерлік көру", "NLP", "Терең оқыту", "TensorFlow"],
+    languages: ["English", "Russian"],
+    rating: 4.9,
+    reviewCount: 26,
+    featured: true,
+    available: false,
+    experience: "5 years"
+  },
+  {
+    id: 16,
+    name: "Erzhan Kasymov",
+    title: "Game Developer",
+    company: "GameStudio",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Game developer with experience in Unity and Unreal Engine. I create engaging gaming experiences and mentor aspiring game developers.",
+    bioRu: "Разработчик игр с опытом работы с Unity и Unreal Engine. Я создаю увлекательные игровые проекты и наставляю начинающих разработчиков игр.",
+    bioKz: "Unity және Unreal Engine тәжірибесі бар ойын әзірлеуші. Мен қызықты ойын тәжірибелерін жасаймын және болашақ ойын әзірлеушілеріне тәлімгерлік етемін.",
+    category: "Game Development",
+    categoryRu: "Разработка игр",
+    categoryKz: "Ойын әзірлеу",
+    skills: ["Unity", "Unreal Engine", "C#", "Game Design", "3D Modeling"],
+    skillsRu: ["Unity", "Unreal Engine", "C#", "Геймдизайн", "3D-моделирование"],
+    skillsKz: ["Unity", "Unreal Engine", "C#", "Ойын дизайны", "3D модельдеу"],
+    languages: ["English", "Russian"],
+    rating: 4.8,
+    reviewCount: 22,
+    featured: false,
+    available: true,
+    experience: "7 years"
+  },
+  {
+    id: 17,
+    name: "Aigul Amangeldieva",
+    title: "Digital Marketer",
+    company: "Digital Growth",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Digital marketing specialist with a focus on growth marketing, SEO, and content strategy. I help businesses grow their online presence and reach their target audience.",
+    bioRu: "Специалист по цифровому маркетингу с акцентом на маркетинг роста, SEO и стратегию контента. Я помогаю бизнесу расширить свое онлайн-присутствие и охватить целевую аудиторию.",
+    bioKz: "Өсу маркетингіне, SEO және контент стратегиясына бағытталған сандық маркетинг маманы. Мен компанияларға онлайн-қатысуын кеңейтуге және мақсатты аудиторияға жетуге көмектесемін.",
+    category: "Marketing",
+    categoryRu: "Маркетинг",
+    categoryKz: "Маркетинг",
+    skills: ["Growth Marketing", "SEO", "Content Marketing", "Social Media", "PPC"],
+    skillsRu: ["Маркетинг роста", "SEO", "Контент-маркетинг", "Социальные сети", "PPC"],
+    skillsKz: ["Өсу маркетингі", "SEO", "Контент-маркетинг", "Әлеуметтік желілер", "PPC"],
+    languages: ["English", "Russian", "Kazakh"],
+    rating: 4.7,
+    reviewCount: 18,
+    featured: false,
+    available: true,
+    experience: "5 years"
+  },
+  {
+    id: 18,
+    name: "Olzhas Mukanov",
+    title: "Blockchain Developer",
+    company: "BlockchainTech",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Blockchain developer with experience in building decentralized applications and smart contracts. I help projects leverage blockchain technology.",
+    bioRu: "Разработчик блокчейн с опытом создания децентрализованных приложений и смарт-контрактов. Я помогаю проектам использовать технологию блокчейн.",
+    bioKz: "Орталықсыздандырылған қосымшалар мен смарт-келісімшарттарды құру тәжірибесі бар блокчейн әзірлеуші. Мен жобаларға блокчейн технологиясын пайдалануға көмектесемін.",
+    category: "Blockchain",
+    categoryRu: "Блокчейн",
+    categoryKz: "Блокчейн",
+    skills: ["Solidity", "Ethereum", "Smart Contracts", "Web3", "DApps"],
+    skillsRu: ["Solidity", "Ethereum", "Смарт-контракты", "Web3", "DApps"],
+    skillsKz: ["Solidity", "Ethereum", "Смарт-келісімшарттар", "Web3", "DApps"],
+    languages: ["English", "Russian"],
+    rating: 4.8,
+    reviewCount: 20,
+    featured: false,
+    available: true,
+    experience: "4 years"
+  },
+  {
+    id: 19,
+    name: "Zarina Tursynbekova",
+    title: "UX Researcher",
+    company: "User Insights",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "UX researcher with expertise in user research methodologies, user interviews, and usability testing. I help teams understand user needs and behaviors.",
+    bioRu: "UX-исследователь с опытом в методологиях пользовательских исследований, интервью с пользователями и тестирования удобства использования. Я помогаю командам понять потребности и поведение пользователей.",
+    bioKz: "Пайдаланушы зерттеу әдістері, пайдаланушылармен сұхбаттар және пайдалану ыңғайлылығын тестілеу саласындағы тәжірибесі бар UX зерттеуші. Мен командаларға пайдаланушылардың қажеттіліктері мен мінез-құлқын түсінуге көмектесемін.",
+    category: "Design",
+    categoryRu: "Дизайн",
+    categoryKz: "Дизайн",
+    skills: ["User Research", "Usability Testing", "User Interviews"],
+    skillsRu: ["Пользовательские исследования", "Тестирование удобства", "Интервью"],
+    skillsKz: ["Пайдаланушыларды зерттеу", "Пайдалануды тестілеу", "Cұхбаттар"],
+    languages: ["English", "Kazakh", "Russian"],
+    rating: 4.6,
+    reviewCount: 16,
+    featured: false,
+    available: true,
+    experience: "6 years"
+  },
+  {
+    id: 20,
+    name: "Bakyt Kalibekov",
+    title: "Cloud Architect",
+    company: "Cloud Solutions",
+    location: "Almaty, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Cloud architect with expertise in designing scalable, secure, and cost-effective cloud solutions. I specialize in AWS, Azure, and GCP.",
+    bioRu: "Облачный архитектор с опытом в разработке масштабируемых, безопасных и экономически эффективных облачных решений. Я специализируюсь на AWS, Azure и GCP.",
+    bioKz: "Масштабталатын, қауіпсіз және үнемді бұлтты шешімдерді жобалау тәжірибесі бар бұлт архитекторы. Мен AWS, Azure және GCP мамандандырамын.",
+    category: "Cloud Computing",
+    categoryRu: "Облачные вычисления",
+    categoryKz: "Бұлтты есептеу",
+    skills: ["AWS", "Azure", "GCP", "Cloud Migration", "Infrastructure as Code"],
+    skillsRu: ["AWS", "Azure", "GCP", "Миграция в облако", "Инфраструктура как код"],
+    skillsKz: ["AWS", "Azure", "GCP", "Бұлтқа көшу", "Код ретінде инфрақұрылым"],
+    languages: ["English", "Russian"],
+    rating: 4.9,
+    reviewCount: 29,
+    featured: true,
+    available: true,
+    experience: "10 years"
+  },
+  {
+    id: 21,
+    name: "Alikhan Tursunov",
+    title: "AI Ethics Researcher",
+    company: "Ethical AI",
+    location: "Nur-Sultan, Kazakhstan",
+    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    bio: "Researcher focused on the ethical implications of artificial intelligence and machine learning. I help organizations develop responsible AI frameworks.",
+    bioRu: "Исследователь, изучающий этические аспекты искусственного интеллекта и машинного обучения. Я помогаю организациям разрабатывать ответственные рамки для ИИ.",
+    bioKz: "Жасанды интеллект пен машиналық оқытудың этикалық салдарын зерттеуге бағытталған зерттеуші. Мен ұйымдарға жауапты ЖИ шеңберлерін дамытуға көмектесемін.",
+    category: "Ethics",
+    categoryRu: "Этика",
+    categoryKz: "Этика",
+    skills: ["AI Ethics", "Ethical Frameworks", "Policy Development", "Fairness in ML", "Responsible AI"],
+    skillsRu: ["Этика ИИ", "Этические рамки", "Разработка политик", "Справедливость в МО", "Ответственный ИИ"],
+    skillsKz: ["ЖИ этикасы", "Этикалық шеңберлер", "Саясатты әзірлеу", "МО-дағы әділеттілік", "Жауапты ЖИ"],
+    languages: ["English", "Kazakh", "Russian"],
+    rating: 4.7,
+    reviewCount: 14,
+    featured: false,
+    available: false,
+    experience: "8 years"
+  }
+];
+
+// Merge the additional mentors with the existing ones
+const allMentors = [...dummyMentors, ...additionalMentors];
 
 // Преимущества работы с менторами
 interface Feature {
@@ -329,20 +682,7 @@ function FeatureCard({ icon: Icon, title, titleRu, titleKz, description, descrip
 // Компонент карточки ментора
 function MentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (mentor: Mentor) => void }) {
   const { language } = useTranslations();
-  const [, navigate] = useLocation();
-  
-  const getText = (lang: string) => {
-    return translations[lang as keyof typeof translations];
-  };
-  
-  const t = getText(language || 'en');
-  
-  // Получение локализованных данных
-  const getBio = () => {
-    if (language === 'ru' && mentor.bioRu) return mentor.bioRu;
-    if (language === 'kz' && mentor.bioKz) return mentor.bioKz;
-    return mentor.bio;
-  };
+  const [imageError, setImageError] = useState(false);
   
   const getCategory = () => {
     if (language === 'ru' && mentor.categoryRu) return mentor.categoryRu;
@@ -356,141 +696,126 @@ function MentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (mentor: M
     return mentor.skills;
   };
   
+  const getInitials = () => {
+    return mentor.name.split(' ').map(word => word[0]).join('');
+  };
+  
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col h-[550px]">
-      {/* Верхняя часть карточки с изображением и градиентом */}
-      <div className="h-64 overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
-        <img 
-          src={mentor.profileImage} 
-          alt={mentor.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          onError={(e) => {
-            // При ошибке загрузки используем градиентный фон с инициалами
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            const parent = target.parentElement;
-            if (parent) {
-              const gradientDiv = document.createElement('div');
-              gradientDiv.className = "absolute inset-0 bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center";
-              const text = document.createElement('span');
-              text.className = "text-white text-3xl font-bold text-center";
-              text.textContent = mentor.name.split(' ').map(word => word[0]).join('');
-              gradientDiv.appendChild(text);
-              parent.appendChild(gradientDiv);
-            }
-          }}
-        />
+    <div 
+      className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-[400px] flex flex-col cursor-pointer"
+      onClick={() => onSelect(mentor)}
+    >
+      {/* Верхняя часть - фиксированная высота 100px */}
+      <div className="h-[100px] px-5 py-4 flex items-center gap-4">
+        {/* Фото - фиксированный размер */}
+        <div className="flex-shrink-0 w-[65px] h-[65px]">
+          {!imageError ? (
+            <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm">
+              <img 
+                src={mentor.profileImage} 
+                alt={mentor.name} 
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            </div>
+          ) : (
+            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-primary text-white font-bold text-xl shadow-sm">
+              {getInitials()}
+            </div>
+          )}
+        </div>
         
-        {/* Категория и бейдж */}
-        <Badge className="absolute top-4 left-4 z-20 bg-blue-600 text-white border-none">
-          {getCategory()}
-        </Badge>
-        
-        {/* Выделенный ментор */}
-        {mentor.featured && (
-          <div className="absolute top-4 right-4 z-20 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full flex items-center">
-            <Award className="w-3 h-3 mr-1" />
-            <span>{language === 'ru' ? 'Рекомендуемый' : language === 'kz' ? 'Ұсынылған' : 'Featured'}</span>
-          </div>
-        )}
-        
-        {/* Информация о менторе поверх изображения */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
-          <div className="flex items-center text-white/80 text-sm mt-1">
-            <Building2 className="w-4 h-4 mr-1" />
-            <span className="truncate">{mentor.title}</span>
-          </div>
-          <div className="flex items-center text-white/80 text-sm mt-1">
-            {mentor.company && (
-              <>
-                <Building2 className="w-4 h-4 mr-1" />
-                <span className="truncate">{mentor.company}</span>
-              </>
-            )}
-          </div>
-          <div className="flex items-center text-white/80 text-sm mt-1">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span className="truncate">{mentor.location}</span>
+        {/* Информация - выровнена и с обрезкой текста */}
+        <div className="flex-1 overflow-hidden">
+          <h3 className="text-base font-semibold text-foreground truncate">{mentor.name}</h3>
+          <p className="text-primary/80 text-sm truncate">{mentor.title}</p>
+          <div className="flex items-center mt-1">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star 
+                  key={star} 
+                  className={`w-3 h-3 ${star <= Math.floor(mentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                />
+              ))}
+            </div>
+            <span className="ml-1 text-xs text-foreground/70">
+              {mentor.rating.toFixed(1)}
+            </span>
           </div>
         </div>
       </div>
       
-      {/* Контентная часть карточки */}
-      <div className="p-5 flex-1 flex flex-col">
-        {/* Рейтинг */}
-        <div className="flex items-center text-sm mb-3">
-          <div className="flex items-center">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star 
-                key={star} 
-                className={`w-4 h-4 ${star <= Math.floor(mentor.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-              />
-            ))}
-            <span className="ml-2 text-foreground/80">
-              {mentor.rating.toFixed(1)} • {mentor.reviewCount} {language === 'ru' ? 'отзывов' : language === 'kz' ? 'пікір' : 'reviews'}
-            </span>
-          </div>
-        </div>
-        
-        {/* Опыт и доступность */}
-        <div className="flex justify-between items-center mb-3">
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
-            {mentor.experience}
+      {/* Средняя часть - информация о категории, опыте и доступности */}
+      <div className="h-[80px] px-5 py-3 bg-gray-50/50 dark:bg-gray-800/20">
+        <div className="flex flex-wrap gap-1 mb-2">
+          <Badge className="bg-primary/90 text-white border-none text-xs">
+            {getCategory()}
           </Badge>
           
           {mentor.available ? (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
-              <BadgeCheck className="w-3 h-3 mr-1" /> {language === 'ru' ? 'Доступен' : language === 'kz' ? 'Қол жетімді' : 'Available'}
+            <Badge variant="outline" className="text-xs py-0 h-5 bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700">
+              {language === 'ru' ? 'Принимает учеников' : language === 'kz' ? 'Оқушылар қабылдайды' : 'Available'}
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
-              {language === 'ru' ? 'Недоступен' : language === 'kz' ? 'Қол жетімсіз' : 'Unavailable'}
+            <Badge variant="outline" className="text-xs py-0 h-5 bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700">
+              {language === 'ru' ? 'Группы укомплектованы' : language === 'kz' ? 'Топтар жасақталған' : 'Not accepting students'}
             </Badge>
           )}
         </div>
         
-        {/* Биография */}
-        <p className="text-foreground/80 text-sm line-clamp-3 mb-4">{getBio()}</p>
-        
-        {/* Навыки */}
-        <div className="mb-4">
-          <h4 className="text-sm font-medium text-foreground mb-2">
-            {language === 'ru' ? 'Экспертиза' : language === 'kz' ? 'Мамандану' : 'Expertise'}:
-          </h4>
-          <div className="flex flex-wrap gap-1.5">
-            {getSkills().slice(0, 4).map((skill, index) => (
-              <Badge key={index} variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs">
-                {skill}
-              </Badge>
-            ))}
-            {getSkills().length > 4 && (
-              <Badge variant="outline" className="text-xs">
-                +{getSkills().length - 4}
-              </Badge>
-            )}
+        <div className="flex items-center gap-4 text-xs text-foreground/60">
+          <div className="flex items-center">
+            <MapPin className="w-3 h-3 mr-1" />
+            <span className="truncate max-w-[100px]">{mentor.location}</span>
+          </div>
+          <div className="flex items-center">
+            <Briefcase className="w-3 h-3 mr-1" />
+            <span>{mentor.experience}</span>
           </div>
         </div>
-        
-        {/* Языки */}
-        <div className="flex items-center text-xs text-foreground/70 mb-4">
-          <Globe className="w-3 h-3 mr-1" />
-          {mentor.languages.join(', ')}
+      </div>
+      
+      {/* Навыки - фиксированная высота 100px */}
+      <div className="h-[100px] px-5 py-3">
+        <h4 className="text-xs font-medium text-foreground/70 mb-2">
+          {language === 'ru' ? 'Навыки' : language === 'kz' ? 'Дағдылар' : 'Skills'}
+        </h4>
+        <div className="flex flex-wrap gap-1 overflow-hidden" style={{ maxHeight: '60px' }}>
+          {getSkills().slice(0, 5).map((skill, index) => (
+            <Badge key={index} variant="secondary" className="text-xs py-0.5 px-2 bg-primary/5 text-primary/80 border-primary/10">
+              {skill}
+            </Badge>
+          ))}
+          {getSkills().length > 5 && (
+            <Badge variant="outline" className="text-xs py-0.5 px-2">
+              +{getSkills().length - 5}
+            </Badge>
+          )}
         </div>
-        
-        {/* Кнопка (внизу карточки) */}
-        <div className="mt-auto">
-          <Button 
-            className="w-full gap-2 rounded-full"
-            variant={mentor.available ? "default" : "outline"}
-            disabled={!mentor.available}
-            onClick={() => onSelect(mentor)}
-          >
-            <MessageCircle className="w-4 h-4" />
-            {language === 'ru' ? 'Подробнее' : language === 'kz' ? 'Толығырақ' : 'Details'}
-          </Button>
+      </div>
+      
+      {/* Языки - фиксированная высота 50px */}
+      <div className="h-[50px] px-5 py-3 bg-gray-50/50 dark:bg-gray-800/20">
+        <div className="flex items-center gap-1.5 text-xs text-foreground/60">
+          <Globe className="w-3 h-3" />
+          <span className="truncate">{mentor.languages.join(', ')}</span>
         </div>
+      </div>
+      
+      {/* Кнопка действия - всегда снизу, авто-высота */}
+      <div className="px-5 py-4 mt-auto">
+        <Button 
+          variant="outline"
+          size="sm"
+          className="w-full bg-transparent hover:bg-primary hover:text-white border-primary/20 text-primary transition-all h-9"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(mentor);
+          }}
+        >
+          <MessageCircle className="w-4 h-4 mr-2" />
+          {language === 'ru' ? 'Подробнее' : language === 'kz' ? 'Толығырақ' : 'Learn More'}
+        </Button>
       </div>
     </div>
   );
@@ -504,6 +829,11 @@ export default function PublicMentors() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
   const [languageFilter, setLanguageFilter] = useState("all");
+  
+  // Добавляем состояние для пагинации
+  const [currentPage, setCurrentPage] = useState(1);
+  const mentorsPerPage = 6; // 6 менторов на страницу
+  
   const isMobile = useIsMobile();
   const { theme } = useTheme();
   
@@ -568,13 +898,13 @@ export default function PublicMentors() {
   ];
   
   // Уникальные категории для фильтрации
-  const categories = ["all", ...Array.from(new Set(dummyMentors.map(mentor => mentor.category)))];
+  const categories = ["all", ...Array.from(new Set(allMentors.map(mentor => mentor.category)))];
   
   // Уникальные языки
-  const languages = ["all", ...Array.from(new Set(dummyMentors.flatMap(mentor => mentor.languages)))];
+  const languages = ["all", ...Array.from(new Set(allMentors.flatMap(mentor => mentor.languages)))];
   
   // Фильтрация менторов
-  const filteredMentors = dummyMentors.filter(mentor => {
+  const filteredMentors = allMentors.filter(mentor => {
     const mentorText = `${mentor.name} ${mentor.title} ${mentor.company} ${mentor.bio} ${mentor.skills.join(' ')}`.toLowerCase();
     
     const matchesSearch = searchQuery === "" || mentorText.includes(searchQuery.toLowerCase());
@@ -586,31 +916,41 @@ export default function PublicMentors() {
     
     return matchesSearch && matchesCategory && matchesAvailability && matchesLanguage;
   });
-
-  // Функция для очистки фильтров
+  
+  // Расчеты для пагинации
+  const indexOfLastMentor = currentPage * mentorsPerPage;
+  const indexOfFirstMentor = indexOfLastMentor - mentorsPerPage;
+  const currentMentors = filteredMentors.slice(indexOfFirstMentor, indexOfLastMentor);
+  const totalPages = Math.ceil(filteredMentors.length / mentorsPerPage);
+  
+  // Обновленная функция очистки фильтров
   const clearFilters = () => {
     setSearchQuery("");
     setCategoryFilter("all");
     setAvailabilityFilter("all");
     setLanguageFilter("all");
+    setCurrentPage(1);
+    setShowAdvancedFilters(false);
   };
-
+  
   // В начало компонента PublicMentors добавим состояние для модального окна:
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  
   // Функция для открытия модального окна
   const openMentorModal = (mentor: Mentor) => {
     setSelectedMentor(mentor);
     setIsModalOpen(true);
   };
-
+  
   // Функция для закрытия модального окна
   const closeMentorModal = () => {
     setIsModalOpen(false);
     // Сбрасываем выбранного ментора не сразу, а после закрытия анимации
     setTimeout(() => setSelectedMentor(null), 300);
   };
+  
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   return (
     <PublicPageLayout>
@@ -678,7 +1018,7 @@ export default function PublicMentors() {
                 </motion.div>
               </motion.div>
             </motion.div>
-          </div>
+            </div>
           
           {/* Floating animation elements */}
           <motion.div 
@@ -797,122 +1137,210 @@ export default function PublicMentors() {
             </motion.div>
             
             {/* Filters Section */}
-            <div className="mb-8 bg-card p-6 rounded-xl border border-border">
-              <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                <div className="flex-1">
-                  <label htmlFor="search" className="text-sm font-medium mb-2 block">
-                    {t.search}
-                  </label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <div className="mb-8 bg-card/40 backdrop-blur-sm border border-border/20 rounded-xl p-6 md:p-8 shadow-sm">
+              <div className="flex flex-col md:flex-row gap-4 items-start">
+                <div className="flex-1 relative w-full">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/50" size={18} />
                 <Input
-                      id="search"
-                      type="text"
-                      placeholder={t.searchPlaceholder}
-                  className="pl-10"
+                    id="search"
+                    type="text"
+                    placeholder={t.searchPlaceholder}
+                    className="pl-10 py-6 text-base"
                   value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                  </div>
               </div>
               
-              <div className="w-full md:w-48">
-                  <label htmlFor="category-filter" className="text-sm font-medium mb-2 block">
-                    {t.category}
-                  </label>
-                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                    <SelectTrigger id="category-filter">
-                      <SelectValue placeholder={t.allCategories} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t.allCategories}
-                      </SelectItem>
-                      {categories.filter(cat => cat !== "all").map(category => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-          </div>
-          
-                <div className="w-full md:w-48">
-                  <label htmlFor="availability-filter" className="text-sm font-medium mb-2 block">
-                    {t.availability}
-                  </label>
-                  <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-                    <SelectTrigger id="availability-filter">
-                      <SelectValue placeholder={t.all} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t.all}
-                      </SelectItem>
-                      <SelectItem value="available">
-                        {t.available}
-                      </SelectItem>
-                      <SelectItem value="unavailable">
-                        {t.unavailable}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="w-full md:w-48">
-                  <label htmlFor="language-filter" className="text-sm font-medium mb-2 block">
-                    {t.language}
-                  </label>
-                  <Select value={languageFilter} onValueChange={setLanguageFilter}>
-                    <SelectTrigger id="language-filter">
-                      <SelectValue placeholder={t.allLanguages} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">
-                        {t.allLanguages}
-                      </SelectItem>
-                      {languages.filter(lang => lang !== "all").map(lang => (
-                        <SelectItem key={lang} value={lang}>
-                          {lang}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
                 <Button 
-                  variant="outline" 
-                  className="w-full md:w-auto mt-2 md:mt-0"
-                  onClick={clearFilters}
+                  variant="outline"
+                  className="min-w-[180px] gap-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50"
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                 >
-                  <Filter className="mr-2 h-4 w-4" />
-                  {t.clearFilters}
+                  <Filter size={16} />
+                  {language === 'ru' ? 'Расширенные фильтры' : 
+                  language === 'kz' ? 'Кеңейтілген сүзгілер' : 
+                  'Advanced Filters'}
+                  <motion.div
+                    animate={{ rotate: showAdvancedFilters ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <ArrowRight className="w-4 h-4 transform -rotate-90" />
+                  </motion.div>
                 </Button>
               </div>
+              
+              {/* Расширенные фильтры с анимацией */}
+              <AnimatePresence>
+                {showAdvancedFilters && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden mt-4 pt-4 border-t border-border/10"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* Фильтр по категории */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                          <Filter size={14} />
+                          {t.category}
+                        </h4>
+                  <select
+                          className="w-full px-3 py-2 appearance-none bg-background border border-input rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                  >
+                          <option value="all">{t.allCategories}</option>
+                          {categories.filter(cat => cat !== "all").map(category => (
+                            <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+          </div>
+          
+                      {/* Фильтр по доступности */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                          <Calendar size={14} />
+                          {t.availability}
+                        </h4>
+                        <select
+                          className="w-full px-3 py-2 appearance-none bg-background border border-input rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          value={availabilityFilter}
+                          onChange={(e) => setAvailabilityFilter(e.target.value)}
+                        >
+                          <option value="all">{t.all}</option>
+                          <option value="available">{t.available}</option>
+                          <option value="unavailable">{t.unavailable}</option>
+                        </select>
             </div>
+            
+                      {/* Фильтр по языку */}
+                      <div>
+                        <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                          <Globe size={14} />
+                          {t.language}
+                        </h4>
+                        <select
+                          className="w-full px-3 py-2 appearance-none bg-background border border-input rounded-md text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          value={languageFilter}
+                          onChange={(e) => setLanguageFilter(e.target.value)}
+                        >
+                          <option value="all">{t.allLanguages}</option>
+                          {languages.filter(lang => lang !== "all").map(lang => (
+                            <option key={lang} value={lang}>{lang}</option>
+                          ))}
+                        </select>
+                  </div>
+              </div>
+                    
+                    <div className="mt-4 flex justify-end">
+                      <Button 
+                        variant="outline" 
+                        className="gap-2"
+                        onClick={clearFilters}
+                      >
+                        <X size={14} />
+                        {t.clearFilters}
+                      </Button>
+                  </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              </div>
             
             {/* Results count */}
             <div className="mb-6 text-foreground/70">
               {t.found}: {filteredMentors.length} {filteredMentors.length === 1 ? t.mentor : t.mentors}
-            </div>
-            
+          </div>
+          
             {/* Mentors Grid */}
             {filteredMentors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredMentors.map((mentor, index) => (
-                  <motion.div
-                    key={mentor.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                  >
-                    <MentorCard 
-                      mentor={mentor} 
-                      onSelect={openMentorModal} 
-                    />
-                  </motion.div>
-                ))}
+                  <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  {currentMentors.map((mentor, index) => (
+                    <motion.div
+                      key={mentor.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                    >
+                      <MentorCard 
+                        mentor={mentor} 
+                        onSelect={openMentorModal} 
+                      />
+                    </motion.div>
+                  ))}
+            </div>
+            
+                {/* Пагинация */}
+                {filteredMentors.length > mentorsPerPage && (
+                  <div className="flex justify-center mt-8 pt-6 border-t border-border/20">
+                    <div className="flex flex-wrap gap-3 items-center justify-center">
+                      {/* Кнопка "Предыдущая" */}
+                      <Button
+                        variant="outline"
+                        className={`rounded-full px-5 py-2 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'border-primary/30 hover:bg-primary/10 hover:text-primary'}`}
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ArrowRight className="w-4 h-4 mr-2 transform rotate-180" />
+                        {language === 'ru' ? 'Предыдущая' : 
+                         language === 'kz' ? 'Алдыңғы' : 
+                         'Previous'}
+                      </Button>
+                      
+                      {/* Номера страниц */}
+                      <div className="flex gap-2">
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                          <Button
+                            key={i}
+                            variant={currentPage === i + 1 ? "default" : "outline"}
+                            className={`rounded-full w-9 h-9 p-0 ${
+                              currentPage === i + 1 
+                                ? 'bg-primary text-white' 
+                                : 'border-primary/30 hover:bg-primary/10'
+                            }`}
+                            onClick={() => setCurrentPage(i + 1)}
+                          >
+                            {i + 1}
+                          </Button>
+                        ))}
+            </div>
+            
+                      {/* Кнопка "Следующая" */}
+                      <Button
+                        variant={currentPage === totalPages ? "outline" : "default"}
+                        className={`rounded-full px-5 py-2 ${
+                          currentPage === totalPages 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'bg-primary text-white'
+                        }`}
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                      >
+                        {language === 'ru' ? 'Следующая' : 
+                         language === 'kz' ? 'Келесі' : 
+                         'Next'}
+                        <motion.div
+                          animate={currentPage !== totalPages ? 
+                            { x: [0, 3, 0] } : 
+                            { x: 0 }
+                          }
+                          transition={{ 
+                            duration: 1.2, 
+                            repeat: currentPage !== totalPages ? Infinity : 0, 
+                            repeatDelay: 1 
+                          }}
+                          className="ml-2"
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                        </motion.div>
+                      </Button>
                   </div>
+                  </div>
+                )}
+                </div>
             ) : (
               <div className="text-center py-12">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
@@ -927,7 +1355,7 @@ export default function PublicMentors() {
                 <Button onClick={clearFilters}>
                   {t.clearFiltersBtn}
                 </Button>
-              </div>
+            </div>
             )}
             
             {/* Call-to-action Section */}
@@ -954,14 +1382,12 @@ export default function PublicMentors() {
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </span>
             </Button>
-              </div>
+          </div>
             </motion.div>
         </div>
       </section>
       </main>
       
-      <Footer />
-
       {/* Модальное окно с деталями ментора */}
       <AnimatePresence>
         {isModalOpen && selectedMentor && (
@@ -1037,14 +1463,14 @@ export default function PublicMentors() {
                     
                     <div className="hidden md:block text-white/50">•</div>
                     
-                    <div className="flex items-center">
+            <div className="flex items-center">
                       <Briefcase className="w-4 h-4 mr-2" />
                       {selectedMentor.experience}
-                    </div>
-                  </div>
+              </div>
               </div>
             </div>
-            
+          </div>
+          
               {/* Основное содержимое */}
               <div className="p-6 md:p-8">
                 {/* Рейтинг и статус доступности */}
@@ -1067,11 +1493,11 @@ export default function PublicMentors() {
             
                   {selectedMentor.available ? (
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
-                      <BadgeCheck className="w-4 h-4 mr-2" /> {language === 'ru' ? 'Доступен для менторства' : language === 'kz' ? 'Тәлімгерлікке қол жетімді' : 'Available for mentoring'}
+                      <BadgeCheck className="w-3 h-3 mr-1" /> {language === 'ru' ? 'Принимает учеников' : language === 'kz' ? 'Оқушыларды қабылдайды' : 'Open for mentoring'}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
-                      {language === 'ru' ? 'Временно недоступен' : language === 'kz' ? 'Уақытша қол жетімсіз' : 'Temporarily unavailable'}
+                      {language === 'ru' ? 'Группы укомплектованы' : language === 'kz' ? 'Топтар жасақталған' : 'Not accepting students'}
                     </Badge>
                   )}
                 </div>
@@ -1132,7 +1558,7 @@ export default function PublicMentors() {
                      language === 'kz' ? 'Тәлімгермен байланысу үшін тіркелу немесе кіру қажет' : 
                      'You need to sign up or login to connect with mentors'}
                   </p>
-                </div>
+        </div>
         </div>
             </motion.div>
           </motion.div>

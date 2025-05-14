@@ -984,19 +984,16 @@ interface FeatureCardProps {
   color: string;
 }
 
+// 1. Оптимизация компонента FeatureCard - уменьшаем анимацию
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, description, color }) => {
   return (
-    <motion.div 
-      whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
-      transition={{ duration: 0.3 }}
-      className="bg-card/60 backdrop-blur-sm border border-border/20 rounded-xl p-6 shadow-sm h-full flex flex-col"
-    >
+    <div className="bg-card/60 backdrop-blur-sm border border-border/20 rounded-xl p-6 shadow-sm h-full flex flex-col hover:-translate-y-2 transition-transform duration-300">
       <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${color} shadow-lg`}>
         <Icon className="w-7 h-7 text-white" />
       </div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
       <p className="text-foreground/70 text-sm">{description}</p>
-    </motion.div>
+    </div>
   );
 };
 
@@ -1008,6 +1005,7 @@ interface CourseCardProps {
   index: number;
 }
 
+// 2. Оптимизация компонента CourseCard - упрощаем анимацию
 const CourseCard: React.FC<CourseCardProps> = ({ 
   course, 
   onRegisterClick, 
@@ -1037,13 +1035,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
   };
   
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -10, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)" }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col h-[550px] cursor-pointer"
+    <div 
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col h-[550px] cursor-pointer hover:-translate-y-2 hover:shadow-xl"
       onClick={onClick}
     >
       {/* Изображение курса с оверлеем */}
@@ -1185,7 +1178,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </Button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

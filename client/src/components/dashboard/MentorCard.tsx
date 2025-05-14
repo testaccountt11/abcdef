@@ -9,11 +9,12 @@ interface MentorCardProps {
 }
 
 export default function MentorCard({ mentor }: MentorCardProps) {
-  const { name, title, company, profileImage, skills, contactInfo } = mentor;
+  const { name, title, company, skills, contactInfo } = mentor;
   const { language } = useTheme();
   
   const mentorSkills = skills || [];
-  const mentorImage = profileImage || '/assets/default-mentor.jpg';
+  // Use the standard icon.png for all mentor profile images
+  const mentorImage = '/src/img/icon.png';
   
   const getSkillBadgeColor = (index: number) => {
     const colors = [

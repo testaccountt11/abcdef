@@ -3,7 +3,7 @@ import { useTranslations } from "@/hooks/use-translations";
 import { 
   ArrowRight, Users2, Lightbulb, Heart, Trophy, Rocket, 
   ExternalLink, Github, Linkedin, Twitter, 
-  Building, BookOpen, UserPlus, Star, Globe, Shield, CheckCircle2
+  Building, BookOpen, UserPlus, Star, Globe, Shield, CheckCircle2, Code, PenTool, GraduationCap, Medal
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
@@ -24,7 +24,6 @@ export default function PublicAboutUs() {
     mission: false,
     values: false,
     team: false,
-    cta: false,
     contact: false
   });
 
@@ -164,7 +163,7 @@ export default function PublicAboutUs() {
     );
 
     // Observe each section
-    const sections = ['mission', 'values', 'team', 'cta', 'contact'];
+    const sections = ['mission', 'values', 'team', 'contact'];
     sections.forEach(id => {
       const element = document.getElementById(id);
       if (element) observer.observe(element);
@@ -208,51 +207,26 @@ export default function PublicAboutUs() {
 
   const teamMembers = [
     {
-      name: t('aboutUs.team.member1.name'),
-      role: t('aboutUs.team.member1.role'),
-      bio: t('aboutUs.team.member1.bio'),
-      image: "/assets/team/member1.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287&q=80",
-      socials: [
-        { icon: <Linkedin className="w-4 h-4" />, link: "#" },
-        { icon: <Twitter className="w-4 h-4" />, link: "#" },
-        { icon: <Github className="w-4 h-4" />, link: "#" }
-      ]
-    },
-    {
-      name: t('aboutUs.team.member2.name'),
-      role: t('aboutUs.team.member2.role'),
-      bio: t('aboutUs.team.member2.bio'),
-      image: "/assets/team/member2.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80",
-      socials: [
-        { icon: <Linkedin className="w-4 h-4" />, link: "#" },
-        { icon: <Twitter className="w-4 h-4" />, link: "#" },
-        { icon: <Github className="w-4 h-4" />, link: "#" }
-      ]
-    },
-    {
-      name: t('aboutUs.team.member3.name'),
-      role: t('aboutUs.team.member3.role'),
-      bio: t('aboutUs.team.member3.bio'),
-      image: "/assets/team/member3.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287&q=80",
-      socials: [
-        { icon: <Linkedin className="w-4 h-4" />, link: "#" },
-        { icon: <Twitter className="w-4 h-4" />, link: "#" },
-        { icon: <Github className="w-4 h-4" />, link: "#" }
-      ]
-    },
-    {
-      name: t('aboutUs.team.member4.name'),
-      role: t('aboutUs.team.member4.role'),
-      bio: t('aboutUs.team.member4.bio'),
-      image: "/assets/team/member4.jpg",
-      fallbackImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1288&q=80",
-      socials: [
-        { icon: <Linkedin className="w-4 h-4" />, link: "#" },
-        { icon: <Twitter className="w-4 h-4" />, link: "#" },
-        { icon: <Github className="w-4 h-4" />, link: "#" }
+      name: 'Мақажан Маусымжан',
+      role: language === 'ru' ? 'Основатель проекта' : language === 'kz' ? 'Жоба негізін қалаушы' : 'Project Founder',
+      image: '/src/img/founder.jpg', // Обновленный путь
+      fallbackImage: '/src/img/founder.jpg', // Обновленный путь
+      bio: language === 'ru' 
+        ? 'Талантливый разработчик с опытом создания веб-платформ и успешной реализацией онлайн-магазина.' 
+        : language === 'kz' 
+        ? 'Веб-платформалар әзірлеу тәжірибесі бар және онлайн дүкен жобасын сәтті жүзеге асырды.' 
+        : 'Talented developer with experience in creating web platforms and successfully implementing an online store project.',
+      education: language === 'ru'
+        ? 'Колледж "Astana IT University", специализация: Программное обеспечение (06130100)'
+        : language === 'kz'
+        ? '"Astana IT University" ЖШС Колледжі, мамандығы: Бағдарламалық қамтамасыз ету (06130100)'
+        : 'Astana IT University College, specialization: Software Development (06130100)',
+      qualities: [
+        language === 'ru' ? 'Креативность' : language === 'kz' ? 'Шығармашылық' : 'Creativity',
+        language === 'ru' ? 'Целеустремленность' : language === 'kz' ? 'Мақсаттылық' : 'Purposefulness',
+        language === 'ru' ? 'Адаптивность' : language === 'kz' ? 'Бейімделгіштік' : 'Adaptability',
+        language === 'ru' ? 'Лидерство' : language === 'kz' ? 'Көшбасшылық' : 'Leadership',
+        language === 'ru' ? 'Ответственность' : language === 'kz' ? 'Жауапкершілік' : 'Responsibility'
       ]
     }
   ];
@@ -402,18 +376,8 @@ export default function PublicAboutUs() {
           role="banner"
         >
           {/* Градиентные элементы */}
-          <motion.div 
+          <div 
             className="absolute top-20 left-[10%] w-96 h-96 bg-gradient-to-r from-indigo-400/10 to-primary/10 dark:from-indigo-400/20 dark:to-primary/20 blur-3xl -z-10"
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.2, 0.25, 0.2],
-              rotate: [0, 5, 0]
-            }}
-            transition={{
-              duration: 15,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
             aria-hidden="true"
           />
           <motion.div 
@@ -434,14 +398,12 @@ export default function PublicAboutUs() {
           <motion.div 
             className="absolute top-[15%] left-[15%] text-primary/30 z-0"
             animate={{
-              y: [0, -20, 0],
-              x: [0, 10, 0],
-              rotate: [0, 10, 0]
+              y: [0, -10, 0]
             }}
             transition={{
-              duration: 8,
+              duration: 4,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: "linear"
             }}
           >
             <Building className="w-16 h-16" />
@@ -450,9 +412,7 @@ export default function PublicAboutUs() {
           <motion.div
             className="absolute top-[25%] right-[15%] text-indigo-600/30 z-0"
             animate={{ 
-              y: [0, 15, 0],
-              x: [0, -10, 0],
-              rotate: [0, -5, 0]
+              y: [0, 15, 0]
             }}
             transition={{
               duration: 9,
@@ -466,9 +426,7 @@ export default function PublicAboutUs() {
           <motion.div
             className="absolute bottom-[25%] left-[12%] text-blue-500/30 z-0"
             animate={{ 
-              y: [0, 10, 0],
-              x: [0, -5, 0],
-              rotate: [0, 8, 0]
+              y: [0, 10, 0]
             }}
             transition={{
               duration: 10,
@@ -482,9 +440,7 @@ export default function PublicAboutUs() {
           <motion.div 
             className="absolute bottom-[20%] right-[12%] text-purple-500/30 z-0"
             animate={{
-              y: [0, -8, 0],
-              x: [0, 5, 0],
-              rotate: [0, -5, 0]
+              y: [0, -8, 0]
             }}
             transition={{
               duration: 9,
@@ -498,9 +454,7 @@ export default function PublicAboutUs() {
             <motion.div
             className="absolute top-[35%] left-[10%] text-indigo-500/30 z-0"
             animate={{
-              y: [0, 18, 0],
-              x: [0, -10, 0],
-              rotate: [0, 15, 0]
+              y: [0, 18, 0]
             }}
             transition={{
               duration: 10.5,
@@ -514,9 +468,7 @@ export default function PublicAboutUs() {
           <motion.div 
             className="absolute top-[45%] right-[10%] text-primary/30 z-0"
             animate={{
-              y: [0, -14, 0],
-              x: [0, -7, 0],
-              rotate: [0, 8, 0]
+              y: [0, -14, 0]
             }}
             transition={{
               duration: 9.8,
@@ -530,9 +482,7 @@ export default function PublicAboutUs() {
           <motion.div 
             className="absolute bottom-[12%] left-[20%] text-primary/30 z-0"
             animate={{
-              y: [0, 16, 0],
-              x: [0, 9, 0],
-              rotate: [0, -12, 0]
+              y: [0, 16, 0]
             }}
             transition={{
               duration: 11.2,
@@ -582,7 +532,7 @@ export default function PublicAboutUs() {
                   <span className="flex items-center">
                     {language === 'en' ? 'Discover Our Story' : 
                      language === 'ru' ? 'Узнать нашу историю' : 
-                     'Біздің тарихымызбен танысу'}
+                     'Бізбен таныс'}
                     <motion.span aria-hidden="true">
                       <ArrowRight className={`ml-2 ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                     </motion.span>
@@ -620,9 +570,7 @@ export default function PublicAboutUs() {
                     </h2>
                     
                     <motion.div 
-                      className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-xl p-8 shadow-xl"
-                      whileHover={{ boxShadow: "0 20px 30px -10px rgba(0, 0, 0, 0.1)" }}
-                      transition={{ duration: 0.3 }}
+                      className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-xl p-8 shadow-xl hover:shadow-2xl transition-shadow duration-300"
                     >
                       <motion.p 
                         className="text-lg mb-6 text-foreground/90 dark:text-foreground/95 leading-relaxed"
@@ -721,11 +669,7 @@ export default function PublicAboutUs() {
                     
                     {/* Улучшенный оверлей с градиентом */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end">
-                      <div className="p-6 text-white">
-                        <h3 className="text-2xl font-semibold">
-                          {language === 'ru' ? 'Образование без границ' : language === 'kz' ? 'Шексіз білім беру' : 'Education Without Boundaries'}
-                        </h3>
-                      </div>
+                      
                     </div>
                   </motion.div>
                   
@@ -1048,233 +992,262 @@ export default function PublicAboutUs() {
         </div>
       </section>
 
-        {/* Our Team Section */}
+        {/* Интерактивный профиль разработчика в стиле геймификации */}
         <section id="team" className="py-16 md:py-24">
         <div className="container mx-auto px-4 max-w-7xl">
             <div className="text-center mb-16">
-              <motion.span 
-                className="inline-block px-3 py-1 text-sm rounded-full border border-primary/30 bg-primary/5 text-primary mb-4"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isVisible.team ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5 }}
-              >
-                {language === 'en' ? t('aboutUs.team.subtitle') : 
-                 language === 'ru' ? 'Познакомьтесь с нами' : 
-                 t('aboutUs.team.subtitle')}
-              </motion.span>
-              <motion.h2 
-                className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600"
-                initial={{ opacity: 0, y: 20 }}
-                animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {language === 'en' ? t('aboutUs.team.title') : 
-                   language === 'ru' ? 'Наша команда' : 
-                   t('aboutUs.team.title')}
-              </motion.h2>
-              <motion.p 
-                className="text-lg max-w-3xl mx-auto text-foreground/80"
-                initial={{ opacity: 0, y: 20 }}
-                animate={isVisible.team ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                {language === 'en' ? t('aboutUs.team.description') : 
-                 language === 'ru' ? 'Талантливые профессионалы, объединенные единой миссией создания лучшей образовательной платформы.' : 
-                 t('aboutUs.team.description')}
-              </motion.p>
+              <span className="inline-block px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4">
+                {language === 'ru' ? 'Руководство платформы' : 
+                 language === 'kz' ? 'Платформа басшылығы' : 
+                 'Platform Leadership'}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold mb-8 pb-1 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 leading-loose">
+                {language === 'ru' ? 'Основатель проекта' : 
+                 language === 'kz' ? 'Жоба негізін қалаушы' : 
+                 'Project Founder'}
+              </h2>
+              <p className="text-lg text-foreground/70 max-w-3xl mx-auto mb-12">
+                {language === 'ru' ? 'Познакомьтесь с человеком, создавшим платформу Portfol.IO для развития вашего образовательного и карьерного потенциала.' : 
+                 language === 'kz' ? 'Сіздің білім беру және мансаптық әлеуетіңізді дамыту үшін Portfol.IO платформасын құрған адаммен танысыңыз.' : 
+                 'Meet the person who created the Portfol.IO platform to develop your educational and career potential.'}
+              </p>
             </div>
             
-            {isVisible.team && (
-              isMobile ? (
-                <div className="flex overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar">
-                  {teamMembers.map((member, i) => (
-                    <div 
-                      key={i}
-                      className="snap-center flex-shrink-0 w-[85%] mr-4 group relative overflow-hidden rounded-2xl"
-                    >
-                      <div className="relative overflow-hidden h-64">
+            <div className="grid grid-cols-1 gap-8">
+              {/* Карточка с портретной фотографией в центре внимания */}
+              <div className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-xl overflow-hidden shadow-xl p-8 md:p-10">
+                <div className="flex flex-col items-center gap-8 md:flex-row">
+                  {/* Центральное портретное фото */}
+                  <div className="relative w-full max-w-xs mx-auto md:w-64 h-64 rounded-3xl overflow-hidden flex-shrink-0 shadow-xl border-2 border-primary/20 md:mr-8">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-indigo-500/5 dark:from-primary/10 dark:to-indigo-500/10 blur-md"></div>
+                    
+                    <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-white/20 to-white/5 dark:from-white/5 dark:to-black/20 backdrop-blur-md">
+                      {/* Круглое фото */}
+                      <div className="absolute inset-3 rounded-full overflow-hidden border-2 border-white/20 shadow-inner">
                         <img 
-                          src={member.image} 
-                          alt={member.name} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          src={teamMembers[0].image} 
+                          alt={teamMembers[0].name} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = member.fallbackImage;
+                            target.src = teamMembers[0].fallbackImage;
                           }}
                         />
+                      </div>
+                      
+                      {/* Декоративные элементы вокруг фото */}
+                      <div className="absolute inset-0 w-full h-full pointer-events-none">
+                        {/* Уровень */}
+                        <div className="absolute top-3 left-3 bg-primary text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white shadow-md z-10">
+                          7
+                        </div>
                         
-                        {/* Social links */}
-                        <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                          {member.socials.map((social, j) => (
-                            <a 
-                              key={j}
-                                href={social.link}
-                              className="bg-background/90 text-foreground p-2 rounded-full hover:bg-primary hover:text-white transition-colors duration-300"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              >
-                                {social.icon}
-                            </a>
-                            ))}
+                        {/* Звезда отличия */}
+                        <div className="absolute bottom-3 right-3 text-amber-500">
+                          <Star className="w-6 h-6 fill-amber-500" />
+                      </div>
+                      
+                        {/* Декоративные технологические линии */}
+                        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="50%" cy="50%" r="46%" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" className="text-primary/30 animate-spin-slow" style={{animationDuration: '30s'}} />
+                          <circle cx="50%" cy="50%" r="40%" fill="none" stroke="currentColor" strokeWidth="1" className="text-indigo-500/20 animate-reverse-spin" style={{animationDuration: '20s'}} />
+                        </svg>
+                      </div>
+                    </div>
+                </div>
+                  
+                  {/* Информация о создателе - расширенная и интересная */}
+                  <div className="flex-grow flex flex-col">
+                    <div className="border-l-4 border-primary/20 pl-6 py-1">
+                      <h3 className="text-2xl md:text-3xl font-bold text-foreground/90 flex items-center gap-2">
+                        {teamMembers[0].name}
+                        <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-md text-xs font-medium ml-2">
+                          <Trophy className="w-3.5 h-3.5 mr-1" />
+                          <span>Pro Dev</span>
+                      </div>
+                      </h3>
+                      <p className="text-primary font-medium text-lg mb-4">{teamMembers[0].role}</p>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <p className="text-foreground/80 text-base leading-relaxed mb-6">
+                        {teamMembers[0].bio}
+                      </p>
+                      
+                      <div className="mt-6 mb-6">
+                        <div className="p-4 bg-foreground/5 border border-border/10 rounded-xl">
+                          <h4 className="font-medium flex items-center mb-3">
+                            <GraduationCap className="w-5 h-5 mr-2 text-primary/70" />
+                            {language === 'ru' ? 'Образование' : 
+                             language === 'kz' ? 'Білім' : 
+                             'Education'}
+                          </h4>
+                          <p className="text-foreground/80 text-sm">{teamMembers[0].education}</p>
+                    </div>
+        </div>
+                      
+                      {/* Навыки в более простом формате */}
+                      <div className="mb-6">
+                        <h4 className="font-semibold mb-4 flex items-center">
+                          <Code className="w-5 h-5 mr-2 text-primary/70" />
+                          {language === 'ru' ? 'Технические навыки' : 
+                           language === 'kz' ? 'Техникалық дағдылар' : 
+                           'Technical skills'}
+                        </h4>
+                        
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <Globe className="w-4 h-4 text-primary mr-2" />
+                            <span className="font-medium text-sm">Web Dev</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <span className="w-4 h-4 flex items-center justify-center text-primary mr-2 font-semibold">Py</span>
+                            <span className="font-medium text-sm">Python</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <svg className="w-4 h-4 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20L12 4L20 20"></path></svg>
+                            <span className="font-medium text-sm">Flutter</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <PenTool className="w-4 h-4 text-primary mr-2" />
+                            <span className="font-medium text-sm">UI/UX</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <svg className="w-4 h-4 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                            <span className="font-medium text-sm">JavaScript</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <svg className="w-4 h-4 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h20v14H2zM15 21l-5-5 5-5"></path></svg>
+                            <span className="font-medium text-sm">SQL</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <svg className="w-4 h-4 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+                            <span className="font-medium text-sm">Full Stack</span>
+                          </div>
+                          
+                          <div className="p-2 px-3 bg-foreground/5 border border-border/20 rounded-lg flex items-center hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer">
+                            <svg className="w-4 h-4 text-primary mr-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19l9 2-9-18-9 18 9-2z"></path></svg>
+                            <span className="font-medium text-sm">Figma</span>
+                          </div>
                         </div>
                       </div>
                       
-                      {/* Member details */}
-                      <div className="p-5 flex-grow flex flex-col">
-                        <h3 className="text-xl font-bold">{member.name}</h3>
-                        <p className="text-primary font-medium mb-3">{member.role}</p>
-                        <p className="text-foreground/70 text-sm flex-grow">{member.bio}</p>
+                      {/* Личные качества и преимущества в две колонки */}
+                      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Левая колонка - достижения */}
+                        <div>
+                          <h4 className="font-semibold mb-4 flex items-center">
+                            <Trophy className="w-5 h-5 mr-2 text-amber-500" />
+                            {language === 'ru' ? 'Достижения' : 
+                            language === 'kz' ? 'Жетістіктер' : 
+                            'Achievements'}
+                          </h4>
+                          
+                          <div className="space-y-3">
+                            <div className="p-2 px-3 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center hover:translate-x-1 transition-transform cursor-pointer">
+                              <Medal className="w-4 h-4 text-amber-500 mr-2" />
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {language === 'ru' ? 'Призер олимпиад' : 
+                                  language === 'kz' ? 'Олимпиада жүлдегері' : 
+                                  'Olympiad winner'}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="p-2 px-3 bg-blue-500/10 rounded-lg border border-blue-500/20 flex items-center hover:translate-x-1 transition-transform cursor-pointer">
+                              <BookOpen className="w-4 h-4 text-blue-500 mr-2" />
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {language === 'ru' ? 'Научные проекты' : 
+                                  language === 'kz' ? 'Ғылыми жобалар' : 
+                                  'Scientific projects'}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="p-2 px-3 bg-green-500/10 rounded-lg border border-green-500/20 flex items-center hover:translate-x-1 transition-transform cursor-pointer">
+                              <Globe className="w-4 h-4 text-green-500 mr-2" />
+                              <div>
+                                <p className="font-medium text-sm">
+                                  {language === 'ru' ? 'Международные конференции' : 
+                                  language === 'kz' ? 'Халықаралық конференциялар' : 
+                                  'International conferences'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Правая колонка - личные качества */}
+                        <div>
+                          <h4 className="font-semibold mb-4 flex items-center">
+                            <Users2 className="w-5 h-5 mr-2 text-primary/70" />
+                            {language === 'ru' ? 'Личные качества' : 
+                            language === 'kz' ? 'Жеке қасиеттері' : 
+                            'Personal qualities'}
+                          </h4>
+                          
+                          <div className="flex flex-wrap gap-2">
+                            {teamMembers[0].qualities.map((quality, i) => (
+                              <div 
+                                key={i} 
+                                className="px-3 py-1.5 bg-foreground/5 border border-border/20 rounded-full text-sm 
+                                  hover:bg-primary/10 hover:border-primary/30 hover:text-primary cursor-pointer
+                                  hover:-translate-y-1 transition-transform"
+                              >
+                                {quality}
+                              </div>
+                            ))}
+                          </div>
+                        </div>  
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-              <motion.div 
-                className="flex flex-wrap justify-center gap-x-8 gap-y-16"
-                variants={staggerContainerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {teamMembers.map((member, i) => (
-                  <motion.div 
-                    key={i}
-                    className="group relative overflow-hidden rounded-2xl bg-card dark:bg-gray-800/60 border border-border/40 dark:border-white/5 transition-all duration-300 h-full flex flex-col dark:shadow-lg dark:shadow-primary/5 w-64"
-                    custom={i}
-                    variants={teamMemberVariants}
-                    whileHover="hover"
-                  >
-                    <div className="relative overflow-hidden h-64">
-                      <img 
-                        src={member.image} 
-                        alt={member.name} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = member.fallbackImage;
-                        }}
-                      />
                       
-                      {/* Social links */}
-                      <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                        {member.socials.map((social, j) => (
-                          <a 
-                            key={j}
-                              href={social.link}
-                            className="bg-background/90 text-foreground p-2 rounded-full hover:bg-primary hover:text-white transition-colors duration-300"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >
-                              {social.icon}
-                          </a>
-                          ))}
+                      {/* Цитата */}
+                      <div className="mt-6 pt-4 border-t border-border/20">
+                        <p className="text-foreground/70 italic">
+                          {language === 'ru' ? '"Образование должно быть доступным, практичным и вдохновляющим. С Portfol.IO мы стремимся создать среду для эффективного обучения и развития профессиональных навыков."' : 
+                           language === 'kz' ? '"Білім қолжетімді, практикалық және шабыттандыратын болуы керек. Portfol.IO арқылы біз тиімді оқыту және кәсіби дағдыларды дамыту ортасын құруға тырысамыз."' : 
+                           '"Education should be accessible, practical, and inspiring. With Portfol.IO, we aim to create an environment for effective learning and professional skills development."'}
+                        </p>
                       </div>
                     </div>
-                    
-                    {/* Member details */}
-                    <div className="p-5 flex-grow flex flex-col">
-                      <h3 className="text-xl font-bold">{member.name}</h3>
-                      <p className="text-primary font-medium mb-3">{member.role}</p>
-                      <p className="text-foreground/70 text-sm flex-grow">{member.bio}</p>
-                    </div>
-                  </motion.div>
-                ))}
-            </motion.div>
-              )
-          )}
-        </div>
-      </section>
-      
-      {/* CTA Section */}
-        <section id="cta" className="py-16 md:py-24 overflow-hidden">
-          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <div className={`border border-primary/10 rounded-3xl bg-card/60 backdrop-blur-xl ${isMobile ? 'p-6' : 'p-12'} shadow-md`}>
-        <motion.div
-                className="max-w-3xl mx-auto text-center"
-              initial={{ opacity: 0, y: 30 }}
-                animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7 }}
-              >
-                <motion.h2 
-                  className={`${isMobile ? 'text-2xl' : 'text-3xl md:text-5xl'} font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90`}
-                >
-                  {language === 'ru' ? 'Присоединяйтесь к нам сегодня' : 
-                   language === 'kz' ? 'Бүгін бізге қосылыңыз' : 
-                   'Join Us Today'}
-                </motion.h2>
-                <motion.p 
-                  className="text-xl text-foreground/70 mb-10"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  {language === 'ru' 
-                    ? 'Начните свой образовательный путь с Portfol.IO и откройте новые возможности для своего будущего.' 
-                    : language === 'kz' 
-                    ? 'Portfol.IO-мен білім беру жолыңызды бастаңыз және болашағыңыз үшін жаңа мүмкіндіктерді ашыңыз.' 
-                    : 'Start your educational journey with Portfol.IO and unlock new opportunities for your future.'}
-                </motion.p>
-                <motion.div
-                  className="flex flex-col sm:flex-row gap-4 justify-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isVisible.cta ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  <Button 
-                    size={isMobile ? "default" : "lg"} 
-                    className={`rounded-full ${isMobile ? 'px-6 py-4' : 'px-8 py-6 text-lg'} bg-gradient-to-r from-primary/90 to-indigo-600/90 hover:from-primary/80 hover:to-indigo-600/80 shadow-lg hover:shadow-primary/10 text-white transition-all duration-500`}
-                    onClick={() => navigate('/register')}
-                  >
-                    {language === 'ru' ? 'Зарегистрироваться' : 
-                     language === 'kz' ? 'Тіркелу' : 
-                     'Register Now'}
-                  </Button>
-                </motion.div>
-                
-                {/* Stats counter - используем существующие переводы через t() */}
-                <motion.div 
-                  className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8"
-                  initial={{ opacity: 0 }}
-                  animate={isVisible.cta ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.7, delay: 0.5 }}
-                >
-                  <motion.div 
-                    className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-border/10"
-                    whileHover={{ y: -3, boxShadow: "0 10px 20px -5px rgba(0, 0, 0, 0.05)", transition: { duration: 0.4 } }}
-                  >
-                    <div className="text-4xl font-bold text-primary/90 mb-1">5000+</div>
-                    <div className="text-sm text-foreground/60">{t('aboutUs.cta.stat1')}</div>
-                  </motion.div>
-                  <motion.div 
-                    className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-border/10"
-                    whileHover={{ y: -3, boxShadow: "0 10px 20px -5px rgba(0, 0, 0, 0.05)", transition: { duration: 0.4 } }}
-                  >
-                    <div className="text-4xl font-bold text-primary/90 mb-1">200+</div>
-                    <div className="text-sm text-foreground/60">{t('aboutUs.cta.stat2')}</div>
-                  </motion.div>
-                  <motion.div 
-                    className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-border/10"
-                    whileHover={{ y: -3, boxShadow: "0 10px 20px -5px rgba(0, 0, 0, 0.05)", transition: { duration: 0.4 } }}
-                  >
-                    <div className="text-4xl font-bold text-primary/90 mb-1">98%</div>
-                    <div className="text-sm text-foreground/60">{t('aboutUs.cta.stat3')}</div>
-                  </motion.div>
-                </motion.div>
-            </motion.div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Подсказка */}
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 text-foreground/60 text-sm px-4 py-2 bg-card/30 border border-border/10 rounded-full">
+                  <Lightbulb className="w-4 h-4 text-amber-500 animate-pulse" />
+                  <span>
+                    {language === 'ru' ? 'Наведите на элементы для дополнительной информации' : 
+                     language === 'kz' ? 'Қосымша ақпарат үшін элементтердің үстіне тінтуірді апарыңыз' : 
+                     'Hover over elements for additional information'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Contact Form Section */}
-        <section id="contact" className="py-24 pb-32 relative overflow-hidden">
+        <section id="contact" className="py-16 pb-24 relative overflow-hidden">
           {/* Фоновые эффекты */}
           <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
             <div className="absolute top-0 left-0 right-0 h-2/3 bg-gradient-to-br from-primary/20 via-transparent to-indigo-500/20 blur-3xl"></div>
             <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-tr from-blue-500/20 via-transparent to-purple-500/20 blur-3xl"></div>
           </div>
 
-          <div className="container mx-auto px-4 max-w-7xl relative mb-12">
+          <div className="container mx-auto px-4 max-w-7xl relative">
             <motion.div 
-              className="text-center mb-12"
+              className="text-center mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -1295,44 +1268,47 @@ export default function PublicAboutUs() {
             </motion.div>
 
             <div className="bg-card/30 backdrop-blur-md border border-border/10 rounded-xl p-6 lg:p-8 shadow-xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Левая колонка - информация */}
                 <div>
                   <h3 className="text-xl font-semibold mb-6 text-foreground/90">
-                    {language === 'ru' ? 'Контакты' : language === 'kz' ? 'Байланыстар' : 'Contacts'}
+                    {language === 'ru' ? 'Контакты' : language === 'kz' ? 'Байланыс контактілері' : 'Contacts'}
                   </h3>
                   
                   <div className="space-y-5 mb-8">
+                    {/* В мини-разделе контактов - все иконки filled */}
+                  <div className="space-y-5 mb-8">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 flex items-center justify-center mr-3 text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                          <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                        <div className="w-10 h-10 flex items-center justify-center mr-3 bg-primary/10 rounded-full text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
                         </svg>
                       </div>
-                      <p className="text-foreground/80">+7 (800) 123-45-67</p>
+                        <p className="text-foreground/80">+7 776 828 5785</p>
                     </div>
                     
                     <div className="flex items-center">
-                      <div className="w-10 h-10 flex items-center justify-center mr-3 text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+                        <div className="w-10 h-10 flex items-center justify-center mr-3 bg-primary/10 rounded-full text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                            <path d="M19 4H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" fill="currentColor"/>
+                            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8" fill="none" stroke="white" strokeOpacity="0.6" strokeWidth="1.5" strokeLinecap="round"/>
                         </svg>
                       </div>
-                      <p className="text-foreground/80">info@portfol.io</p>
+                        <p className="text-foreground/80">mssmi797@gmail.com</p>
                     </div>
                     
                     <div className="flex items-center">
-                      <div className="w-10 h-10 flex items-center justify-center mr-3 text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        <div className="w-10 h-10 flex items-center justify-center mr-3 bg-primary/10 rounded-full text-primary">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                         </svg>
                       </div>
                       <p className="text-foreground/80">
                         {language === 'ru' 
-                          ? 'г. Москва, ул. Примерная, 123'
+                            ? 'г. Астана, Мангилик Ел 55а'
                           : language === 'kz'
-                          ? 'Мәскеу қ., Примерная к-сі, 123 үй'
-                          : '123 Sample St., Moscow'}
+                            ? 'Астана қ., Мәңгілік Ел 55а'
+                            : 'Astana, Mangilik El 55a'}
                       </p>
                     </div>
                   </div>
@@ -1342,38 +1318,41 @@ export default function PublicAboutUs() {
                       {language === 'ru' ? 'Мы в соцсетях' : language === 'kz' ? 'Әлеуметтік желілерде' : 'Follow us'}
                     </h4>
                     <div className="flex space-x-3">
-                      <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-background/50 border border-border/20 text-primary hover:bg-primary/10 transition-all duration-300">
+                        <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                           <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
                         </svg>
                       </a>
-                      <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-background/50 border border-border/20 text-primary hover:bg-primary/10 transition-all duration-300">
+                        <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                           <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
                         </svg>
                       </a>
-                      <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-background/50 border border-border/20 text-primary hover:bg-primary/10 transition-all duration-300">
+                        <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                           <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
                         </svg>
                       </a>
-                      <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-background/50 border border-border/20 text-primary hover:bg-primary/10 transition-all duration-300">
+                        <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                           <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
                         </svg>
                       </a>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Правая колонка - форма */}
                 <div>
-                  <form className="space-y-5" onSubmit={handleContactSubmit}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <form className="space-y-4" onSubmit={handleContactSubmit}>
+                    {/* В форме отправки - все иконки только бордер */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-primary">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
                           </svg>
                         </div>
                         <input 
@@ -1386,12 +1365,11 @@ export default function PublicAboutUs() {
                         />
                       </div>
                       
-                      {/* Поле Email с исправленной иконкой */}
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-primary">
-                          {/* Новая иконка Email */}
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                           </svg>
                         </div>
                         <input 
@@ -1407,8 +1385,8 @@ export default function PublicAboutUs() {
                     
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path fillRule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
                       </div>
                       <input 
@@ -1422,9 +1400,10 @@ export default function PublicAboutUs() {
                     
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                       </div>
                       <select 
@@ -1432,7 +1411,7 @@ export default function PublicAboutUs() {
                         name="subject"
                         className="w-full pl-11 pr-4 py-2.5 bg-background/70 border border-border/20 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent transition-all"
                         required
-                        defaultValue="" // Исправлено: добавлен defaultValue вместо selected
+                        defaultValue=""
                       >
                         <option value="" disabled>
                           {language === 'ru' ? 'Выберите тему' : language === 'kz' ? 'Тақырыпты таңдаңыз' : 'Select a subject'}
@@ -1454,8 +1433,8 @@ export default function PublicAboutUs() {
                     
                     <div className="relative">
                       <div className="absolute top-3 left-0 flex items-start pl-3.5 pointer-events-none text-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.394A9.06 9.06 0 0 0 8 15z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
                       </div>
                       <textarea 

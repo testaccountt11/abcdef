@@ -66,6 +66,13 @@ export function Navbar() {
               {t('nav.mentors')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
             </div>
+            <div 
+              className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
+              onClick={() => navigate('/publicstudytips')}
+            >
+              {t('nav.studyAdvice')}
+              <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            </div>
           </div>
           
           <div className="flex items-center space-x-3">
@@ -141,6 +148,15 @@ export function Navbar() {
               }}
             >
               {t('nav.mentors')}
+            </div>
+            <div 
+              className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
+              onClick={() => {
+                navigate('/publicstudytips');
+                setIsMenuOpen(false);
+              }}
+            >
+              {t('nav.studyAdvice')}
             </div>
           </div>
         </div>

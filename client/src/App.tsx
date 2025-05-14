@@ -28,9 +28,11 @@ import PublicAboutUs from "@/pages/publicaboutus";
 import PublicCourses from "@/pages/publiccourses";
 import PublicInternships from "@/pages/publicinternships";
 import PublicMentors from "@/pages/publicmentors";
+import PublicStudyTips from "@/pages/publicstudytips";
+import BecomeMentor from "@/pages/become-mentor";
 
 // List of public routes that don't require authentication
-const PUBLIC_ROUTES = ['/', '/login', '/register', '/publicaboutus', '/publiccourses', '/publicinternships', '/publicmentors'];
+const PUBLIC_ROUTES = ['/', '/login', '/register', '/publicaboutus', '/publiccourses', '/publicinternships', '/publicmentors', '/publicstudytips', '/become-mentor'];
 
 function Router() {
   const [location, setLocation] = useLocation();
@@ -81,6 +83,8 @@ function Router() {
       <Route path="/publiccourses" component={PublicCourses} />
       <Route path="/publicinternships" component={PublicInternships} />
       <Route path="/publicmentors" component={PublicMentors} />
+      <Route path="/publicstudytips" component={PublicStudyTips} />
+      <Route path="/become-mentor" component={BecomeMentor} />
       
       <Route component={NotFound} />
     </Switch>

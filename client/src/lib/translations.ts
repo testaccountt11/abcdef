@@ -3,6 +3,7 @@ export type TranslationKey =
   | 'nav.courses'
   | 'nav.internships'
   | 'nav.mentors'
+  | 'nav.studyAdvice'
   | 'nav.login'
   | 'hero.title'
   | 'hero.subtitle'
@@ -287,6 +288,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'nav.courses': 'Courses',
     'nav.internships': 'Internships',
     'nav.mentors': 'Mentors',
+    'nav.studyAdvice': 'Study Tips',
     'nav.login': 'Login',
     'hero.title': 'Build Your Future with Portfol.IO',
     'hero.subtitle': 'Next generation platform for your career development. Courses, internships and mentorship in one place.',
@@ -566,7 +568,8 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'nav.about': 'О нас',
     'nav.courses': 'Курсы',
     'nav.internships': 'Стажировки',
-    'nav.mentors': 'Наставники',
+    'nav.mentors': 'Менторы',
+    'nav.studyAdvice': 'Советы по учебе',
     'nav.login': 'Войти',
     'hero.title': 'Создайте своё будущее с Portfol.IO',
     'hero.subtitle': 'Платформа нового поколения для вашего карьерного развития. Курсы, стажировки и наставничество в одном месте.',
@@ -844,8 +847,9 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
   kz: {
     'nav.about': 'Біз туралы',
     'nav.courses': 'Курстар',
-    'nav.internships': 'Тәжірибеден өту',
+    'nav.internships': 'Тәжірибе',
     'nav.mentors': 'Менторлар',
+    'nav.studyAdvice': 'Оқу кеңестері',
     'nav.login': 'Кіру',
     'hero.title': 'Portfol.IO-мен болашағыңды құр',
     'hero.subtitle': 'Мансабыңды дамытуға арналған жаң буын платформасы. Курстар, тәжірибеден өту және тәлімгерлік бір жерде.',
