@@ -235,16 +235,16 @@ export default function PublicPrivacyPolicy() {
       </div>
       
       {/* Policy Content */}
-      <div className="container px-4 py-16 ml-0">
+      <div className="container mx-auto px-4 py-16 max-w-7xl">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid gap-8 max-w-5xl"
+          className="grid gap-8 w-full"
         >
           {content.sections.map((section, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <Card className="overflow-hidden border-border/30 hover:shadow-md transition-all duration-300">
+            <motion.div key={index} variants={itemVariants} className="w-full">
+              <Card className="overflow-hidden border-border/30 hover:shadow-md transition-all duration-300 w-full">
                 <CardHeader className="bg-primary/5 pb-4">
                   <div className="flex items-start gap-4">
                     <div className="bg-card rounded-md p-2 shadow-sm">
