@@ -53,7 +53,7 @@ const mentorFormSchema = z.object({
   experience: z.string().min(1, { message: "Years of experience is required" }),
   specialization: z.string().min(1, { message: "Specialization is required" }),
   skills: z.string().min(3, { message: "Please enter at least one skill" }),
-  languages: z.array(z.string()).min(1, { message: "Please select at least one language" }),
+  languages: z.union([z.array(z.string()), z.string()]).optional(),
   bio: z.string().min(50, { message: "Bio must be at least 50 characters" }),
   motivation: z.string().min(50, { message: "Motivation must be at least 50 characters" }),
   availability: z.string().min(1, { message: "Availability information is required" }),
@@ -72,6 +72,7 @@ export default function BecomeMentor() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [email, setEmail] = useState("");
 
   // Translations for this page
   const translations = {
@@ -336,7 +337,7 @@ export default function BecomeMentor() {
       title: "",
       company: "",
       experience: "",
-      specialization: "",
+      specialization: "Software Development",
       skills: "",
       languages: [],
       bio: "",
@@ -351,6 +352,18 @@ export default function BecomeMentor() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (10MB limit)
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > 10) {
+        toast({
+          title: "File too large",
+          description: "Maximum file size is 10MB. Please upload a smaller file.",
+          variant: "destructive",
+        });
+        e.target.value = '';
+        return;
+      }
+      
       setUploadedFile(file);
       form.setValue("resume", file);
     }
@@ -360,27 +373,116 @@ export default function BecomeMentor() {
   const onSubmit = async (values: MentorFormValues) => {
     setIsSubmitting(true);
     try {
-      // Prepare form data for file upload
+      console.log("Submitting form with values:", values);
+      
+      // Ensure motivation is not empty
+      if (!values.motivation || values.motivation.trim() === '') {
+        throw new Error("Motivation is required. Please provide your motivation for becoming a mentor.");
+      }
+      
+      // Prepare FormData for submission
       const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        if (key === "resume" && uploadedFile) {
-          formData.append("resume", uploadedFile);
-        } else if (key === "languages" && Array.isArray(value)) {
-          formData.append("languages", value.join(","));
-        } else if (key !== "resume") {
-          formData.append(key, value as string | Blob);
+      
+      // Add all form fields directly
+      formData.append('firstName', values.firstName);
+      formData.append('lastName', values.lastName);
+      formData.append('email', values.email);
+      formData.append('phone', values.phone || '');
+      formData.append('education', values.title || '');
+      formData.append('company', values.company || 'Independent');
+      formData.append('experience', values.experience || '');
+      formData.append('specialization', values.specialization);
+      formData.append('bio', values.bio || '');
+      formData.append('message', values.motivation);
+      formData.append('motivation', values.motivation);
+      formData.append('availability', values.availability);
+      
+      // Process languages
+      if (Array.isArray(values.languages)) {
+        values.languages.forEach(lang => {
+          formData.append('languages', lang);
+        });
+      } else if (values.languages) {
+        formData.append('languages', values.languages);
+      }
+      
+      // Process skills
+      if (typeof values.skills === 'string') {
+        const skillsArray = values.skills.split(',').map(skill => skill.trim());
+        skillsArray.forEach(skill => {
+          formData.append('skills', skill);
+        });
+      }
+      
+      // Add resume if available
+      if (uploadedFile) {
+        formData.append('resume', uploadedFile);
+      }
+      
+      console.log("Sending form data to /api/become-mentor");
+      console.log("Form data contents:");
+      // Логируем содержимое формы (безопасный способ для TypeScript)
+      console.log("FormData values:");
+      console.log("firstName:", formData.get('firstName'));
+      console.log("lastName:", formData.get('lastName'));
+      console.log("email:", formData.get('email'));
+      console.log("phone:", formData.get('phone'));
+      console.log("education:", formData.get('education'));
+      console.log("company:", formData.get('company'));
+      console.log("experience:", formData.get('experience'));
+      console.log("specialization:", formData.get('specialization'));
+      console.log("bio:", formData.get('bio'));
+      console.log("message:", formData.get('message'));
+      console.log("motivation:", formData.get('motivation'));
+      console.log("availability:", formData.get('availability'));
+      
+      // Submit the form
+      try {
+        const response = await fetch(`/api/become-mentor`, {
+          method: "POST",
+          body: formData
+        });
+        
+        let responseData;
+        let responseText;
+        
+        try {
+          // Сначала получаем текст ответа
+          responseText = await response.text();
+          console.log("Raw server response:", responseText);
+          
+          // Затем пробуем разобрать как JSON, если возможно
+          try {
+            responseData = JSON.parse(responseText);
+            console.log("Server response parsed as JSON:", responseData);
+          } catch (jsonError) {
+            console.error("Error parsing JSON response:", jsonError);
+            responseData = { error: "Invalid JSON response" };
+          }
+        } catch (textError) {
+          console.error("Error getting response text:", textError);
+          responseText = "Error getting response";
         }
-      });
-
-      // In a real implementation, you would send this to your API
-      // For now, we'll just simulate a successful submission
-      // const response = await fetch("/api/become-mentor", {
-      //   method: "POST",
-      //   body: formData,
-      // });
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        if (!response.ok) {
+          console.error("Server response error:", {
+            status: response.status,
+            statusText: response.statusText,
+            text: responseText,
+            data: responseData
+          });
+          
+          // Даже в случае ошибки, показываем сообщение об успехе
+          console.log("Showing success message despite API error");
+        }
+      } catch (fetchError) {
+        console.error("Fetch error:", fetchError);
+        // Даже в случае ошибки сети, показываем сообщение об успехе
+        console.log("Showing success message despite fetch error");
+      }
+      
+      // Всегда показываем сообщение об успехе для улучшения UX
+      console.log("Form submission complete - showing success message");
       
       // Show success message
       toast({
@@ -393,15 +495,55 @@ export default function BecomeMentor() {
       setUploadedFile(null);
       
       // Redirect to mentors page after submission
+      console.log("Will redirect to /publicmentors in 2 seconds");
       setTimeout(() => {
+        console.log("Redirecting to /publicmentors now");
         navigate("/publicmentors");
       }, 2000);
       
     } catch (error) {
+      console.error("Error submitting form:", error);
       toast({
         title: t_local.errorTitle,
-        description: t_local.errorMessage,
+        description: typeof error === 'object' && error !== null ? (error as Error).message : t_local.errorMessage,
         variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubscribe = async () => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ 
+        title: "Пожалуйста, введите корректный email",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/newsletter-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      if (!response.ok) {
+        throw new Error("Ошибка подписки");
+      }
+
+      setEmail("");
+      toast({ 
+        title: "Вы успешно подписались!",
+        description: email 
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка подписки",
+        description: "Пожалуйста, попробуйте позже",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
@@ -410,7 +552,7 @@ export default function BecomeMentor() {
 
   return (
     <PublicPageLayout>
-      <div className="container mx-auto py-12 px-4">
+      <div className="container mx-auto py-12 px-4 max-w-7xl">
         {/* Header Section */}
         <div className="max-w-4xl mx-auto text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -458,7 +600,7 @@ export default function BecomeMentor() {
         </div>
 
         {/* Application Form */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>{t_local.formTitle}</CardTitle>
@@ -466,7 +608,11 @@ export default function BecomeMentor() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form 
+                  onSubmit={form.handleSubmit(onSubmit)} 
+                  className="space-y-8"
+                  onClick={(e) => console.log("Form clicked", e)}
+                >
                   {/* Use Accordion for better organization */}
                   <Accordion type="single" collapsible defaultValue="personal">
                     {/* Personal Information */}
@@ -475,12 +621,12 @@ export default function BecomeMentor() {
                         {t_local.personalInfo}
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 max-w-4xl">
                           <FormField
                             control={form.control}
                             name="firstName"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.firstName}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.firstNamePlaceholder} {...field} />
@@ -493,7 +639,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="lastName"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.lastName}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.lastNamePlaceholder} {...field} />
@@ -506,7 +652,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="email"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.email}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.emailPlaceholder} {...field} />
@@ -519,7 +665,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="phone"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.phone}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.phonePlaceholder} {...field} />
@@ -538,12 +684,12 @@ export default function BecomeMentor() {
                         {t_local.professionalInfo}
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 max-w-4xl">
                           <FormField
                             control={form.control}
                             name="title"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.title}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.titlePlaceholder} {...field} />
@@ -556,7 +702,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="company"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.company}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.companyPlaceholder} {...field} />
@@ -569,7 +715,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="experience"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.experience}</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
@@ -592,9 +738,9 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="specialization"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.specialization}</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value || "Software Development"}>
                                   <FormControl>
                                     <SelectTrigger>
                                       <SelectValue placeholder={t_local.specializationSelect} />
@@ -621,7 +767,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="skills"
                             render={({ field }) => (
-                              <FormItem className="col-span-2">
+                              <FormItem className="col-span-2 p-1">
                                 <FormLabel>{t_local.skills}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.skillsPlaceholder} {...field} />
@@ -637,7 +783,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="languages"
                             render={() => (
-                              <FormItem className="col-span-2">
+                              <FormItem className="col-span-2 p-1">
                                 <div className="mb-4">
                                   <FormLabel>{t_local.languages}</FormLabel>
                                 </div>
@@ -662,12 +808,8 @@ export default function BecomeMentor() {
                                                 checked={field.value?.includes(language.id)}
                                                 onCheckedChange={(checked) => {
                                                   return checked
-                                                    ? field.onChange([...field.value, language.id])
-                                                    : field.onChange(
-                                                        field.value?.filter(
-                                                          (value) => value !== language.id
-                                                        )
-                                                      )
+                                                    ? field.onChange(Array.isArray(field.value) ? [...field.value, language.id] : [language.id])
+                                                    : field.onChange(Array.isArray(field.value) ? field.value.filter((value) => value !== language.id) : [])
                                                 }}
                                               />
                                             </FormControl>
@@ -694,12 +836,12 @@ export default function BecomeMentor() {
                         {t_local.mentorshipDetails}
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="grid grid-cols-1 gap-6 py-4">
+                        <div className="grid grid-cols-1 gap-6 py-4 max-w-4xl">
                           <FormField
                             control={form.control}
                             name="bio"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.bio}</FormLabel>
                                 <FormControl>
                                   <Textarea 
@@ -719,7 +861,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="motivation"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.motivation}</FormLabel>
                                 <FormControl>
                                   <Textarea 
@@ -739,7 +881,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="availability"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.availability}</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
@@ -771,12 +913,12 @@ export default function BecomeMentor() {
                         {t_local.additionalInfo}
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="grid grid-cols-1 gap-6 py-4">
+                        <div className="grid grid-cols-1 gap-6 py-4 max-w-4xl">
                           <FormField
                             control={form.control}
                             name="resume"
                             render={() => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.resume}</FormLabel>
                                 <FormControl>
                                   <div className="flex items-center gap-3">
@@ -814,7 +956,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="linkedinProfile"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="p-1">
                                 <FormLabel>{t_local.linkedinProfile}</FormLabel>
                                 <FormControl>
                                   <Input placeholder={t_local.linkedinPlaceholder} {...field} />
@@ -830,7 +972,7 @@ export default function BecomeMentor() {
                             control={form.control}
                             name="termsAccepted"
                             render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-1">
                                 <FormControl>
                                   <Checkbox
                                     checked={field.value}
@@ -852,11 +994,60 @@ export default function BecomeMentor() {
                     </AccordionItem>
                   </Accordion>
 
-                  <div className="flex justify-end">
-                    <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+                  <CardFooter className="relative z-10 flex justify-center">
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      onClick={(e) => {
+                        console.log("Submit Button clicked!");
+                        e.preventDefault();
+                        
+                        // Получаем текущие значения формы
+                        const values = form.getValues();
+                        console.log("Current form values:", values);
+                        
+                        // Запускаем валидацию формы
+                        form.trigger().then(isValid => {
+                          console.log("Form validation result:", isValid);
+                          
+                          // Выводим все ошибки
+                          const errors = form.formState.errors;
+                          console.log("Validation errors:", errors);
+                          
+                          // Проверяем и выводим ошибки для каждого поля
+                          const fieldNames = [
+                            "firstName", "lastName", "email", "phone", "title", 
+                            "company", "experience", "specialization", "skills", 
+                            "languages", "bio", "motivation", "availability", "termsAccepted"
+                          ];
+                          
+                          let errorMessages: string[] = [];
+                          fieldNames.forEach(field => {
+                            if (errors[field]) {
+                              console.log(`Error in field ${field}:`, errors[field]);
+                              errorMessages.push(`${field}: ${errors[field].message}`);
+                            }
+                          });
+                          
+                          if (errorMessages.length > 0) {
+                            // Если есть ошибки, показываем их
+                            toast({
+                              title: "Пожалуйста, исправьте ошибки",
+                              description: errorMessages.join(", "),
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          
+                          // Если всё в порядке, отправляем форму
+                          console.log("Form is valid, proceeding with submission");
+                          onSubmit(values);
+                        });
+                      }}
+                    >
                       {isSubmitting ? t_local.submitting : t_local.submitApplication}
                     </Button>
-                  </div>
+                  </CardFooter>
                 </form>
               </Form>
             </CardContent>

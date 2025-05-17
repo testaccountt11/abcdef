@@ -10,7 +10,8 @@ import {
   insertArticleSchema,
   insertCertificateSchema,
   insertStatsSchema,
-  contactRequests
+  contactRequests,
+  newsletterSubscriptions
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -23,18 +24,22 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import fs from "fs";
 import express from "express";
+import { db } from './db';
+import { sql, eq } from 'drizzle-orm';
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configure multer for file uploads
+// Создаем директорию для загрузки резюме
+const uploadDir = path.join(process.cwd(), 'uploads/resumes');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Настройка multer для загрузки резюме
 const multerStorage = multer.diskStorage({
   destination: function (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) {
-    const uploadDir = path.join(process.cwd(), 'uploads/certificates');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
     cb(null, uploadDir);
   },
   filename: function (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) {
@@ -43,21 +48,125 @@ const multerStorage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const resumeUpload = multer({ 
   storage: multerStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
+    fileSize: 10 * 1024 * 1024 // 10MB limit
   },
   fileFilter: (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-    const allowedTypes = ['.pdf', '.jpg', '.jpeg', '.png'];
+    const allowedTypes = ['.pdf', '.doc', '.docx'];
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedTypes.includes(ext)) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type. Only PDF, JPG, JPEG, and PNG files are allowed.'));
+      cb(new Error('Invalid file type. Only PDF, DOC, and DOCX files are allowed.'));
     }
   }
 });
+
+// Создание таблицы mentor_applications при запуске сервера
+(async () => {
+  try {
+    // Проверяем существование таблицы и ее структуру
+    const tableExists = await db.execute(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'mentor_applications'
+      );
+    `);
+    
+    if (tableExists.rows[0].exists) {
+      console.log("Table mentor_applications exists, checking structure...");
+      
+      // Получаем все NOT NULL колонки без дефолтных значений
+      const mandatoryColumns = await db.execute(`
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns 
+        WHERE table_name = 'mentor_applications'
+        AND is_nullable = 'NO'
+        AND column_default IS NULL
+        AND column_name != 'id'
+      `);
+      
+      console.log("Mandatory columns without defaults:", mandatoryColumns.rows);
+      
+      // Делаем все обязательные колонки nullable или добавляем дефолтные значения
+      for (const col of mandatoryColumns.rows) {
+        try {
+          const columnName = col.column_name as string;
+          const dataType = col.data_type as string;
+          const defaultValue = getDefaultValueForColumn(columnName, dataType);
+          
+          if (defaultValue) {
+            // Добавляем дефолтное значение
+            await db.execute(`
+              ALTER TABLE mentor_applications
+              ALTER COLUMN ${columnName} SET DEFAULT ${defaultValue}
+            `);
+            console.log(`Added default value ${defaultValue} to column ${columnName}`);
+          } else {
+            // Делаем колонку nullable
+            await db.execute(`
+              ALTER TABLE mentor_applications
+              ALTER COLUMN ${columnName} DROP NOT NULL
+            `);
+            console.log(`Made column ${columnName} nullable`);
+          }
+        } catch (alterError) {
+          console.error(`Error modifying column ${col.column_name}:`, alterError);
+        }
+      }
+      
+      // Выводим обновленную структуру таблицы
+      const updatedStructure = await db.execute(`
+        SELECT column_name, data_type, is_nullable, column_default
+        FROM information_schema.columns 
+        WHERE table_name = 'mentor_applications'
+        ORDER BY ordinal_position
+      `);
+      console.log("Updated mentor_applications table structure:", updatedStructure.rows);
+    }
+  } catch (error) {
+    console.error("Error checking/updating mentor_applications table:", error);
+  }
+})();
+
+// Функция для определения дефолтных значений по типу колонки
+function getDefaultValueForColumn(columnName: string, dataType: string): string | null {
+  switch (columnName) {
+    case 'company':
+      return "'Independent'";
+    case 'specialization':
+      return "'General'";
+    case 'availability':
+      return "'1-2'";
+    case 'status':
+      return "'pending'";
+    case 'experience':
+      return "'1-3'";
+    case 'languages':
+      return "ARRAY[]::text[]";
+    case 'skills':
+      return "ARRAY[]::text[]";
+    case 'bio':
+    case 'message':
+    case 'motivation':
+      return "''"; // Пустая строка
+    default:
+      if (dataType.includes('text')) {
+        return "''";
+      } else if (dataType.includes('int')) {
+        return "0";
+      } else if (dataType.includes('bool')) {
+        return "false";
+      } else if (dataType.includes('timestamp')) {
+        return "CURRENT_TIMESTAMP";
+      } else if (dataType.includes('date')) {
+        return "CURRENT_DATE";
+      }
+      return null; // Нет подходящего дефолтного значения
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const SessionStore = MemoryStore(session);
@@ -118,8 +227,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Authentication middleware
-  function isAuthenticated(req: Request, res: Response, next: Function) {
+  // Middleware для проверки авторизации
+  function isAuthenticated(req: Request, res: Response, next: any) {
     if (req.isAuthenticated()) {
       return next();
     }
@@ -127,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   
   // Error handling for Zod validation
-  function validateRequest(schema: any, body: any) {
+  function validateRequest(schema: any, body: any): any {
     try {
       return schema.parse(body);
     } catch (error) {
@@ -698,7 +807,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Certificate file upload endpoint
-  app.post("/api/upload-certificate", isAuthenticated, upload.single('file'), async (req, res) => {
+  app.post("/api/upload-certificate", isAuthenticated, resumeUpload.single('file'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -822,6 +931,456 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Error creating contact request:', error);
       return res.status(500).json({ message: 'Failed to submit contact request' });
+    }
+  });
+  
+  // Полностью переписанный обработчик подписки на бюллетень без зависимости от pool или dbStorage
+  app.post("/api/newsletter-subscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      // Валидация email
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ message: "Invalid email address" });
+      }
+      
+      // Используем прямые SQL-запросы через db.execute, не используя ни pool, ни dbStorage
+      // Проверка существующего email
+      const checkResult = await db.execute(
+        sql`SELECT id FROM newsletter_subscriptions WHERE LOWER(email) = LOWER(${email}) LIMIT 1`
+      );
+      
+      // Проверяем результат
+      if (checkResult && checkResult[0]) {
+        return res.status(200).json({ message: "Email already subscribed" });
+      }
+      
+      // Добавление нового email
+      await db.execute(
+        sql`INSERT INTO newsletter_subscriptions (email, subscription_date) 
+            VALUES (${email}, ${new Date()})`
+      );
+      
+      res.status(201).json({ message: "Successfully subscribed" });
+    } catch (error: any) {
+      // Добавим больше информации в лог для диагностики
+      console.error("Newsletter subscription error details:", {
+        message: error.message,
+        stack: error.stack,
+        error
+      });
+      res.status(500).json({ message: "Subscription failed. Please try again later." });
+    }
+  });
+  
+  // Обработчик заявок на менторство с загрузкой файлов
+  app.post("/api/become-mentor", (req, res, next) => {
+    console.log("Received request to /api/become-mentor");
+    console.log("Request body keys:", Object.keys(req.body));
+    resumeUpload.single('resume')(req, res, (err) => {
+      if (err) {
+        console.error("File upload error:", err);
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ 
+            message: "Application submission failed", 
+            error: "File size limit exceeded. Maximum file size is 10MB."
+          });
+        }
+        return res.status(400).json({ 
+          message: "Application submission failed", 
+          error: err.message
+        });
+      }
+      next();
+    });
+  }, async (req, res) => {
+    try {
+      console.log("Processing form data in /api/become-mentor");
+      console.log("Request body:", req.body);
+      
+      // Получаем данные из тела запроса
+      const { 
+        email, 
+        firstName, 
+        lastName, 
+        phone, 
+        education, 
+        experience, 
+        languages, 
+        skills, 
+        message,
+        motivation, // Явно добавляем поле motivation
+        company = 'Independent',
+        specialization = 'General',
+        availability = '1-2' // Добавляем availability с дефолтным значением
+      } = req.body;
+      
+      // Проверяем обязательные поля
+      if (!email || !firstName || !lastName) {
+        console.error("Missing required fields:", { email, firstName, lastName });
+        return res.status(400).json({
+          message: "Validation failed",
+          error: "Email, firstName, and lastName are required fields"
+        });
+      }
+      
+      // Check for motivation field
+      if (!motivation && !message) {
+        console.error("Motivation field missing in request");
+        return res.status(400).json({
+          message: "Validation failed",
+          error: "Motivation field is required"
+        });
+      }
+      
+      // Use motivation or message for the motivation field
+      const motivationValue = motivation || message || '';
+      
+      // Получаем информацию о загруженном файле, если он есть
+      const resumeFile = req.file ? req.file.filename : null;
+      
+      console.log("Mentor application data:", { 
+        email, 
+        firstName, 
+        lastName, 
+        company,
+        specialization,
+        availability,
+        motivation: motivationValue,
+      });
+      console.log("Resume file:", resumeFile);
+      
+      // Проверим, есть ли company в req.body напрямую
+      if (!req.body.company) {
+        console.log("Company field is missing in request body. Setting default value.");
+        req.body.company = 'Independent';
+      }
+      
+      console.log("Company field value:", req.body.company);
+      
+      // Modified array formatting function
+      const formatPgArray = (input: string | string[] | undefined): string => {
+        if (!input) return "ARRAY[]::text[]";
+        
+        let items: string[] = [];
+        if (Array.isArray(input)) {
+          items = input;
+        } else if (typeof input === 'string') {
+          items = [input];
+        }
+        
+        // Format as ARRAY constructor with properly escaped strings
+        const escapedItems = items.map(item => `'${item.replace(/'/g, "''")}'`);
+        return `ARRAY[${escapedItems.join(",")}]::text[]`;
+      };
+      
+      // Escape single quotes in text fields to prevent SQL injection
+      const escapeSql = (text: string | undefined): string => {
+        if (!text) return '';
+        return text.replace(/'/g, "''");
+      };
+      
+      const fullName = escapeSql(`${firstName} ${lastName}`);
+      const emailEscaped = escapeSql(email);
+      const phoneEscaped = escapeSql(phone || '');
+      const educationEscaped = escapeSql(education || '');
+      const experienceEscaped = escapeSql(experience || '');
+      const messageEscaped = escapeSql(message || '');
+      const resumePathEscaped = escapeSql(resumeFile || '');
+      // Use "Independent" as a fallback value to avoid NULL constraint issues
+      const companyEscaped = escapeSql(company) || 'Independent';
+      const specializationEscaped = escapeSql(specialization) || 'General';
+      
+      // Format arrays properly
+      const languagesFormatted = formatPgArray(languages);
+      const skillsFormatted = formatPgArray(skills);
+      
+      console.log("Formatted languages:", languagesFormatted);
+      console.log("Formatted skills:", skillsFormatted);
+      
+      // Проверим структуру таблицы, используя строковые литералы
+      const tableColumnsQuery = `
+        SELECT column_name, data_type, is_nullable
+        FROM information_schema.columns 
+        WHERE table_name = 'mentor_applications'
+        ORDER BY ordinal_position
+      `;
+      const tableColumns = await db.execute(tableColumnsQuery);
+      
+      console.log("Table columns with details:", tableColumns.rows);
+      
+      // Формируем SQL-запрос как строку
+      let query = "";
+      
+      // Если колонка first_name существует, используем ее
+      if (tableColumns.rows.some((col: any) => col.column_name === 'first_name')) {
+        query = `
+          INSERT INTO mentor_applications 
+          (first_name, last_name, email, phone, title, experience, languages, skills, bio, resume_file, company, specialization, motivation, availability) 
+          VALUES (
+            '${escapeSql(firstName)}', 
+            '${escapeSql(lastName)}', 
+            '${emailEscaped}', 
+            '${phoneEscaped}', 
+            '${educationEscaped}', 
+            '${experienceEscaped}', 
+            ${languagesFormatted}, 
+            ${skillsFormatted}, 
+            '${messageEscaped}',
+            '${resumePathEscaped}',
+            COALESCE('${companyEscaped}', 'Independent'),
+            COALESCE('${specializationEscaped}', 'General'),
+            '${motivationValue}',
+            '${escapeSql(req.body.availability || '1-2')}'
+          ) 
+          RETURNING id
+        `;
+      } else {
+        // Альтернативный запрос с колонкой name
+        query = `
+          INSERT INTO mentor_applications 
+          (name, email, phone, title, experience, languages, skills, bio, resume_file, company, specialization, motivation, availability) 
+          VALUES (
+            '${fullName}', 
+            '${emailEscaped}', 
+            '${phoneEscaped}', 
+            '${educationEscaped}', 
+            '${experienceEscaped}', 
+            ${languagesFormatted}, 
+            ${skillsFormatted}, 
+            '${messageEscaped}',
+            '${resumePathEscaped}',
+            COALESCE('${companyEscaped}', 'Independent'),
+            COALESCE('${specializationEscaped}', 'General'),
+            '${motivationValue}',
+            '${escapeSql(req.body.availability || '1-2')}'
+          ) 
+          RETURNING id
+        `;
+      }
+      
+      console.log("Executing query:", query);
+      // Log all prepared values for debugging
+      console.log("Prepared values:", {
+        firstName: escapeSql(firstName),
+        lastName: escapeSql(lastName),
+        email: emailEscaped,
+        phone: phoneEscaped,
+        title: educationEscaped,
+        experience: experienceEscaped,
+        languages: languagesFormatted,
+        skills: skillsFormatted,
+        message: messageEscaped,
+        resumeFile: resumePathEscaped,
+        company: companyEscaped,
+        companyDirectValue: req.body.company,
+        hasCompanyField: 'company' in req.body,
+        specialization: specializationEscaped,
+        specializationDirectValue: req.body.specialization,
+        hasSpecializationField: 'specialization' in req.body,
+        motivation: motivationValue,
+        availability: req.body.availability || '1-2'
+      });
+      
+      // Double-check if 'company' column exists and is required
+      const companyColumnQuery = `
+        SELECT column_name, is_nullable, column_default
+        FROM information_schema.columns 
+        WHERE table_name = 'mentor_applications' AND column_name = 'company'
+      `;
+      const companyColumn = await db.execute(companyColumnQuery);
+      console.log("Company column details:", companyColumn.rows);
+      
+      // Last resort: try altering the table to add a default value
+      if (companyColumn.rows.length > 0 && companyColumn.rows[0].is_nullable === 'NO' && !companyColumn.rows[0].column_default) {
+        try {
+          console.log("Attempting to add default value to company column");
+          const alterQuery = `
+            ALTER TABLE mentor_applications
+            ALTER COLUMN company SET DEFAULT 'Independent'
+          `;
+          await db.execute(alterQuery);
+          console.log("Successfully added default value to company column");
+        } catch (alterError) {
+          console.error("Failed to add default value:", alterError);
+        }
+      }
+      
+      const result = await db.execute(query);
+      
+      res.json({ success: true, id: result.rows[0].id });
+    } catch (dbError) {
+      console.error("Database error details:", {
+        message: (dbError as any).message,
+        code: (dbError as any).code,
+        detail: (dbError as any).detail,
+        hint: (dbError as any).hint,
+        position: (dbError as any).position,
+        table: (dbError as any).table,
+        column: (dbError as any).column,
+        constraint: (dbError as any).constraint,
+        stack: (dbError as any).stack
+      });
+      
+      // Проверим структуру таблицы для диагностики
+      try {
+        const tableStructure = await db.execute(`
+          SELECT column_name, data_type, is_nullable, column_default
+          FROM information_schema.columns 
+          WHERE table_name = 'mentor_applications'
+          ORDER BY ordinal_position
+        `);
+        console.log("Table structure for mentor_applications:", tableStructure.rows);
+      } catch (schemaError) {
+        console.error("Error fetching schema:", schemaError);
+      }
+      
+      res.status(500).json({ 
+        message: "Application submission failed", 
+        error: String((dbError as any).message || "Unknown error"),
+        detail: (dbError as any).detail,
+        hint: (dbError as any).hint,
+        column: (dbError as any).column
+      });
+    }
+  });
+  
+  // JSON API для заявок на менторство
+  app.post("/api/become-mentor-json", async (req, res) => {
+    try {
+      console.log("Received request to /api/become-mentor-json");
+      console.log("Request body keys:", Object.keys(req.body));
+      
+      // Получаем данные из тела запроса в формате JSON
+      const { 
+        email, 
+        firstName, 
+        lastName, 
+        phone, 
+        education, 
+        experience, 
+        languages, 
+        skills, 
+        bio,
+        message,
+        motivation,
+        company = 'Independent',
+        specialization = 'General',
+        availability = '1-2'  // Добавляем availability с дефолтным значением
+      } = req.body;
+      
+      console.log("JSON API mentor application data:", { 
+        email, 
+        firstName, 
+        lastName, 
+        company,
+        specialization,
+        availability,
+        motivation,
+      });
+      
+      // Проверим, есть ли обязательные поля
+      if (!email || !firstName || !lastName) {
+        return res.status(400).json({
+          message: "Validation failed",
+          error: "Required fields missing"
+        });
+      }
+      
+      // Check for motivation field
+      if (!motivation && !message && !bio) {
+        console.error("Motivation field missing in request");
+        return res.status(400).json({
+          message: "Validation failed",
+          error: "Motivation field is required"
+        });
+      }
+      
+      // Modified array formatting function
+      const formatPgArray = (input: string | string[] | undefined): string => {
+        if (!input) return "ARRAY[]::text[]";
+        
+        let items: string[] = [];
+        if (Array.isArray(input)) {
+          items = input;
+        } else if (typeof input === 'string') {
+          items = [input];
+        }
+        
+        // Format as ARRAY constructor with properly escaped strings
+        const escapedItems = items.map(item => `'${item.replace(/'/g, "''")}'`);
+        return `ARRAY[${escapedItems.join(",")}]::text[]`;
+      };
+      
+      // Escape single quotes in text fields to prevent SQL injection
+      const escapeSql = (text: string | undefined): string => {
+        if (!text) return '';
+        return text.replace(/'/g, "''");
+      };
+      
+      const fullName = escapeSql(`${firstName} ${lastName}`);
+      const emailEscaped = escapeSql(email);
+      const phoneEscaped = escapeSql(phone || '');
+      const educationEscaped = escapeSql(education || '');
+      const experienceEscaped = escapeSql(experience || '');
+      const bioEscaped = escapeSql(bio || '');
+      const motivationEscaped = escapeSql(motivation || message || bio || '');
+      const companyEscaped = escapeSql(company) || 'Independent';
+      const specializationEscaped = escapeSql(specialization) || 'General';
+      
+      // Format arrays properly
+      const languagesFormatted = formatPgArray(languages);
+      const skillsFormatted = formatPgArray(skills);
+      
+      // Сначала проверим структуру таблицы
+      const tableColumnsQuery = `
+        SELECT column_name, data_type, is_nullable
+        FROM information_schema.columns 
+        WHERE table_name = 'mentor_applications'
+        ORDER BY ordinal_position
+      `;
+      const tableColumns = await db.execute(tableColumnsQuery);
+      
+      console.log("Table columns for JSON API:", tableColumns.rows);
+      
+      // Создаем SQL запрос с явным указанием поля motivation
+      const query = `
+        INSERT INTO mentor_applications 
+        (first_name, last_name, email, phone, title, experience, languages, skills, bio, 
+         company, specialization, motivation, availability) 
+        VALUES (
+          '${escapeSql(firstName)}', 
+          '${escapeSql(lastName)}', 
+          '${emailEscaped}', 
+          '${phoneEscaped}', 
+          '${educationEscaped}', 
+          '${experienceEscaped}', 
+          ${languagesFormatted}, 
+          ${skillsFormatted}, 
+          '${bioEscaped}',
+          '${companyEscaped}',
+          '${specializationEscaped}',
+          '${motivationEscaped}',
+          '${escapeSql(req.body.availability || '1-2')}'
+        ) 
+        RETURNING id
+      `;
+      
+      console.log("Executing JSON API query:", query);
+      
+      const result = await db.execute(query);
+      
+      res.json({ 
+        success: true, 
+        id: result.rows[0].id,
+        message: "Mentor application successfully submitted" 
+      });
+    } catch (dbError) {
+      console.error("Database error in JSON API:", dbError);
+      res.status(500).json({ 
+        message: "Application submission failed", 
+        error: String((dbError as any).message || "Unknown error")
+      });
     }
   });
   

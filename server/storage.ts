@@ -10,11 +10,11 @@ import {
   achievements, type Achievement, type InsertAchievement,
   userAchievements, type UserAchievement, type InsertUserAchievement,
   badges, type Badge, type InsertBadge,
-  userBadges, type UserBadge, type InsertUserBadge
+  userBadges, type UserBadge, type InsertUserBadge,
+  NewsletterSubscription, InsertNewsletterSubscription
 } from "@shared/schema";
 
 export interface IStorage {
-  // Users
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -77,6 +77,11 @@ export interface IStorage {
   awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge>;
   updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined>;
   checkAndAwardBadges(userId: number): Promise<Badge[]>; // Check if user qualifies for new badges
+  
+  // Newsletter subscriptions
+  createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
+  getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null>;
+  getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -92,6 +97,7 @@ export class MemStorage implements IStorage {
   private userAchievements: Map<string, UserAchievement>; // key = userId-achievementId
   private badges: Map<number, Badge>;
   private userBadges: Map<string, UserBadge>; // key = userId-badgeId
+  private newsletterSubscriptions: Map<number, NewsletterSubscription>;
   
   private currentIds: {
     users: number;
@@ -106,6 +112,7 @@ export class MemStorage implements IStorage {
     userAchievements: number;
     badges: number;
     userBadges: number;
+    newsletterSubscriptions: number;
   };
 
   constructor() {
@@ -121,6 +128,7 @@ export class MemStorage implements IStorage {
     this.userAchievements = new Map();
     this.badges = new Map();
     this.userBadges = new Map();
+    this.newsletterSubscriptions = new Map();
     
     this.currentIds = {
       users: 1,
@@ -134,7 +142,8 @@ export class MemStorage implements IStorage {
       achievements: 1,
       userAchievements: 1,
       badges: 1,
-      userBadges: 1
+      userBadges: 1,
+      newsletterSubscriptions: 1
     };
     
     // Initialize with sample data
@@ -912,6 +921,28 @@ export class MemStorage implements IStorage {
     }
 
     return newBadges;
+  }
+
+  // Newsletter subscription methods
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    const id = this.currentIds.newsletterSubscriptions++;
+    const newSubscription: NewsletterSubscription = { ...subscription, id };
+    this.newsletterSubscriptions.set(id, newSubscription);
+    return newSubscription;
+  }
+  
+  async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null> {
+    const subscriptions = Array.from(this.newsletterSubscriptions.values());
+    for (const subscription of subscriptions) {
+      if (subscription.email.toLowerCase() === email.toLowerCase()) {
+        return subscription;
+      }
+    }
+    return null;
+  }
+  
+  async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
+    return Array.from(this.newsletterSubscriptions.values());
   }
 }
 

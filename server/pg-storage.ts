@@ -26,13 +26,60 @@ import {
   contactRequests,
   insertContactRequestSchema,
   ContactRequest,
-  InsertContactRequest
+  InsertContactRequest,
+  NewsletterSubscription,
+  InsertNewsletterSubscription,
+  mentorApplications,
+  InsertMentorApplication,
+  MentorApplication
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { db } from "./db";
 import { eq, and, sql } from "drizzle-orm";
 
 export class PgStorage implements IStorage {
+  [x: string]: any;
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    try {
+      const { email, subscriptionDate } = subscription;
+      const result = await db.execute(
+        sql`INSERT INTO newsletter_subscriptions (email, subscription_date) 
+            VALUES (${email}, ${subscriptionDate}) 
+            RETURNING *`
+      );
+      return result[0];
+    } catch (error) {
+      console.error("Error creating newsletter subscription:", error);
+      throw error;
+    }
+  }
+
+  async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null> {
+    try {
+      const result = await db.execute(
+        sql`SELECT * FROM newsletter_subscriptions WHERE LOWER(email) = LOWER(${email})`
+      );
+      return result[0] || null;
+    } catch (error) {
+      console.error("Error getting newsletter subscription:", error);
+      return null;
+    }
+  }
+
+  async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
+    try {
+      const result = await db.execute(
+        sql`SELECT * FROM newsletter_subscriptions`
+      );
+      
+      // Убедимся, что возвращаем массив
+      return Array.isArray(result) ? result : [];
+    } catch (error) {
+      console.error("Error getting all newsletter subscriptions:", error);
+      return [];
+    }
+  }
+
   // Users
   async getUser(id: number): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
@@ -458,5 +505,48 @@ export class PgStorage implements IStorage {
   async createContactRequest(contactRequest: InsertContactRequest): Promise<ContactRequest> {
     const [request] = await db.insert(contactRequests).values(contactRequest).returning();
     return request;
+  }
+
+  async createMentorApplication(application: InsertMentorApplication): Promise<MentorApplication> {
+    try {
+      const result = await db.insert(mentorApplications).values(application).returning();
+      return result[0];
+    } catch (error) {
+      console.error("Error creating mentor application:", error);
+      throw error;
+    }
+  }
+
+  async getMentorApplicationByEmail(email: string): Promise<MentorApplication | null> {
+    try {
+      const result = await db.select().from(mentorApplications).where(eq(mentorApplications.email, email)).limit(1);
+      return result[0] || null;
+    } catch (error) {
+      console.error("Error getting mentor application:", error);
+      return null;
+    }
+  }
+
+  async getAllMentorApplications(): Promise<MentorApplication[]> {
+    try {
+      return await db.select().from(mentorApplications);
+    } catch (error) {
+      console.error("Error getting all mentor applications:", error);
+      return [];
+    }
+  }
+
+  async updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication | null> {
+    try {
+      const result = await db
+        .update(mentorApplications)
+        .set({ status })
+        .where(eq(mentorApplications.id, id))
+        .returning();
+      return result[0] || null;
+    } catch (error) {
+      console.error("Error updating mentor application status:", error);
+      return null;
+    }
   }
 }

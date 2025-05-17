@@ -1069,10 +1069,10 @@ export default function PublicInternships() {
                 }}
               >
                 <span className="flex items-center">
-                  {language === 'ru' ? 'Найти стажировку' : 
-                   language === 'kz' ? 'Тағылымдама табу' : 
-                   'Find an Internship'}
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                {language === 'ru' ? 'Найти стажировку' : 
+                 language === 'kz' ? 'Тағылымдама табу' : 
+                 'Find an Internship'}
+                <ArrowRight className="ml-2 w-5 h-5" />
                 </span>
               </Button>
             </motion.div>

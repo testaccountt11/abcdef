@@ -9,7 +9,7 @@ import {
   CheckCircle2, Users, FileText, Target,
   Clock, X, Tag, Bookmark,
   Share2, ChevronRight, Star, TrendingUp,
-  Eye, ThumbsUp, Mail, Bell
+  Eye, ThumbsUp, Mail, Bell, Check
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -24,8 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
-// Тип для учебных советов/статей
 interface StudyTip {
   id: number;
   title: string;
@@ -43,21 +43,20 @@ interface StudyTip {
   featured: boolean;
 }
 
-// Примеры данных учебных советов
 const dummyStudyTips = [
   {
     id: 1,
     title: "How to Prepare for IELTS Exam: Step-by-Step Guide",
     titleRu: "Как подготовиться к экзамену IELTS: пошаговое руководство",
     titleKz: "IELTS емтиханына қалай дайындалу керек: қадамдық нұсқаулық",
-    description: "Essential tips, resources, and strategies to achieve your target score in the IELTS exam.",
-    descriptionRu: "Важные советы, ресурсы и стратегии для достижения целевого балла на экзамене IELTS.",
-    descriptionKz: "IELTS емтиханында мақсатты баллға қол жеткізу үшін маңызды кеңестер, ресурстар және стратегиялар.",
+    description: "The IELTS test has four parts: Listening, Reading, Writing, and Speaking. Prepare strategically by understanding each component and practicing with real exam materials. IDP IELTS Kazakhstan offers both Paper-based and Computer-based formats.",
+    descriptionRu: "Тест IELTS состоит из четырех частей: Аудирование, Чтение, Письмо и Говорение. Готовьтесь стратегически, понимая каждый компонент и практикуясь с реальными экзаменационными материалами. IDP IELTS Казахстан предлагает как бумажный, так и компьютерный формат.",
+    descriptionKz: "IELTS тесті төрт бөліктен тұрады: Тыңдау, Оқу, Жазу және Сөйлеу. Әрбір компонентті түсініп, нақты емтихан материалдарымен жаттығу арқылы стратегиялық түрде дайындалыңыз. IDP IELTS Қазақстан қағаз және компьютерлік форматтардың екеуін де ұсынады.",
     category: "Exam Preparation",
     imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-09-15",
-    author: "Aizhan Nurmagambetova",
-    tags: ["IELTS", "English", "Exam Tips"],
+    author: "IDP IELTS Kazakhstan",
+    tags: ["IELTS", "English", "Exam Tips", "International Tests"],
     readTime: "8 min",
     featured: true
   },
@@ -66,47 +65,47 @@ const dummyStudyTips = [
     title: "ENT Preparation: Top Strategies for Success",
     titleRu: "Подготовка к ЕНТ: лучшие стратегии для успеха",
     titleKz: "ҰБТ-ға дайындық: жетістікке жету үшін жоғары стратегиялар",
-    description: "Comprehensive guide to scoring high on Kazakhstan's Unified National Testing with expert advice.",
-    descriptionRu: "Подробное руководство по получению высоких баллов на Едином национальном тестировании Казахстана с экспертными советами.",
-    descriptionKz: "Қазақстанның Ұлттық бірыңғай тестілеуінде жоғары балл жинау бойынша сарапшылардың кеңестерімен толық нұсқаулық.",
+    description: "Preparation for Kazakhstan's Unified National Testing requires systematic approach. TestCenter.kz offers comprehensive practice tests that simulate the actual exam environment. Regular practice with diverse question types and time management skills are key to success.",
+    descriptionRu: "Подготовка к Единому национальному тестированию Казахстана требует систематического подхода. TestCenter.kz предлагает комплексные практические тесты, имитирующие реальную экзаменационную среду. Регулярная практика с разнообразными типами вопросов и навыки управления временем – ключ к успеху.",
+    descriptionKz: "Қазақстанның Ұлттық бірыңғай тестілеуіне дайындық жүйелі тәсілді қажет етеді. TestCenter.kz нақты емтихан ортасын имитациялайтын кешенді практикалық тесттерді ұсынады. Сұрақтардың әртүрлі түрлерімен жүйелі түрде жаттығу және уақытты басқару дағдылары – жетістіктің кілті.",
     category: "Exam Preparation",
     imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-10-02",
-    author: "Arman Bekov",
-    tags: ["ENT", "ҰБТ", "University", "Exams"],
+    author: "TestCenter.kz Team",
+    tags: ["ENT", "ҰБТ", "University", "Exams", "Kazakhstan"],
     readTime: "10 min",
     featured: true
   },
   {
     id: 3,
-    title: "Effective Study Techniques for University Students",
-    titleRu: "Эффективные методы обучения для студентов университетов",
-    titleKz: "Университет студенттеріне арналған тиімді оқу әдістері",
-    description: "Science-backed study methods to improve retention and maximize your learning efficiency.",
-    descriptionRu: "Научно обоснованные методы обучения для улучшения запоминания и максимального повышения эффективности обучения.",
-    descriptionKz: "Есте сақтауды жақсарту және оқу тиімділігін арттыру үшін ғылыми негізделген оқу әдістері.",
-    category: "Study Skills",
+    title: "IELTS Computer-Based Test: Everything You Need to Know",
+    titleRu: "Компьютерный IELTS: все, что вам нужно знать",
+    titleKz: "Компьютерлік IELTS: сізге білу қажет барлық нәрсе",
+    description: "IELTS on Computer offers the same test format as paper-based but with added benefits. Results are available in 2-5 days compared to 13 days for paper tests. Practice with IELTS simulation tools to get comfortable with the digital interface before your exam.",
+    descriptionRu: "Компьютерный IELTS предлагает тот же формат теста, что и бумажный, но с дополнительными преимуществами. Результаты доступны через 2-5 дней по сравнению с 13 днями для бумажных тестов. Практикуйтесь с инструментами симуляции IELTS, чтобы освоиться с цифровым интерфейсом перед экзаменом.",
+    descriptionKz: "Компьютерлік IELTS қағаз нұсқасымен бірдей тест форматын, бірақ қосымша артықшылықтармен ұсынады. Нәтижелер қағаз тесттерінің 13 күніне қарағанда 2-5 күн ішінде қол жетімді. Емтиханға дейін сандық интерфейспен таныс болу үшін IELTS симуляция құралдарымен жаттығыңыз.",
+    category: "Exam Preparation",
     imageUrl: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-08-20",
-    author: "Dauren Kasenov",
-    tags: ["Study Methods", "University", "Learning"],
+    author: "IELTS Test Simulation",
+    tags: ["IELTS", "Digital Exams", "Computer Testing", "English"],
     readTime: "6 min",
     featured: false
   },
   {
     id: 4,
-    title: "Time Management Skills for Students",
-    titleRu: "Навыки управления временем для студентов",
-    titleKz: "Студенттерге арналған уақытты басқару дағдылары",
-    description: "Practical tips to balance academics, extracurricular activities, and personal life.",
-    descriptionRu: "Практические советы по сбалансированию учебы, внеучебной деятельности и личной жизни.",
-    descriptionKz: "Оқу, сыныптан тыс іс-шаралар мен жеке өмірді теңестіруге арналған практикалық кеңестер.",
+    title: "Effective Time Management for GMAT Success",
+    titleRu: "Эффективное управление временем для успеха в GMAT",
+    titleKz: "GMAT-та жетістікке жету үшін тиімді уақытты басқару",
+    description: "The GMAT exam requires strategic time allocation across sections. TestVerbal's approach focuses on question prioritization and section-specific timing strategies. Practice with timed sections to build the mental endurance needed for the 3+ hour test.",
+    descriptionRu: "Экзамен GMAT требует стратегического распределения времени по разделам. Подход TestVerbal фокусируется на приоритизации вопросов и стратегиях распределения времени для каждого раздела. Практикуйтесь с ограничением по времени, чтобы выработать психологическую выносливость, необходимую для 3+ часового теста.",
+    descriptionKz: "GMAT емтиханы бөлімдер бойынша стратегиялық уақыт бөлуді талап етеді. TestVerbal-дің тәсілі сұрақтардың басымдықтарын анықтауға және бөлімге тән уақытты басқару стратегияларына бағытталған. 3+ сағаттық тестке қажетті психикалық төзімділікті қалыптастыру үшін уақыт шектеулі бөлімдермен жаттығыңыз.",
     category: "Study Skills",
     imageUrl: "https://images.unsplash.com/photo-1508962914676-134849a727f0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-09-05",
-    author: "Alina Iskakova",
-    tags: ["Time Management", "Productivity", "Balance"],
-    readTime: "5 min",
+    author: "TestVerbal.ru Team",
+    tags: ["Time Management", "GMAT", "Business School", "MBA"],
+    readTime: "7 min",
     featured: false
   },
   {
@@ -114,43 +113,75 @@ const dummyStudyTips = [
     title: "How to Choose the Right University Program",
     titleRu: "Как выбрать правильную университетскую программу",
     titleKz: "Дұрыс университеттік бағдарламаны қалай таңдау керек",
-    description: "Factors to consider when deciding on your undergraduate or graduate degree program.",
-    descriptionRu: "Факторы, которые следует учитывать при выборе программы бакалавриата или магистратуры.",
-    descriptionKz: "Бакалавриат немесе магистратура бағдарламасын таңдау кезінде ескерілетін факторлар.",
+    description: "Choosing the right university program requires balancing passion, practicality, and future prospects. According to Ucheba.ru, factors to consider include employment rates, curriculum relevance, teaching quality, and availability of internships. Research both program content and institution reputation.",
+    descriptionRu: "Выбор правильной университетской программы требует баланса между увлечением, практичностью и перспективами на будущее. По данным Ucheba.ru, следует учитывать показатели трудоустройства, актуальность учебной программы, качество преподавания и наличие стажировок. Исследуйте как содержание программы, так и репутацию учебного заведения.",
+    descriptionKz: "Дұрыс университеттік бағдарламаны таңдау құштарлық, практикалық және болашақ перспективалар арасындағы теңгерімді талап етеді. Ucheba.ru мәліметтеріне сәйкес, жұмыспен қамту көрсеткіштері, оқу бағдарламасының өзектілігі, оқыту сапасы және тағылымдамалардың болуы ескерілуі керек. Бағдарламаның мазмұнын да, оқу орнының беделін де зерттеңіз.",
     category: "Career Guidance",
     imageUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-07-12",
-    author: "Nurlan Abdrakhmanov",
-    tags: ["University", "Career Planning", "Education"],
-    readTime: "7 min",
+    author: "Ucheba.ru Education Portal",
+    tags: ["University", "Career Planning", "Education", "Program Selection"],
+    readTime: "8 min",
     featured: false
   },
   {
     id: 6,
-    title: "GMAT Exam Preparation Strategies",
-    titleRu: "Стратегии подготовки к экзамену GMAT",
-    titleKz: "GMAT емтиханына дайындалу стратегиялары",
-    description: "Expert tips to master the GMAT exam for business school applications.",
-    descriptionRu: "Экспертные советы по освоению экзамена GMAT для поступления в бизнес-школу.",
-    descriptionKz: "Бизнес мектепке түсуге арналған GMAT емтиханын меңгеру бойынша сарапшылардың кеңестері.",
+    title: "IELTS Reading Strategies: Improving Your Score",
+    titleRu: "Стратегии чтения IELTS: повышение вашего балла",
+    titleKz: "IELTS оқу стратегиялары: балыңызды жақсарту",
+    description: "Master IELTS Reading with proven techniques from IELTSTestSimulation. Practice skimming for general understanding, scanning for specific information, and detailed reading for complete comprehension. Understand different question types and develop strategies for each one.",
+    descriptionRu: "Освойте секцию чтения IELTS с проверенными техниками от IELTSTestSimulation. Практикуйте быстрое чтение для общего понимания, сканирование текста для поиска конкретной информации и детальное чтение для полного понимания. Изучите различные типы вопросов и разработайте стратегии для каждого из них.",
+    descriptionKz: "IELTSTestSimulation ұсынған дәлелденген техникалармен IELTS оқу бөлімін меңгеріңіз. Жалпы түсіну үшін жылдам оқу, нақты ақпаратты іздеу үшін мәтінді сканерлеу және толық түсіну үшін егжей-тегжейлі оқуды практикалаңыз. Әртүрлі сұрақ түрлерін зерттеп, әрқайсысына стратегиялар жасаңыз.",
     category: "Exam Preparation",
     imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-10-10",
-    author: "Kanat Zhumabekov",
-    tags: ["GMAT", "Business School", "MBA"],
+    author: "IELTS Test Simulation",
+    tags: ["IELTS", "Reading Skills", "English", "Test Strategies"],
     readTime: "9 min",
     featured: true
+  },
+  {
+    id: 7,
+    title: "GMAT Verbal Section: Critical Reasoning Mastery",
+    titleRu: "Вербальная секция GMAT: мастерство критического мышления",
+    titleKz: "GMAT вербалды бөлімі: сыни ойлау шеберлігі",
+    description: "The GMAT Verbal section challenges test-takers with critical reasoning questions that require careful analysis. TestVerbal.ru experts recommend focusing on argument structure, identifying conclusion and premise, and recognizing common logical flaws in reasoning.",
+    descriptionRu: "Вербальная часть GMAT бросает вызов участникам теста вопросами критического мышления, требующими тщательного анализа. Эксперты TestVerbal.ru рекомендуют сосредоточиться на структуре аргументов, выявлении заключения и посылок, а также распознавании распространенных логических ошибок в рассуждениях.",
+    descriptionKz: "GMAT вербалды бөлімі тест тапсырушыларға мұқият талдауды қажет ететін сыни ойлау сұрақтарымен қиындық тудырады. TestVerbal.ru сарапшылары аргумент құрылымына, қорытынды мен алғышарттарды анықтауға және ойлаудағы жалпы логикалық қателерді тануға назар аударуды ұсынады.",
+    category: "Exam Preparation",
+    imageUrl: "https://images.unsplash.com/photo-1456081445129-830eb8d4bfc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    date: "2023-11-05",
+    author: "TestVerbal.ru Team",
+    tags: ["GMAT", "Critical Thinking", "Verbal Skills", "Logic", "Business School"],
+    readTime: "11 min",
+    featured: false
+  },
+  {
+    id: 8,
+    title: "Effective Study Techniques for Academic Success",
+    titleRu: "Эффективные методы обучения для академического успеха",
+    titleKz: "Академиялық жетістікке жету үшін тиімді оқу әдістері",
+    description: "Research-backed study methods can dramatically improve learning outcomes. Techniques like spaced repetition, active recall, and the Pomodoro time management method help optimize study sessions and enhance information retention. Creating a dedicated study environment minimizes distractions.",
+    descriptionRu: "Научно обоснованные методы обучения могут значительно улучшить результаты обучения. Такие техники, как распределенное повторение, активное воспроизведение и метод управления временем Помодоро, помогают оптимизировать учебные сессии и улучшить запоминание информации. Создание специальной учебной среды минимизирует отвлекающие факторы.",
+    descriptionKz: "Ғылыми негізделген оқу әдістері оқу нәтижелерін айтарлықтай жақсартады. Мерзімді қайталау, белсенді еске түсіру және Pomodoro уақытты басқару әдісі сияқты техникалар оқу сессияларын оңтайландыруға және ақпаратты есте сақтауды жақсартуға көмектеседі. Арнайы оқу ортасын құру алаңдаушылықты азайтады.",
+    category: "Study Skills",
+    imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    date: "2023-08-15",
+    author: "Education Research Team",
+    tags: ["Study Methods", "Time Management", "Learning", "Productivity", "Academic Performance"],
+    readTime: "8 min",
+    featured: false
   }
 ];
 
 // Add tags for filtering
 const tags = [
-  "#ExamPrep", "#StudyTips", "#TimeManagement", "#CareerGuidance", 
-  "#LanguageLearning", "#UniversityApplication", "#SelfDevelopment",
-  "#StressManagement", "#TestScoring", "#UNT", "#IELTS"
+  "#IELTS", "#ҰБТ_ENT", "#ExamPrep", "#TestCenter", "#GMAT", 
+  "#StudyTips", "#TimeManagement", "#UniversityChoice", 
+  "#ComputerTest", "#CareerPlanning", "#EnglishExam",
+  "#ReadingSkills", "#TestStrategies", "#PracticeTests"
 ];
 
-// Enhanced tag component with animation
 function TagButton({ tag, selected, onClick }: { tag: string; selected: boolean; onClick: () => void }) {
   return (
     <motion.div
@@ -425,6 +456,7 @@ export default function PublicStudyTips() {
   const [savedArticles, setSavedArticles] = useState<number[]>([]);
   const isMobile = useIsMobile();
   const { theme } = useTheme();
+  const { toast } = useToast();
   
   // Refs for animation
   const heroRef = useRef<HTMLDivElement>(null);
@@ -686,6 +718,150 @@ export default function PublicStudyTips() {
 
   // Then define t based on the current language
   const t = translations[language as keyof typeof translations] || translations.en;
+  
+  const NewsletterBlock = () => {
+    const [email, setEmail] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const { toast } = useToast();
+    const { language } = useTranslations();
+
+    // Тексты для разных языков
+    const translations = {
+      en: {
+        title: "Subscribe to Updates",
+        subtitle: "Get fresh materials in your inbox",
+        placeholder: "Your email",
+        button: "Subscribe",
+        disclaimer: "No spam, we send twice a month",
+        successToast: "Successfully subscribed!",
+        errorToast: "Subscription failed. Please try again.",
+        invalidEmail: "Please enter a valid email address"
+      },
+      ru: {
+        title: "Подпишитесь на обновления",
+        subtitle: "Получайте свежие материалы на почту",
+        placeholder: "Ваш email",
+        button: "Подписаться",
+        disclaimer: "Без спама, отправляем дважды в месяц",
+        successToast: "Вы успешно подписались!",
+        errorToast: "Ошибка подписки. Пожалуйста, попробуйте еще раз.",
+        invalidEmail: "Пожалуйста, введите корректный email"
+      },
+      kz: {
+        title: "Жаңартуларға жазылыңыз",
+        subtitle: "Жаңа материалдарды поштаңызға алыңыз",
+        placeholder: "Сіздің email",
+        button: "Жазылу",
+        disclaimer: "Спамсыз, айына екі рет жібереміз",
+        successToast: "Сіз сәтті жазылдыңыз!",
+        errorToast: "Жазылу қатесі. Қайталап көріңіз.",
+        invalidEmail: "Жарамды email енгізіңіз"
+      }
+    };
+
+    const t = translations[language as keyof typeof translations];
+
+    const validateEmail = (email: string) => {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const handleSubscribe = async () => {
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast({ 
+          title: "Пожалуйста, введите корректный email",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        console.log("Отправка запроса на подписку:", email);
+        
+        const response = await fetch("/api/newsletter-subscribe", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify({ email })
+        });
+
+        // Для отладки
+        console.log("Статус ответа:", response.status);
+        const responseData = await response.json();
+        console.log("Ответ сервера:", responseData);
+
+        if (!response.ok) {
+          throw new Error(responseData.message || "Ошибка подписки");
+        }
+
+        setEmail("");
+        toast({ 
+          title: "Вы успешно подписались!",
+          description: email 
+        });
+      } catch (error) {
+        console.error("Ошибка при подписке:", error);
+        toast({
+          title: "Ошибка подписки",
+          description: "Пожалуйста, попробуйте позже",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    return (
+      <div className="p-6">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Mail className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg">{t.title}</h3>
+            <p className="text-sm text-foreground/70">{t.subtitle}</p>
+          </div>
+        </div>
+        
+        <div className="space-y-3">
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t.placeholder}
+            className="bg-background/80"
+            disabled={isSubmitting || isSuccess}
+          />
+          
+          <Button 
+            className="w-full"
+            onClick={handleSubscribe}
+            disabled={isSubmitting || isSuccess}
+          >
+            {isSuccess ? (
+              <span className="flex items-center gap-2">
+                <Check className="h-4 w-4" />
+                {t.button}
+              </span>
+            ) : isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                {t.button}
+              </span>
+            ) : (
+              t.button
+            )}
+          </Button>
+          
+          <p className="text-xs text-center text-foreground/60">
+            {t.disclaimer}
+          </p>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <PublicPageLayout>
@@ -1249,43 +1425,7 @@ export default function PublicStudyTips() {
                 {/* Newsletter Subscription */}
                 <Card className="bg-gradient-to-br from-primary/5 to-blue-500/5 border-primary/10">
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                        <Mail className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg">
-                          {language === 'ru' ? 'Подпишитесь на обновления' : 
-                           language === 'kz' ? 'Жаңартуларға жазылыңыз' : 
-                           'Subscribe to Updates'}
-                        </h3>
-                        <p className="text-sm text-foreground/70">
-                          {language === 'ru' ? 'Получайте свежие материалы на почту' :
-                           language === 'kz' ? 'Жаңа материалдарды поштаға алыңыз' : 
-                           'Get new materials delivered to your inbox'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <Input 
-                        type="email" 
-                        placeholder={language === 'ru' ? 'Ваш email' : 
-                                     language === 'kz' ? 'Сіздің email' : 
-                                     'Your email'}
-                        className="bg-background/80"
-                      />
-                      <Button className="w-full">
-                        {language === 'ru' ? 'Подписаться' : 
-                         language === 'kz' ? 'Жазылу' : 
-                         'Subscribe'}
-                      </Button>
-                      <p className="text-xs text-center text-foreground/60">
-                        {language === 'ru' ? 'Без спама, отправляем дважды в месяц' : 
-                         language === 'kz' ? 'Спамсыз, айына екі рет жібереміз' : 
-                         'No spam, we send twice a month'}
-                      </p>
-                    </div>
+                    <NewsletterBlock />
                   </CardContent>
                 </Card>
               </div>
@@ -1383,54 +1523,374 @@ export default function PublicStudyTips() {
                     </div>
                   </div>
                   
-                  <ScrollArea className="pr-4 max-h-[300px]">
+                  <ScrollArea className="pr-4 max-h-[400px]">
                     <p className="text-foreground/80 mb-6">
                       {language === 'ru' && selectedTip.descriptionRu ? selectedTip.descriptionRu : 
                        language === 'kz' && selectedTip.descriptionKz ? selectedTip.descriptionKz : 
                        selectedTip.description}
                     </p>
                     
-                    {/* Placeholder for full article content */}
-                    <p className="text-foreground/80 mb-6">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, diam quis aliquam
-                      tincidunt, nisl nunc aliquam nisi, vitae ultricies nisl nunc eget nisl. Sed euismod, diam
-                      quis aliquam tincidunt, nisl nunc aliquam nisi, vitae ultricies nisl nunc eget nisl.
-                    </p>
+                    {/* Article content based on tip ID */}
+                    {selectedTip.id === 1 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">Understanding the IELTS Test</h3>
+                        <p className="text-foreground/80 mb-6">
+                          IELTS (International English Language Testing System) assesses your English language proficiency through four components: Listening, Reading, Writing, and Speaking. There are two formats: Paper-based IELTS and IELTS on Computer, with identical content but different delivery methods.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          The total test time is 2 hours and 45 minutes. The Listening, Reading, and Writing sections are completed on the same day, with no breaks between them. The Speaking section may be completed up to a week before or after the other tests.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          In Kazakhstan, IDP IELTS offers both Academic and General Training modules, with tests available in Almaty, Astana, Shymkent, and other major cities.
+                        </p>
+                      </>
+                    )}
                     
-                    <h3 className="text-xl font-bold mt-8 mb-4">Key Takeaways</h3>
+                    {selectedTip.id === 2 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">ENT (ҰБТ) Preparation Approach</h3>
+                        <p className="text-foreground/80 mb-6">
+                          The Unified National Testing is a standardized test in Kazakhstan that serves as both a high school graduation assessment and a university entrance exam. TestCenter.kz provides comprehensive preparation resources that simulate the actual testing environment.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Systematic preparation should include regular practice with diverse question formats across all subject areas. Focus on understanding the question patterns and developing efficient time management strategies during the test.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Online practice tests can help you get familiar with the computer-based testing format and improve your speed and accuracy in answering questions.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 3 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">Benefits of IELTS on Computer</h3>
+                        <p className="text-foreground/80 mb-6">
+                          IELTS on Computer offers several advantages over the paper-based format. The most significant benefit is faster results – available online within 2-5 days compared to 13 days for the paper test. The test content, format, level of difficulty, and scoring are identical for both versions.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          The computer-delivered test gives you the ability to highlight text, make notes on screen, and adjust font size for greater readability. The speaking section is still face-to-face with an examiner, maintaining the interactive nature of the assessment.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Before your exam, practice with IELTS simulation tools to get comfortable with the digital interface. IELTSTestSimulation.com offers free practice tests that mimic the computer-based format, helping you develop familiarity with the system.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 4 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">GMAT Time Management Techniques</h3>
+                        <p className="text-foreground/80 mb-6">
+                          The GMAT exam is 3 hours and 7 minutes long and consists of four sections: Analytical Writing Assessment, Integrated Reasoning, Quantitative, and Verbal. According to TestVerbal.ru, effective time management is critical for success in each section.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          For the Quantitative section, allocate approximately 2 minutes per problem-solving question and slightly less for data sufficiency. In the Verbal section, sentence correction questions should take about 1-1.5 minutes, while critical reasoning and reading comprehension require 2-3 minutes each.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Practice with timed sections regularly to build the mental stamina needed for the lengthy test. Learn to recognize when to move on from difficult questions to maximize your overall score.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 5 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">Choosing Your University Path</h3>
+                        <p className="text-foreground/80 mb-6">
+                          According to Ucheba.ru, selecting the right university program involves researching both the content of the curriculum and the reputation of the institution. Consider program accreditation, faculty qualifications, and the experiences of current students and alumni.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Employment statistics are crucial indicators of program quality. Research the employment rate of graduates, average starting salaries, and common career paths. Programs with strong industry connections and internship opportunities often provide better career prospects.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Balance your personal interests with practical considerations such as program cost, location, and future job market demand. Visit university campuses if possible and speak with department representatives to get a feel for the program environment.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 6 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">IELTS Reading Techniques</h3>
+                        <p className="text-foreground/80 mb-6">
+                          The IELTS Reading section consists of three passages of increasing difficulty with 40 questions to complete in 60 minutes. IELTSTestSimulation recommends a three-step reading approach: skimming, scanning, and detailed reading.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Start by skimming each passage for 2-3 minutes to grasp the main ideas. Look at headings, subheadings, first and last paragraphs, and any highlighted text. Then scan for specific information based on the questions, looking for keywords and relevant sections.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          For different question types, apply specific strategies. For multiple-choice questions, eliminate wrong answers rather than searching for the right one. For matching headings, focus on the main idea of each paragraph. For true/false/not given questions, remember that "not given" means the information is neither confirmed nor contradicted by the text.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 7 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">GMAT Critical Reasoning Approach</h3>
+                        <p className="text-foreground/80 mb-6">
+                          GMAT Critical Reasoning questions test your ability to analyze and evaluate arguments. TestVerbal.ru recommends first identifying the conclusion of the argument – the main point the author is trying to make. Then, locate the premises that support this conclusion, and identify any assumptions that bridge the gap between premise and conclusion.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Common question types include strengthening or weakening arguments, identifying assumptions, finding flaws, and evaluating conclusions. For each type, develop specific approaches. For example, in weakening questions, look for information that introduces doubt about the connection between premise and conclusion.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Logical fallacies frequently appear in GMAT arguments. Be on the lookout for common flaws like confusing correlation with causation, relying on inappropriate analogies, or using a small sample to make broad generalizations. Recognizing these patterns can significantly improve your performance.
+                        </p>
+                      </>
+                    )}
+                    
+                    {selectedTip.id === 8 && (
+                      <>
+                        <h3 className="text-xl font-bold mt-8 mb-4">Effective Study Methodologies</h3>
+                        <p className="text-foreground/80 mb-6">
+                          Spaced repetition and active recall are among the most effective learning techniques according to cognitive science research. Spaced repetition involves reviewing material at gradually increasing intervals, while active recall means testing yourself rather than simply re-reading materials. Combined, these techniques significantly enhance long-term retention.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          The Pomodoro Technique – working in focused 25-minute blocks followed by 5-minute breaks – helps maintain concentration and prevents burnout. After completing four "pomodoros," take a longer break of 15-30 minutes. This structured approach keeps your mind fresh and improves productivity.
+                        </p>
+                        <p className="text-foreground/80 mb-6">
+                          Create an optimal study environment by minimizing distractions. Turn off notifications on your devices, use website blockers if necessary, and communicate boundaries to friends and family during study sessions. Consider factors like lighting, noise level, and ergonomics to maximize comfort and focus during long study periods.
+                        </p>
+                      </>
+                    )}
+                    
+                    {/* Key Takeaways Section */}
+                    <h3 className="text-xl font-bold mt-8 mb-4">
+                      {language === 'ru' ? 'Ключевые выводы' : 
+                       language === 'kz' ? 'Негізгі тұжырымдар' : 
+                       'Key Takeaways'}
+                    </h3>
                     
                     <ul className="space-y-3 mb-6">
-                      <li className="flex gap-2 items-start">
-                        <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                          <CheckCircle2 className="w-4 h-4" />
-                        </div>
-                        <div>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, diam quis aliquam.
-                        </div>
-                      </li>
-                      <li className="flex gap-2 items-start">
-                        <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                          <CheckCircle2 className="w-4 h-4" />
-                        </div>
-                        <div>
-                          Sed euismod, diam quis aliquam tincidunt, nisl nunc aliquam nisi, vitae ultricies.
-                        </div>
-                      </li>
-                      <li className="flex gap-2 items-start">
-                        <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                          <CheckCircle2 className="w-4 h-4" />
-                        </div>
-                        <div>
-                          Vitae ultricies nisl nunc eget nisl. Sed euismod, diam quis aliquam tincidunt.
-                        </div>
-                      </li>
+                      {selectedTip.id === 1 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Practice all four IELTS components (Listening, Reading, Writing, Speaking) regularly with official materials.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Consider whether IELTS on Computer or Paper-based fits your preferences and strengths.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Familiarize yourself with test day procedures and attend free introductory sessions offered by IDP IELTS.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 2 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Take regular practice tests that simulate the actual ENT environment to build test-taking stamina.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Create a systematic study schedule covering all subject areas with extra focus on your weaker subjects.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Learn to manage time effectively during the test by practicing with timed sections.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 3 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Get results faster with IELTS on Computer – available in 2-5 days instead of 13 days for paper tests.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Use online practice tools to become familiar with the digital interface before your test day.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Take advantage of features like text highlighting, on-screen note-taking, and adjustable font size.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 4 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Develop section-specific timing strategies – about 2 minutes for problem-solving and 1-1.5 minutes for sentence correction.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Practice identifying question difficulty early and knowing when to move on from challenging questions.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Build mental endurance through regular practice with full-length, timed mock exams.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 5 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Research employment rates and career opportunities for graduates of your potential program.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Evaluate the program's curriculum for relevance to current industry standards and practices.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Consider both academic quality and practical factors like location, cost, and available scholarships.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 6 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Use a three-step approach: skim for main ideas, scan for specific information, then read in detail.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Practice recognizing different question types and apply specific strategies for each type.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              For true/false/not given questions, remember that "not given" means the information is neither confirmed nor contradicted.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 7 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Always identify the conclusion first, then locate the premises and assumptions in Critical Reasoning questions.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Develop specific approaches for each question type (strengthen, weaken, assumption, flaw, etc.).
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Learn to recognize common logical fallacies like correlation vs. causation and hasty generalizations.
+                            </div>
+                          </li>
+                        </>
+                      )}
+                      
+                      {selectedTip.id === 8 && (
+                        <>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Use spaced repetition and active recall techniques instead of passive re-reading for better retention.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Apply the Pomodoro Technique: 25-minute focused work periods with 5-minute breaks between them.
+                            </div>
+                          </li>
+                          <li className="flex gap-2 items-start">
+                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
+                              <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              Create an optimal study environment by minimizing distractions and optimizing comfort factors.
+                            </div>
+                          </li>
+                        </>
+                      )}
                     </ul>
-                    
-                    <p className="text-foreground/80 mb-6">
-                      Sed euismod, diam quis aliquam tincidunt, nisl nunc aliquam nisi, vitae ultricies nisl
-                      nunc eget nisl. Sed euismod, diam quis aliquam tincidunt, nisl nunc aliquam nisi, vitae
-                      ultricies nisl nunc eget nisl.
-                    </p>
                   </ScrollArea>
                   
                   <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border/10">

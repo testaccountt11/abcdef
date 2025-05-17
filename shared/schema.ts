@@ -520,3 +520,92 @@ export type Skill = z.infer<typeof skillSchema>;
 export type Contact = z.infer<typeof contactSchema>;
 export type Resume = z.infer<typeof resumeSchema>;
 export type Event = z.infer<typeof eventSchema>;
+
+// Add these type definitions to your shared schema file
+
+export interface NewsletterSubscription {
+  id: number;
+  email: string;
+  subscriptionDate: Date;
+}
+
+export interface InsertNewsletterSubscription {
+  email: string;
+  subscriptionDate: Date;
+}
+
+// Also make sure to update your IStorage interface to include these methods
+export interface IStorage {
+  // ... existing methods
+  
+  createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
+  getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null>;
+  getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
+}
+
+// You might also need to add validation schema if you're using Zod
+export const insertNewsletterSubscriptionSchema = z.object({
+  email: z.string().email(),
+  subscriptionDate: z.date()
+});
+
+// Добавьте в shared/schema.ts
+export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  subscriptionDate: timestamp('subscription_date').notNull().defaultNow()
+});
+
+// Mentor Application Schema
+export const mentorApplications = pgTable('mentor_applications', {
+  id: serial('id').primaryKey(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  title: text('title').notNull(),
+  company: text('company').notNull(),
+  experience: text('experience').notNull(),
+  specialization: text('specialization').notNull(),
+  skills: text('skills').notNull(),
+  languages: text('languages').array(),
+  bio: text('bio').notNull(),
+  motivation: text('motivation').notNull(),
+  availability: text('availability').notNull(),
+  resumeUrl: text('resume_url'),
+  linkedinProfile: text('linkedin_profile'),
+  status: text('status').default('pending').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull()
+});
+
+export const insertMentorApplicationSchema = createInsertSchema(mentorApplications).pick({
+  firstName: true,
+  lastName: true,
+  email: true,
+  phone: true,
+  title: true,
+  company: true,
+  experience: true,
+  specialization: true,
+  skills: true,
+  languages: true,
+  bio: true,
+  motivation: true,
+  availability: true,
+  resumeUrl: true,
+  linkedinProfile: true,
+  status: true
+});
+
+export type MentorApplication = typeof mentorApplications.$inferSelect;
+export type InsertMentorApplication = z.infer<typeof insertMentorApplicationSchema>;
+
+// Добавим в IStorage
+export interface IStorage {
+  // ... existing methods
+  
+  createMentorApplication(application: InsertMentorApplication): Promise<MentorApplication>;
+  getMentorApplicationByEmail(email: string): Promise<MentorApplication | null>;
+  getAllMentorApplications(): Promise<MentorApplication[]>;
+  updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication | null>;
+}
