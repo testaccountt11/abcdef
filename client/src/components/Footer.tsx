@@ -72,16 +72,16 @@ export function Footer() {
                  'Байланыс'}
               </a></li>
               <li><a href="#" className="text-foreground/70 hover:text-primary">FAQ</a></li>
-              <li><a href="#" className="text-foreground/70 hover:text-primary">
+              <li><Link href="/publicprivacypolicy" className="text-foreground/70 hover:text-primary">
                 {language === 'en' ? 'Privacy Policy' : 
                  language === 'ru' ? 'Политика конфиденциальности' : 
                  'Құпиялылық саясаты'}
-              </a></li>
-              <li><a href="#" className="text-foreground/70 hover:text-primary">
+              </Link></li>
+              <li><Link href="/publictermsofuse" className="text-foreground/70 hover:text-primary">
                 {language === 'en' ? 'Terms of Use' : 
                  language === 'ru' ? 'Условия использования' : 
                  'Қолдану шарттары'}
-              </a></li>
+              </Link></li>
             </ul>
           </div>
         </div>
