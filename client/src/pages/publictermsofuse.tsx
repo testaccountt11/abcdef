@@ -206,7 +206,7 @@ export default function PublicTermsOfUse() {
   return (
     <PublicPageLayout>
       {/* Hero Section */}
-      <div className={`relative overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-b from-primary/15 to-background' : 'bg-gradient-to-b from-primary/5 to-background'}`}>
+      <div className={`relative overflow-hidden min-h-screen flex items-center ${theme === 'dark' ? 'bg-gradient-to-b from-primary/15 to-background' : 'bg-gradient-to-b from-primary/5 to-background'}`}>
         {/* Decorative circles */}
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-primary/5 blur-3xl"></div>
         <div className="absolute -bottom-20 left-20 w-64 h-64 rounded-full bg-blue-500/5 blur-3xl"></div>
@@ -288,12 +288,12 @@ export default function PublicTermsOfUse() {
       </div>
       
       {/* Terms Content */}
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="container px-4 py-16 ml-0">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid gap-8"
+          className="grid gap-8 max-w-5xl"
         >
           {content.sections.map((section, index) => (
             <motion.div key={index} variants={itemVariants}>
