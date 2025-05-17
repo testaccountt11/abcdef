@@ -53,7 +53,7 @@ const dummyStudyTips = [
     descriptionRu: "Тест IELTS состоит из четырех частей: Аудирование, Чтение, Письмо и Говорение. Готовьтесь стратегически, понимая каждый компонент и практикуясь с реальными экзаменационными материалами. IDP IELTS Казахстан предлагает как бумажный, так и компьютерный формат.",
     descriptionKz: "IELTS тесті төрт бөліктен тұрады: Тыңдау, Оқу, Жазу және Сөйлеу. Әрбір компонентті түсініп, нақты емтихан материалдарымен жаттығу арқылы стратегиялық түрде дайындалыңыз. IDP IELTS Қазақстан қағаз және компьютерлік форматтардың екеуін де ұсынады.",
     category: "Exam Preparation",
-    imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-09-15",
     author: "IDP IELTS Kazakhstan",
     tags: ["IELTS", "English", "Exam Tips", "International Tests"],
@@ -69,7 +69,7 @@ const dummyStudyTips = [
     descriptionRu: "Подготовка к Единому национальному тестированию Казахстана требует систематического подхода. TestCenter.kz предлагает комплексные практические тесты, имитирующие реальную экзаменационную среду. Регулярная практика с разнообразными типами вопросов и навыки управления временем – ключ к успеху.",
     descriptionKz: "Қазақстанның Ұлттық бірыңғай тестілеуіне дайындық жүйелі тәсілді қажет етеді. TestCenter.kz нақты емтихан ортасын имитациялайтын кешенді практикалық тесттерді ұсынады. Сұрақтардың әртүрлі түрлерімен жүйелі түрде жаттығу және уақытты басқару дағдылары – жетістіктің кілті.",
     category: "Exam Preparation",
-    imageUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1616531770192-6eaea74c2456?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-10-02",
     author: "TestCenter.kz Team",
     tags: ["ENT", "ҰБТ", "University", "Exams", "Kazakhstan"],
@@ -85,7 +85,7 @@ const dummyStudyTips = [
     descriptionRu: "Компьютерный IELTS предлагает тот же формат теста, что и бумажный, но с дополнительными преимуществами. Результаты доступны через 2-5 дней по сравнению с 13 днями для бумажных тестов. Практикуйтесь с инструментами симуляции IELTS, чтобы освоиться с цифровым интерфейсом перед экзаменом.",
     descriptionKz: "Компьютерлік IELTS қағаз нұсқасымен бірдей тест форматын, бірақ қосымша артықшылықтармен ұсынады. Нәтижелер қағаз тесттерінің 13 күніне қарағанда 2-5 күн ішінде қол жетімді. Емтиханға дейін сандық интерфейспен таныс болу үшін IELTS симуляция құралдарымен жаттығыңыз.",
     category: "Exam Preparation",
-    imageUrl: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-08-20",
     author: "IELTS Test Simulation",
     tags: ["IELTS", "Digital Exams", "Computer Testing", "English"],
@@ -101,7 +101,7 @@ const dummyStudyTips = [
     descriptionRu: "Экзамен GMAT требует стратегического распределения времени по разделам. Подход TestVerbal фокусируется на приоритизации вопросов и стратегиях распределения времени для каждого раздела. Практикуйтесь с ограничением по времени, чтобы выработать психологическую выносливость, необходимую для 3+ часового теста.",
     descriptionKz: "GMAT емтиханы бөлімдер бойынша стратегиялық уақыт бөлуді талап етеді. TestVerbal-дің тәсілі сұрақтардың басымдықтарын анықтауға және бөлімге тән уақытты басқару стратегияларына бағытталған. 3+ сағаттық тестке қажетті психикалық төзімділікті қалыптастыру үшін уақыт шектеулі бөлімдермен жаттығыңыз.",
     category: "Study Skills",
-    imageUrl: "https://images.unsplash.com/photo-1508962914676-134849a727f0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1513128034602-7814ccaddd4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-09-05",
     author: "TestVerbal.ru Team",
     tags: ["Time Management", "GMAT", "Business School", "MBA"],
@@ -133,7 +133,7 @@ const dummyStudyTips = [
     descriptionRu: "Освойте секцию чтения IELTS с проверенными техниками от IELTSTestSimulation. Практикуйте быстрое чтение для общего понимания, сканирование текста для поиска конкретной информации и детальное чтение для полного понимания. Изучите различные типы вопросов и разработайте стратегии для каждого из них.",
     descriptionKz: "IELTSTestSimulation ұсынған дәлелденген техникалармен IELTS оқу бөлімін меңгеріңіз. Жалпы түсіну үшін жылдам оқу, нақты ақпаратты іздеу үшін мәтінді сканерлеу және толық түсіну үшін егжей-тегжейлі оқуды практикалаңыз. Әртүрлі сұрақ түрлерін зерттеп, әрқайсысына стратегиялар жасаңыз.",
     category: "Exam Preparation",
-    imageUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-10-10",
     author: "IELTS Test Simulation",
     tags: ["IELTS", "Reading Skills", "English", "Test Strategies"],
@@ -149,7 +149,7 @@ const dummyStudyTips = [
     descriptionRu: "Вербальная часть GMAT бросает вызов участникам теста вопросами критического мышления, требующими тщательного анализа. Эксперты TestVerbal.ru рекомендуют сосредоточиться на структуре аргументов, выявлении заключения и посылок, а также распознавании распространенных логических ошибок в рассуждениях.",
     descriptionKz: "GMAT вербалды бөлімі тест тапсырушыларға мұқият талдауды қажет ететін сыни ойлау сұрақтарымен қиындық тудырады. TestVerbal.ru сарапшылары аргумент құрылымына, қорытынды мен алғышарттарды анықтауға және ойлаудағы жалпы логикалық қателерді тануға назар аударуды ұсынады.",
     category: "Exam Preparation",
-    imageUrl: "https://images.unsplash.com/photo-1456081445129-830eb8d4bfc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
     date: "2023-11-05",
     author: "TestVerbal.ru Team",
     tags: ["GMAT", "Critical Thinking", "Verbal Skills", "Logic", "Business School"],
@@ -207,6 +207,7 @@ function TagButton({ tag, selected, onClick }: { tag: string; selected: boolean;
 // Featured study tip card (large version)
 function FeaturedStudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyTip) => void }) {
   const { language } = useTranslations();
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const getTitle = () => {
     if (language === 'ru' && tip.titleRu) return tip.titleRu;
@@ -237,10 +238,21 @@ function FeaturedStudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: 
     >
       <div className="relative h-72 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
+        {!imageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-20">
+            <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+          </div>
+        )}
         <img 
           src={tip.imageUrl} 
           alt={getTitle()} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            // Fallback image on error
+            (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/shapes/svg?seed=${tip.id}`;
+            setImageLoaded(true);
+          }}
         />
         
         <div className="absolute top-4 left-4 z-20 flex gap-3">
@@ -312,6 +324,7 @@ function FeaturedStudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: 
 // Enhanced compact study tip card
 function StudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyTip) => void }) {
   const { language } = useTranslations();
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const getTitle = () => {
     if (language === 'ru' && tip.titleRu) return tip.titleRu;
@@ -334,12 +347,23 @@ function StudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyTip
       onClick={() => onClick(tip)}
     >
       {/* Image - small square thumbnail with gradient overlay */}
-      <div className="w-full md:w-40 h-40 md:h-28 flex-shrink-0 rounded-lg overflow-hidden relative group">
+      <div className="w-full md:w-40 h-40 md:h-28 flex-shrink-0 rounded-lg overflow-hidden relative group bg-muted/30">
+        {!imageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-20">
+            <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10 opacity-70 group-hover:opacity-100 transition-opacity z-10"></div>
         <img 
           src={tip.imageUrl} 
           alt={getTitle()} 
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            // Fallback image on error
+            (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/shapes/svg?seed=${tip.id}`;
+            setImageLoaded(true);
+          }}
         />
         {tip.featured && (
           <div className="absolute top-2 left-2 bg-yellow-500 text-xs text-white px-2 py-1 rounded-full flex items-center z-20">
@@ -405,6 +429,7 @@ function StudyTipCard({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyTip
 // Condensed list item for "What's New" section
 function NewTipListItem({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyTip) => void }) {
   const { language } = useTranslations();
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const getTitle = () => {
     if (language === 'ru' && tip.titleRu) return tip.titleRu;
@@ -425,8 +450,23 @@ function NewTipListItem({ tip, onClick }: { tip: StudyTip; onClick: (tip: StudyT
       className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
       onClick={() => onClick(tip)}
     >
-      <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0">
-        <img src={tip.imageUrl} alt={getTitle()} className="w-full h-full object-cover" />
+      <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border border-border/20 bg-muted/30 relative">
+        {!imageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
+            <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+          </div>
+        )}
+        <img 
+          src={tip.imageUrl} 
+          alt={getTitle()} 
+          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
+          onError={(e) => {
+            // Fallback image on error
+            (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/shapes/svg?seed=${tip.id}`;
+            setImageLoaded(true);
+          }}
+        />
       </div>
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-medium truncate">{getTitle()}</h4>
@@ -1386,9 +1426,12 @@ export default function PublicStudyTips() {
                       </h3>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {recentTips.map(tip => (
-                        <NewTipListItem key={tip.id} tip={tip} onClick={openTipModal} />
+                        <div key={tip.id} className="group">
+                          <NewTipListItem tip={tip} onClick={openTipModal} />
+                          {tip !== recentTips[recentTips.length - 1] && <Separator className="mt-3 opacity-30" />}
+                        </div>
                       ))}
                     </div>
                   </CardContent>
@@ -1440,508 +1483,104 @@ export default function PublicStudyTips() {
           {selectedTip && (
             <div className="flex flex-col h-full">
               {/* Hero Image with Gradient Overlay */}
-              <div className="h-64 md:h-72 relative">
+              <div className="h-64 md:h-72 relative bg-muted/30">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
+                {/* Image loading spinner */}
+                <div className="absolute inset-0 flex items-center justify-center z-20 bg-muted/20">
+                  <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+                </div>
                 <img 
                   src={selectedTip.imageUrl} 
                   alt={language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
                        language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
                        selectedTip.title} 
                   className="w-full h-full object-cover" 
+                  onLoad={(e) => {
+                    // Hide spinner when image loads
+                    const target = e.target as HTMLImageElement;
+                    const spinner = target.previousElementSibling as HTMLElement;
+                    if (spinner) spinner.style.display = 'none';
+                  }}
+                  onError={(e) => {
+                    // Fallback image on error
+                    (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/shapes/svg?seed=${selectedTip.id}`;
+                    // Hide spinner when fallback loads
+                    const target = e.target as HTMLImageElement;
+                    const spinner = target.previousElementSibling as HTMLElement;
+                    if (spinner) spinner.style.display = 'none';
+                  }}
                 />
-                
-                {/* Article Info */}
-                <div className="absolute bottom-4 left-4 right-4 z-20">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge className="bg-blue-600 text-white mb-2 border-none">
-                      {selectedTip.category}
-                    </Badge>
-                    
-                    {selectedTip.featured && (
-                      <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
-                        <Star className="w-3 h-3" fill="white" />
-                        {language === 'ru' ? 'Рекомендуем' : 
-                         language === 'kz' ? 'Ұсынамыз' : 
-                         'Featured'}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <h2 className="text-xl md:text-2xl font-bold text-white">
-                    {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
-                     language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
-                     selectedTip.title}
-                  </h2>
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="absolute top-4 right-4 z-30 flex gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
-                    onClick={(e) => toggleSaveArticle(selectedTip.id, e)}
-                  >
-                    <Bookmark 
-                      className="w-5 h-5" 
-                      fill={savedArticles.includes(selectedTip.id) ? "currentColor" : "none"} 
-                    />
-                  </Button>
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                </div>
               </div>
               
-              <div className="flex flex-col md:flex-row">
-                {/* Main Article Content */}
-                <div className="p-6 md:p-8 flex-1">
-                  <div className="flex items-center text-sm text-foreground/60 mb-6">
-                    <Avatar className="w-8 h-8 mr-3 border border-border/20">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedTip.author}`} />
-                      <AvatarFallback>{selectedTip.author.slice(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium text-foreground">{selectedTip.author}</div>
-                      <div className="text-xs flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 inline mr-1" />
-                        {new Date(selectedTip.date).toLocaleDateString(
-                          language === 'ru' ? 'ru-RU' : 
-                          language === 'kz' ? 'kk-KZ' : 
-                          'en-US',
-                          { year: 'numeric', month: 'long', day: 'numeric' }
-                        )}
-                        <span>•</span>
-                        <Clock className="w-3.5 h-3.5 inline mr-1" />
-                        {selectedTip.readTime}
-                      </div>
-                    </div>
-                  </div>
+              {/* Article Info */}
+              <div className="absolute bottom-4 left-4 right-4 z-20">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <Badge className="bg-blue-600 text-white mb-2 border-none">
+                    {selectedTip.category}
+                  </Badge>
                   
-                  <ScrollArea className="pr-4 max-h-[400px]">
-                    <p className="text-foreground/80 mb-6">
-                      {language === 'ru' && selectedTip.descriptionRu ? selectedTip.descriptionRu : 
-                       language === 'kz' && selectedTip.descriptionKz ? selectedTip.descriptionKz : 
-                       selectedTip.description}
-                    </p>
-                    
-                    {/* Article content based on tip ID */}
-                    {selectedTip.id === 1 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">Understanding the IELTS Test</h3>
-                        <p className="text-foreground/80 mb-6">
-                          IELTS (International English Language Testing System) assesses your English language proficiency through four components: Listening, Reading, Writing, and Speaking. There are two formats: Paper-based IELTS and IELTS on Computer, with identical content but different delivery methods.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          The total test time is 2 hours and 45 minutes. The Listening, Reading, and Writing sections are completed on the same day, with no breaks between them. The Speaking section may be completed up to a week before or after the other tests.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          In Kazakhstan, IDP IELTS offers both Academic and General Training modules, with tests available in Almaty, Astana, Shymkent, and other major cities.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 2 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">ENT (ҰБТ) Preparation Approach</h3>
-                        <p className="text-foreground/80 mb-6">
-                          The Unified National Testing is a standardized test in Kazakhstan that serves as both a high school graduation assessment and a university entrance exam. TestCenter.kz provides comprehensive preparation resources that simulate the actual testing environment.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Systematic preparation should include regular practice with diverse question formats across all subject areas. Focus on understanding the question patterns and developing efficient time management strategies during the test.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Online practice tests can help you get familiar with the computer-based testing format and improve your speed and accuracy in answering questions.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 3 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">Benefits of IELTS on Computer</h3>
-                        <p className="text-foreground/80 mb-6">
-                          IELTS on Computer offers several advantages over the paper-based format. The most significant benefit is faster results – available online within 2-5 days compared to 13 days for the paper test. The test content, format, level of difficulty, and scoring are identical for both versions.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          The computer-delivered test gives you the ability to highlight text, make notes on screen, and adjust font size for greater readability. The speaking section is still face-to-face with an examiner, maintaining the interactive nature of the assessment.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Before your exam, practice with IELTS simulation tools to get comfortable with the digital interface. IELTSTestSimulation.com offers free practice tests that mimic the computer-based format, helping you develop familiarity with the system.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 4 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">GMAT Time Management Techniques</h3>
-                        <p className="text-foreground/80 mb-6">
-                          The GMAT exam is 3 hours and 7 minutes long and consists of four sections: Analytical Writing Assessment, Integrated Reasoning, Quantitative, and Verbal. According to TestVerbal.ru, effective time management is critical for success in each section.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          For the Quantitative section, allocate approximately 2 minutes per problem-solving question and slightly less for data sufficiency. In the Verbal section, sentence correction questions should take about 1-1.5 minutes, while critical reasoning and reading comprehension require 2-3 minutes each.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Practice with timed sections regularly to build the mental stamina needed for the lengthy test. Learn to recognize when to move on from difficult questions to maximize your overall score.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 5 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">Choosing Your University Path</h3>
-                        <p className="text-foreground/80 mb-6">
-                          According to Ucheba.ru, selecting the right university program involves researching both the content of the curriculum and the reputation of the institution. Consider program accreditation, faculty qualifications, and the experiences of current students and alumni.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Employment statistics are crucial indicators of program quality. Research the employment rate of graduates, average starting salaries, and common career paths. Programs with strong industry connections and internship opportunities often provide better career prospects.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Balance your personal interests with practical considerations such as program cost, location, and future job market demand. Visit university campuses if possible and speak with department representatives to get a feel for the program environment.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 6 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">IELTS Reading Techniques</h3>
-                        <p className="text-foreground/80 mb-6">
-                          The IELTS Reading section consists of three passages of increasing difficulty with 40 questions to complete in 60 minutes. IELTSTestSimulation recommends a three-step reading approach: skimming, scanning, and detailed reading.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Start by skimming each passage for 2-3 minutes to grasp the main ideas. Look at headings, subheadings, first and last paragraphs, and any highlighted text. Then scan for specific information based on the questions, looking for keywords and relevant sections.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          For different question types, apply specific strategies. For multiple-choice questions, eliminate wrong answers rather than searching for the right one. For matching headings, focus on the main idea of each paragraph. For true/false/not given questions, remember that "not given" means the information is neither confirmed nor contradicted by the text.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 7 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">GMAT Critical Reasoning Approach</h3>
-                        <p className="text-foreground/80 mb-6">
-                          GMAT Critical Reasoning questions test your ability to analyze and evaluate arguments. TestVerbal.ru recommends first identifying the conclusion of the argument – the main point the author is trying to make. Then, locate the premises that support this conclusion, and identify any assumptions that bridge the gap between premise and conclusion.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Common question types include strengthening or weakening arguments, identifying assumptions, finding flaws, and evaluating conclusions. For each type, develop specific approaches. For example, in weakening questions, look for information that introduces doubt about the connection between premise and conclusion.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Logical fallacies frequently appear in GMAT arguments. Be on the lookout for common flaws like confusing correlation with causation, relying on inappropriate analogies, or using a small sample to make broad generalizations. Recognizing these patterns can significantly improve your performance.
-                        </p>
-                      </>
-                    )}
-                    
-                    {selectedTip.id === 8 && (
-                      <>
-                        <h3 className="text-xl font-bold mt-8 mb-4">Effective Study Methodologies</h3>
-                        <p className="text-foreground/80 mb-6">
-                          Spaced repetition and active recall are among the most effective learning techniques according to cognitive science research. Spaced repetition involves reviewing material at gradually increasing intervals, while active recall means testing yourself rather than simply re-reading materials. Combined, these techniques significantly enhance long-term retention.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          The Pomodoro Technique – working in focused 25-minute blocks followed by 5-minute breaks – helps maintain concentration and prevents burnout. After completing four "pomodoros," take a longer break of 15-30 minutes. This structured approach keeps your mind fresh and improves productivity.
-                        </p>
-                        <p className="text-foreground/80 mb-6">
-                          Create an optimal study environment by minimizing distractions. Turn off notifications on your devices, use website blockers if necessary, and communicate boundaries to friends and family during study sessions. Consider factors like lighting, noise level, and ergonomics to maximize comfort and focus during long study periods.
-                        </p>
-                      </>
-                    )}
-                    
-                    {/* Key Takeaways Section */}
-                    <h3 className="text-xl font-bold mt-8 mb-4">
-                      {language === 'ru' ? 'Ключевые выводы' : 
-                       language === 'kz' ? 'Негізгі тұжырымдар' : 
-                       'Key Takeaways'}
-                    </h3>
-                    
-                    <ul className="space-y-3 mb-6">
-                      {selectedTip.id === 1 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Practice all four IELTS components (Listening, Reading, Writing, Speaking) regularly with official materials.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Consider whether IELTS on Computer or Paper-based fits your preferences and strengths.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Familiarize yourself with test day procedures and attend free introductory sessions offered by IDP IELTS.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 2 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Take regular practice tests that simulate the actual ENT environment to build test-taking stamina.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Create a systematic study schedule covering all subject areas with extra focus on your weaker subjects.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Learn to manage time effectively during the test by practicing with timed sections.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 3 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Get results faster with IELTS on Computer – available in 2-5 days instead of 13 days for paper tests.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Use online practice tools to become familiar with the digital interface before your test day.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Take advantage of features like text highlighting, on-screen note-taking, and adjustable font size.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 4 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Develop section-specific timing strategies – about 2 minutes for problem-solving and 1-1.5 minutes for sentence correction.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Practice identifying question difficulty early and knowing when to move on from challenging questions.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Build mental endurance through regular practice with full-length, timed mock exams.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 5 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Research employment rates and career opportunities for graduates of your potential program.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Evaluate the program's curriculum for relevance to current industry standards and practices.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Consider both academic quality and practical factors like location, cost, and available scholarships.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 6 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Use a three-step approach: skim for main ideas, scan for specific information, then read in detail.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Practice recognizing different question types and apply specific strategies for each type.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              For true/false/not given questions, remember that "not given" means the information is neither confirmed nor contradicted.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 7 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Always identify the conclusion first, then locate the premises and assumptions in Critical Reasoning questions.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Develop specific approaches for each question type (strengthen, weaken, assumption, flaw, etc.).
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Learn to recognize common logical fallacies like correlation vs. causation and hasty generalizations.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                      
-                      {selectedTip.id === 8 && (
-                        <>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Use spaced repetition and active recall techniques instead of passive re-reading for better retention.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Apply the Pomodoro Technique: 25-minute focused work periods with 5-minute breaks between them.
-                            </div>
-                          </li>
-                          <li className="flex gap-2 items-start">
-                            <div className="bg-primary/10 rounded-full p-1 text-primary mt-1">
-                              <CheckCircle2 className="w-4 h-4" />
-                            </div>
-                            <div>
-                              Create an optimal study environment by minimizing distractions and optimizing comfort factors.
-                            </div>
-                          </li>
-                        </>
-                      )}
-                    </ul>
-                  </ScrollArea>
-                  
-                  <div className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-border/10">
-                    {selectedTip.tags.map((tag, index) => (
-                      <Badge key={index} variant="outline" className="px-2 py-1">
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
+                  {selectedTip.featured && (
+                    <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
+                      <Star className="w-3 h-3" fill="white" />
+                      {language === 'ru' ? 'Рекомендуем' : 
+                       language === 'kz' ? 'Ұсынамыз' : 
+                       'Featured'}
+                    </Badge>
+                  )}
                 </div>
                 
-                {/* Related Articles Sidebar */}
-                {relatedArticles.length > 0 && (
-                  <div className="w-full md:w-64 bg-muted/30 p-4 border-t md:border-t-0 md:border-l border-border/10">
-                    <h3 className="font-semibold mb-4">
-                      {language === 'ru' ? 'Похожие статьи' : 
-                       language === 'kz' ? 'Ұқсас мақалалар' : 
-                       'Related Articles'}
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      {relatedArticles.map(article => (
-                        <div 
-                          key={article.id}
-                          className="group cursor-pointer"
-                          onClick={() => {
-                            closeTipModal();
-                            setTimeout(() => openTipModal(article), 300);
-                          }}
-                        >
-                          <div className="h-24 rounded-md overflow-hidden mb-2">
-                            <img 
-                              src={article.imageUrl} 
-                              alt={article.title} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                            />
-                          </div>
-                          <h4 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">
-                            {language === 'ru' && article.titleRu ? article.titleRu : 
-                             language === 'kz' && article.titleKz ? article.titleKz : 
-                             article.title}
-                          </h4>
-                          <div className="text-xs text-foreground/60 mt-1 flex items-center">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {article.readTime}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
+                   language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
+                   selectedTip.title}
+                </h2>
+              </div>
+              
+              {/* Article Info */}
+              <div className="absolute bottom-4 left-4 right-4 z-20">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <Badge className="bg-blue-600 text-white mb-2 border-none">
+                    {selectedTip.category}
+                  </Badge>
+                  
+                  {selectedTip.featured && (
+                    <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
+                      <Star className="w-3 h-3" fill="white" />
+                      {language === 'ru' ? 'Рекомендуем' : 
+                       language === 'kz' ? 'Ұсынамыз' : 
+                       'Featured'}
+                    </Badge>
+                  )}
+                </div>
+                
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
+                   language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
+                   selectedTip.title}
+                </h2>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="absolute top-4 right-4 z-30 flex gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
+                  onClick={(e) => toggleSaveArticle(selectedTip.id, e)}
+                >
+                  <Bookmark 
+                    className="w-5 h-5" 
+                    fill={savedArticles.includes(selectedTip.id) ? "currentColor" : "none"} 
+                  />
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
+                >
+                  <Share2 className="w-5 h-5" />
+                </Button>
               </div>
             </div>
           )}
