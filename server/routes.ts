@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { storage as dbStorage } from "./storage";
+import { storage } from "./storage-config.js";
 import { 
   insertUserSchema, 
   insertCourseSchema, 
@@ -24,7 +24,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import fs from "fs";
 import express from "express";
-import { db } from './db';
+import { db } from './db.js';
 import { sql, eq } from 'drizzle-orm';
 
 // Get __dirname equivalent for ES modules
@@ -96,20 +96,20 @@ const resumeUpload = multer({
           const columnName = col.column_name as string;
           const dataType = col.data_type as string;
           const defaultValue = getDefaultValueForColumn(columnName, dataType);
-          
+      
           if (defaultValue) {
             // Добавляем дефолтное значение
-            await db.execute(`
-              ALTER TABLE mentor_applications
+        await db.execute(`
+          ALTER TABLE mentor_applications
               ALTER COLUMN ${columnName} SET DEFAULT ${defaultValue}
-            `);
+        `);
             console.log(`Added default value ${defaultValue} to column ${columnName}`);
           } else {
             // Делаем колонку nullable
-            await db.execute(`
-              ALTER TABLE mentor_applications
+        await db.execute(`
+          ALTER TABLE mentor_applications
               ALTER COLUMN ${columnName} DROP NOT NULL
-            `);
+        `);
             console.log(`Made column ${columnName} nullable`);
           }
         } catch (alterError) {
@@ -120,10 +120,10 @@ const resumeUpload = multer({
       // Выводим обновленную структуру таблицы
       const updatedStructure = await db.execute(`
         SELECT column_name, data_type, is_nullable, column_default
-        FROM information_schema.columns 
+        FROM information_schema.columns
         WHERE table_name = 'mentor_applications'
         ORDER BY ordinal_position
-      `);
+        `);
       console.log("Updated mentor_applications table structure:", updatedStructure.rows);
     }
   } catch (error) {
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        const user = await dbStorage.getUserByUsername(username);
+        const user = await storage.getUserByUsername(username);
         
         if (!user) {
           return done(null, false, { message: "Incorrect username" });
@@ -220,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Deserialize user from the session
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await dbStorage.getUser(id);
+      const user = await storage.getUser(id);
       done(null, user);
     } catch (err) {
       done(err);
@@ -255,20 +255,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userData = validateRequest(insertUserSchema, req.body);
       
       // Check if user already exists
-      const existingUser = await dbStorage.getUserByUsername(userData.username);
+      const existingUser = await storage.getUserByUsername(userData.username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
       
-      const existingEmail = await dbStorage.getUserByEmail(userData.email);
+      const existingEmail = await storage.getUserByEmail(userData.email);
       if (existingEmail) {
         return res.status(400).json({ message: "Email already exists" });
       }
       
-      const user = await dbStorage.createUser(userData);
+      const user = await storage.createUser(userData);
       
       // Create initial stats for user
-      await dbStorage.createUserStats({
+      await storage.createUserStats({
         userId: user.id,
         coursesInProgress: 0,
         certificatesEarned: 0,
@@ -298,13 +298,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if user already exists by email
-      const existingEmail = await dbStorage.getUserByEmail(email);
+      const existingEmail = await storage.getUserByEmail(email);
       if (existingEmail) {
         return res.status(400).json({ message: "Email already registered" });
       }
       
       // Check if username is taken
-      const existingUsername = await dbStorage.getUserByUsername(username);
+      const existingUsername = await storage.getUserByUsername(username);
       if (existingUsername) {
         return res.status(400).json({ message: "Username already taken" });
       }
@@ -319,10 +319,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         profileImage: null
       };
       
-      const user = await dbStorage.createUser(userData);
+      const user = await storage.createUser(userData);
       
       // Create initial stats for user
-      await dbStorage.createUserStats({
+      await storage.createUserStats({
         userId: user.id,
         coursesInProgress: 0,
         certificatesEarned: 0,
@@ -352,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Find user by email
-      const user = await dbStorage.getUserByEmail(email);
+      const user = await storage.getUserByEmail(email);
       
       if (!user) {
         return res.status(404).json({ message: "User not found. Please register first." });
@@ -395,7 +395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Course routes
   app.get("/api/courses", async (req, res) => {
     try {
-      const courses = await dbStorage.getCourses();
+      const courses = await storage.getCourses();
       res.json(courses);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -404,7 +404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/courses/:id", async (req, res) => {
     try {
-      const course = await dbStorage.getCourse(Number(req.params.id));
+      const course = await storage.getCourse(Number(req.params.id));
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
@@ -421,14 +421,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const courseId = Number(req.params.id);
       
       // Check if already enrolled
-      const existingEnrollment = await dbStorage.getEnrollment(userId, courseId);
+      const existingEnrollment = await storage.getEnrollment(userId, courseId);
       
       if (existingEnrollment) {
         return res.status(400).json({ message: "Already enrolled in this course" });
       }
       
       // Create enrollment
-      const enrollment = await dbStorage.createEnrollment({
+      const enrollment = await storage.createEnrollment({
         userId,
         courseId,
         progress: 0,
@@ -436,9 +436,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Update user stats
-      const stats = await dbStorage.getUserStats(userId);
+      const stats = await storage.getUserStats(userId);
       if (stats) {
-        await dbStorage.updateUserStats(userId, {
+        await storage.updateUserStats(userId, {
           coursesInProgress: (stats.coursesInProgress || 0) + 1
         });
       }
@@ -452,7 +452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/courses", isAuthenticated, async (req, res) => {
     try {
       const courseData = validateRequest(insertCourseSchema, req.body);
-      const course = await dbStorage.createCourse(courseData);
+      const course = await storage.createCourse(courseData);
       res.status(201).json(course);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -462,7 +462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/courses", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const courses = await dbStorage.getUserCourses(userId);
+      const courses = await storage.getUserCourses(userId);
       res.json(courses);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -479,7 +479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Check if already enrolled
-      const existingEnrollment = await dbStorage.getEnrollment(
+      const existingEnrollment = await storage.getEnrollment(
         enrollmentData.userId, 
         enrollmentData.courseId
       );
@@ -488,30 +488,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Already enrolled in this course" });
       }
       
-      const enrollment = await dbStorage.createEnrollment(enrollmentData);
+      const enrollment = await storage.createEnrollment(enrollmentData);
       
       // Award "Course Explorer" achievement if this is the first enrollment
       try {
-        const userCourses = await dbStorage.getUserCourses(userId);
+        const userCourses = await storage.getUserCourses(userId);
         
         if (userCourses.length === 1) {
           // This is the first course enrollment, award the achievement
-          const courseExplorerAchievement = await dbStorage.getAchievementByName("Course Explorer");
+          const courseExplorerAchievement = await storage.getAchievementByName("Course Explorer");
           
           if (courseExplorerAchievement) {
             // Check if user already has this achievement
-            const userAchievement = await dbStorage.getUserAchievementProgress(userId, courseExplorerAchievement.id);
+            const userAchievement = await storage.getUserAchievementProgress(userId, courseExplorerAchievement.id);
             
             if (!userAchievement) {
-              await dbStorage.completeUserAchievement(userId, courseExplorerAchievement.id, 1);
+              await storage.completeUserAchievement(userId, courseExplorerAchievement.id, 1);
             }
           }
         }
         
         // Update user stats
-        const stats = await dbStorage.getUserStats(userId);
+        const stats = await storage.getUserStats(userId);
         if (stats) {
-          await dbStorage.updateUserStats(userId, {
+          await storage.updateUserStats(userId, {
             coursesInProgress: (stats.coursesInProgress || 0) + 1
           });
         }
@@ -537,10 +537,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get current enrollment to check if this is a completion
-      const existingEnrollment = await dbStorage.getEnrollment(userId, courseId);
+      const existingEnrollment = await storage.getEnrollment(userId, courseId);
       const wasComplete = existingEnrollment && existingEnrollment.progress === 100;
       
-      const updatedEnrollment = await dbStorage.updateEnrollmentProgress(
+      const updatedEnrollment = await storage.updateEnrollmentProgress(
         userId,
         courseId,
         progress
@@ -554,29 +554,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (progress === 100 && !wasComplete) {
         try {
           // Award "Course Completion" achievement
-          const courseCompletionAchievement = await dbStorage.getAchievementByName("Course Completion");
+          const courseCompletionAchievement = await storage.getAchievementByName("Course Completion");
           
           if (courseCompletionAchievement) {
             // Check if user already has this achievement
-            const userAchievement = await dbStorage.getUserAchievementProgress(userId, courseCompletionAchievement.id);
+            const userAchievement = await storage.getUserAchievementProgress(userId, courseCompletionAchievement.id);
             
             if (!userAchievement) {
-              await dbStorage.completeUserAchievement(userId, courseCompletionAchievement.id, 1);
+              await storage.completeUserAchievement(userId, courseCompletionAchievement.id, 1);
             }
           }
           
           // Update user stats
-          const stats = await dbStorage.getUserStats(userId);
+          const stats = await storage.getUserStats(userId);
           if (stats) {
-            await dbStorage.updateUserStats(userId, {
+            await storage.updateUserStats(userId, {
               coursesInProgress: Math.max(0, (stats.coursesInProgress || 0) - 1),
               certificatesEarned: (stats.certificatesEarned || 0) + 1
             });
             
             // Automatically create a certificate for completed course
-            const course = await dbStorage.getCourse(courseId);
+            const course = await storage.getCourse(courseId);
             if (course) {
-              await dbStorage.createCertificate({
+              await storage.createCertificate({
                 userId,
                 title: `Certificate of Completion: ${course.title}`,
                 issuer: "Portfol.IO",
@@ -600,7 +600,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Opportunity routes
   app.get("/api/opportunities", async (req, res) => {
     try {
-      const opportunities = await dbStorage.getOpportunities();
+      const opportunities = await storage.getOpportunities();
       res.json(opportunities);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -609,7 +609,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/opportunities/:id", async (req, res) => {
     try {
-      const opportunity = await dbStorage.getOpportunity(Number(req.params.id));
+      const opportunity = await storage.getOpportunity(Number(req.params.id));
       if (!opportunity) {
         return res.status(404).json({ message: "Opportunity not found" });
       }
@@ -626,7 +626,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const opportunityId = Number(req.params.id);
       
       // Check if opportunity exists
-      const opportunity = await dbStorage.getOpportunity(opportunityId);
+      const opportunity = await storage.getOpportunity(opportunityId);
       if (!opportunity) {
         return res.status(404).json({ message: "Opportunity not found" });
       }
@@ -635,9 +635,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, just return a success response
       
       // Update user stats
-      const stats = await dbStorage.getUserStats(userId);
+      const stats = await storage.getUserStats(userId);
       if (stats) {
-        await dbStorage.updateUserStats(userId, {
+        await storage.updateUserStats(userId, {
           opportunitiesSaved: (stats.opportunitiesSaved || 0) + 1
         });
       }
@@ -654,7 +654,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/opportunities", isAuthenticated, async (req, res) => {
     try {
       const opportunityData = validateRequest(insertOpportunitySchema, req.body);
-      const opportunity = await dbStorage.createOpportunity(opportunityData);
+      const opportunity = await storage.createOpportunity(opportunityData);
       res.status(201).json(opportunity);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -664,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mentor routes
   app.get("/api/mentors", async (req, res) => {
     try {
-      const mentors = await dbStorage.getMentors();
+      const mentors = await storage.getMentors();
       res.json(mentors);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -673,7 +673,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/mentors/:id", async (req, res) => {
     try {
-      const mentor = await dbStorage.getMentor(Number(req.params.id));
+      const mentor = await storage.getMentor(Number(req.params.id));
       if (!mentor) {
         return res.status(404).json({ message: "Mentor not found" });
       }
@@ -690,7 +690,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mentorId = Number(req.params.id);
       
       // Check if mentor exists
-      const mentor = await dbStorage.getMentor(mentorId);
+      const mentor = await storage.getMentor(mentorId);
       if (!mentor) {
         return res.status(404).json({ message: "Mentor not found" });
       }
@@ -699,9 +699,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, just return a success response
       
       // Update user stats
-      const stats = await dbStorage.getUserStats(userId);
+      const stats = await storage.getUserStats(userId);
       if (stats) {
-        await dbStorage.updateUserStats(userId, {
+        await storage.updateUserStats(userId, {
           mentorSessions: (stats.mentorSessions || 0) + 1
         });
       }
@@ -718,7 +718,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/mentors", isAuthenticated, async (req, res) => {
     try {
       const mentorData = validateRequest(insertMentorSchema, req.body);
-      const mentor = await dbStorage.createMentor(mentorData);
+      const mentor = await storage.createMentor(mentorData);
       res.status(201).json(mentor);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -728,7 +728,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Article routes
   app.get("/api/articles", async (req, res) => {
     try {
-      const articles = await dbStorage.getArticles();
+      const articles = await storage.getArticles();
       res.json(articles);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -737,7 +737,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/articles/:id", async (req, res) => {
     try {
-      const article = await dbStorage.getArticle(Number(req.params.id));
+      const article = await storage.getArticle(Number(req.params.id));
       if (!article) {
         return res.status(404).json({ message: "Article not found" });
       }
@@ -750,7 +750,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/articles", isAuthenticated, async (req, res) => {
     try {
       const articleData = validateRequest(insertArticleSchema, req.body);
-      const article = await dbStorage.createArticle(articleData);
+      const article = await storage.createArticle(articleData);
       res.status(201).json(article);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -761,7 +761,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/certificates", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const certificates = await dbStorage.getUserCertificates(userId);
+      const certificates = await storage.getUserCertificates(userId);
       res.json(certificates);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -776,22 +776,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId
       });
       
-      const certificate = await dbStorage.createCertificate(certificateData);
+      const certificate = await storage.createCertificate(certificateData);
       
       // Award "Portfolio Builder" achievement if this is the first certificate
       try {
-        const userCertificates = await dbStorage.getUserCertificates(userId);
+        const userCertificates = await storage.getUserCertificates(userId);
         
         if (userCertificates.length === 1) {
           // This is the first certificate, award the achievement
-          const portfolioBuilderAchievement = await dbStorage.getAchievementByName("Portfolio Builder");
+          const portfolioBuilderAchievement = await storage.getAchievementByName("Portfolio Builder");
           
           if (portfolioBuilderAchievement) {
             // Check if user already has this achievement
-            const userAchievement = await dbStorage.getUserAchievementProgress(userId, portfolioBuilderAchievement.id);
+            const userAchievement = await storage.getUserAchievementProgress(userId, portfolioBuilderAchievement.id);
             
             if (!userAchievement) {
-              await dbStorage.completeUserAchievement(userId, portfolioBuilderAchievement.id, 1);
+              await storage.completeUserAchievement(userId, portfolioBuilderAchievement.id, 1);
             }
           }
         }
@@ -828,11 +828,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/stats", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const stats = await dbStorage.getUserStats(userId);
+      const stats = await storage.getUserStats(userId);
       
       if (!stats) {
         // Create stats if they don't exist
-        const newStats = await dbStorage.createUserStats({
+        const newStats = await storage.createUserStats({
           userId,
           coursesInProgress: 0,
           certificatesEarned: 0,
@@ -853,7 +853,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/achievements", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const achievements = await dbStorage.getUserAchievements(userId);
+      const achievements = await storage.getUserAchievements(userId);
       res.json(achievements);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -862,7 +862,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/achievements/all", isAuthenticated, async (req, res) => {
     try {
-      const achievements = await dbStorage.getAchievements();
+      const achievements = await storage.getAchievements();
       res.json(achievements);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -873,7 +873,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/badges", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const badges = await dbStorage.getUserBadges(userId);
+      const badges = await storage.getUserBadges(userId);
       res.json(badges);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -882,7 +882,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/badges/all", isAuthenticated, async (req, res) => {
     try {
-      const badges = await dbStorage.getBadges();
+      const badges = await storage.getBadges();
       res.json(badges);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -900,7 +900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "displayOnProfile must be a boolean" });
       }
       
-      const badge = await dbStorage.updateUserBadgeDisplay(userId, badgeId, displayOnProfile);
+      const badge = await storage.updateUserBadgeDisplay(userId, badgeId, displayOnProfile);
       
       if (!badge) {
         return res.status(404).json({ message: "Badge not found" });
@@ -918,7 +918,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // You need to add this method to your storage class
-      const contactRequest = await dbStorage.createContactRequest({
+      const contactRequest = await storage.createContactRequest({
         name,
         email, 
         phone,
@@ -934,7 +934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Полностью переписанный обработчик подписки на бюллетень без зависимости от pool или dbStorage
+  // Полностью переписанный обработчик подписки на бюллетень без зависимости от pool или storage
   app.post("/api/newsletter-subscribe", async (req, res) => {
     try {
       const { email } = req.body;
@@ -944,14 +944,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid email address" });
       }
       
-      // Используем прямые SQL-запросы через db.execute, не используя ни pool, ни dbStorage
+      // Используем прямые SQL-запросы через db.execute, не используя ни pool, ни storage
       // Проверка существующего email
       const checkResult = await db.execute(
         sql`SELECT id FROM newsletter_subscriptions WHERE LOWER(email) = LOWER(${email}) LIMIT 1`
       );
       
       // Проверяем результат
-      if (checkResult && checkResult[0]) {
+      if (checkResult && checkResult.rows && checkResult.rows.length > 0) {
         return res.status(200).json({ message: "Email already subscribed" });
       }
       
@@ -970,6 +970,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         error
       });
       res.status(500).json({ message: "Subscription failed. Please try again later." });
+    }
+  });
+  
+  // Add a new route to check newsletter subscriptions - place this after the newsletter-subscribe endpoint
+  app.get("/api/check-subscriptions", async (req, res) => {
+    try {
+      console.log("Checking all newsletter subscriptions");
+      
+      // Get all subscriptions from the database
+      const result = await db.execute(
+        sql`SELECT * FROM newsletter_subscriptions ORDER BY subscription_date DESC LIMIT 50`
+      );
+      
+      // Return the subscriptions
+      res.status(200).json({ 
+        count: result.rows.length,
+        subscriptions: result.rows
+      });
+    } catch (error: any) {
+      console.error("Error checking subscriptions:", error);
+      res.status(500).json({ message: "Failed to check subscriptions", error: error.message });
     }
   });
   

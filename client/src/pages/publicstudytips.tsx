@@ -498,6 +498,10 @@ export default function PublicStudyTips() {
   const { theme } = useTheme();
   const { toast } = useToast();
   
+  // Add these state variables for the newsletter subscription
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  
   // Refs for animation
   const heroRef = useRef<HTMLDivElement>(null);
   
@@ -759,14 +763,26 @@ export default function PublicStudyTips() {
   // Then define t based on the current language
   const t = translations[language as keyof typeof translations] || translations.en;
   
+  // Обновляем компонент NewsletterBlock для отображения элегантного интегрированного уведомления в стиле приложения
   const NewsletterBlock = () => {
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
     const { toast } = useToast();
     const { language } = useTranslations();
+    // Удаляем состояние для отладочных сообщений
+    // const [debugMessages, setDebugMessages] = useState<string[]>([]);
 
-    // Тексты для разных языков
+    // Удаляем функцию отладки
+    // const addDebugMessage = (message: string) => {
+    //   // Выводим отладочные сообщения только в режиме разработки
+    //   if (process.env.NODE_ENV === 'development') {
+    //     console.log("[NewsletterBlock Debug]:", message);
+    //     setDebugMessages(prev => [...prev, message]);
+    //   }
+    // };
+
+    // Текст для разных языков
     const translations = {
       en: {
         title: "Subscribe to Updates",
@@ -775,6 +791,7 @@ export default function PublicStudyTips() {
         button: "Subscribe",
         disclaimer: "No spam, we send twice a month",
         successToast: "Successfully subscribed!",
+        successMessage: "Your request has been successfully submitted!",
         errorToast: "Subscription failed. Please try again.",
         invalidEmail: "Please enter a valid email address"
       },
@@ -785,6 +802,7 @@ export default function PublicStudyTips() {
         button: "Подписаться",
         disclaimer: "Без спама, отправляем дважды в месяц",
         successToast: "Вы успешно подписались!",
+        successMessage: "Ваша заявка была успешно отправлена!",
         errorToast: "Ошибка подписки. Пожалуйста, попробуйте еще раз.",
         invalidEmail: "Пожалуйста, введите корректный email"
       },
@@ -795,21 +813,25 @@ export default function PublicStudyTips() {
         button: "Жазылу",
         disclaimer: "Спамсыз, айына екі рет жібереміз",
         successToast: "Сіз сәтті жазылдыңыз!",
+        successMessage: "Сіздің өтінішіңіз сәтті жіберілді!",
         errorToast: "Жазылу қатесі. Қайталап көріңіз.",
         invalidEmail: "Жарамды email енгізіңіз"
       }
     };
 
-    const t = translations[language as keyof typeof translations];
+    const t = translations[language as keyof typeof translations] || translations.en;
 
     const validateEmail = (email: string) => {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
 
     const handleSubscribe = async () => {
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      console.log("🚀 ПОДПИСКА: Кнопка нажата, email:", email);
+      
+      if (!email || !validateEmail(email)) {
+        console.log("❌ ПОДПИСКА: Невалидный email:", email);
         toast({ 
-          title: "Пожалуйста, введите корректный email",
+          title: t.invalidEmail,
           variant: "destructive"
         });
         return;
@@ -817,7 +839,7 @@ export default function PublicStudyTips() {
 
       setIsSubmitting(true);
       try {
-        console.log("Отправка запроса на подписку:", email);
+        console.log("📧 ПОДПИСКА: Отправка запроса на сервер...", email);
         
         const response = await fetch("/api/newsletter-subscribe", {
           method: "POST",
@@ -827,34 +849,104 @@ export default function PublicStudyTips() {
           body: JSON.stringify({ email })
         });
 
-        // Для отладки
-        console.log("Статус ответа:", response.status);
-        const responseData = await response.json();
-        console.log("Ответ сервера:", responseData);
-
-        if (!response.ok) {
-          throw new Error(responseData.message || "Ошибка подписки");
-        }
-
+        console.log("📨 ПОДПИСКА: Ответ от сервера получен. Статус:", response.status);
+        
+        // Упрощаем обработку ответа - если статус 2xx, считаем успехом
+        if (response.status >= 200 && response.status < 300) {
+          console.log("✅ ПОДПИСКА: УСПЕХ! Email:", email);
+          
+          // Сохраняем email перед очисткой формы
+          setSubmittedEmail(email);
         setEmail("");
+          setIsSuccess(true);
+          console.log("🎉 ПОДПИСКА: Состояние успеха установлено в TRUE");
+          
+          // Показываем более заметное toast уведомление с большим временем отображения
         toast({ 
-          title: "Вы успешно подписались!",
-          description: email 
-        });
+            title: language === 'ru' ? 'Подписка оформлена!' : 
+                   language === 'kz' ? 'Жазылым рәсімделді!' : 
+                   'Subscription confirmed!',
+            description: language === 'ru' ? `${email} успешно добавлен в список рассылки` : 
+                         language === 'kz' ? `${email} тарату тізіміне сәтті қосылды` : 
+                         `${email} was successfully added to our mailing list`,
+            variant: "default",
+            duration: 8000, // Увеличиваем время отображения до 8 секунд
+          });
+          
+          // Автоматически скрываем встроенное сообщение об успехе через 8 секунд
+          setTimeout(() => {
+            setIsSuccess(false);
+            console.log("⏰ ПОДПИСКА: Состояние успеха сброшено через таймаут");
+          }, 8000);
+        } else {
+          // Если статус не 2xx, считаем ошибкой
+          const errorText = await response.text();
+          console.error("❌ ПОДПИСКА: Ошибка ответа сервера:", errorText);
+          throw new Error(errorText || "Subscription failed");
+        }
       } catch (error) {
-        console.error("Ошибка при подписке:", error);
+        console.error("❌ ПОДПИСКА: ОШИБКА:", error);
+        setSubmittedEmail(email);
+        setIsError(true);
         toast({
-          title: "Ошибка подписки",
-          description: "Пожалуйста, попробуйте позже",
-          variant: "destructive"
+          title: language === 'ru' ? 'Ошибка подписки!' : 
+                 language === 'kz' ? 'Жазылу қатесі!' : 
+                 'Subscription error!',
+          description: language === 'ru' ? 'Пожалуйста, попробуйте позже' : 
+                       language === 'kz' ? 'Кейінірек қайталап көріңіз' : 
+                       'Please try again later',
+          variant: "destructive",
+          duration: 5000
         });
+        
+        // Автоматически скрываем сообщение об ошибке через 8 секунд
+        setTimeout(() => {
+          setIsError(false);
+        }, 8000);
       } finally {
         setIsSubmitting(false);
       }
     };
 
     return (
-      <div className="p-6">
+      <div className="p-6 relative">
+        {isSuccess ? (
+          <div className="bg-card border border-primary/20 rounded-lg p-6 shadow-md transition-all duration-300">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30">
+                <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
+              
+              <div>
+                <h3 className="text-2xl font-semibold mb-2">
+                  {language === 'ru' ? 'Подписка оформлена!' : 
+                   language === 'kz' ? 'Жазылым рәсімделді!' : 
+                   'Subscription confirmed!'}
+                </h3>
+                
+                <p className="text-muted-foreground mb-6">
+                  {language === 'ru' ? 'Спасибо! Вы успешно подписались на нашу рассылку.' : 
+                   language === 'kz' ? 'Рахмет! Сіз біздің таратылымға сәтті жазылдыңыз.' : 
+                   'Thank you! You have successfully subscribed to our newsletter.'}
+                </p>
+                
+                <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-md mb-6 border border-green-200 dark:border-green-900/50">
+                  <p className="text-green-600 dark:text-green-400 font-medium">{submittedEmail}</p>
+                </div>
+                
+                <Button 
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => setIsSuccess(false)}
+                >
+                  {language === 'ru' ? 'Закрыть' : 
+                   language === 'kz' ? 'Жабу' : 
+                   'Close'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
             <Mail className="w-6 h-6" />
@@ -872,20 +964,15 @@ export default function PublicStudyTips() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t.placeholder}
             className="bg-background/80"
-            disabled={isSubmitting || isSuccess}
+                disabled={isSubmitting}
           />
           
           <Button 
             className="w-full"
             onClick={handleSubscribe}
-            disabled={isSubmitting || isSuccess}
+                disabled={isSubmitting}
           >
-            {isSuccess ? (
-              <span className="flex items-center gap-2">
-                <Check className="h-4 w-4" />
-                {t.button}
-              </span>
-            ) : isSubmitting ? (
+                {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 {t.button}
@@ -899,6 +986,10 @@ export default function PublicStudyTips() {
             {t.disclaimer}
           </p>
         </div>
+          </>
+        )}
+        
+        {/* Удалены большие модальные окна успеха и ошибки */}
       </div>
     );
   };
@@ -1479,11 +1570,23 @@ export default function PublicStudyTips() {
       
       {/* Enhanced Modal for tip details */}
       <Dialog open={isModalOpen} onOpenChange={(open) => !open && closeTipModal()}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden p-0">
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 overflow-hidden flex flex-col">
+          <DialogHeader className="sr-only">
+            <DialogTitle>
+              {selectedTip && (language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
+               language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
+               selectedTip.title)}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedTip && (language === 'ru' && selectedTip.descriptionRu ? selectedTip.descriptionRu : 
+               language === 'kz' && selectedTip.descriptionKz ? selectedTip.descriptionKz : 
+               selectedTip.description)}
+            </DialogDescription>
+          </DialogHeader>
           {selectedTip && (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full max-h-[90vh]">
               {/* Hero Image with Gradient Overlay */}
-              <div className="h-64 md:h-72 relative bg-muted/30">
+              <div className="h-64 md:h-72 relative bg-muted/30 flex-shrink-0">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                 {/* Image loading spinner */}
                 <div className="absolute inset-0 flex items-center justify-center z-20 bg-muted/20">
@@ -1511,81 +1614,370 @@ export default function PublicStudyTips() {
                   }}
                 />
               </div>
-              
-              {/* Article Info */}
-              <div className="absolute bottom-4 left-4 right-4 z-20">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge className="bg-blue-600 text-white mb-2 border-none">
-                    {selectedTip.category}
-                  </Badge>
-                  
-                  {selectedTip.featured && (
-                    <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
-                      <Star className="w-3 h-3" fill="white" />
-                      {language === 'ru' ? 'Рекомендуем' : 
-                       language === 'kz' ? 'Ұсынамыз' : 
-                       'Featured'}
+                
+                {/* Article Info */}
+                <div className="absolute bottom-4 left-4 right-4 z-20">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Badge className="bg-blue-600 text-white mb-2 border-none">
+                      {selectedTip.category}
                     </Badge>
-                  )}
+                    
+                    {selectedTip.featured && (
+                      <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
+                        <Star className="w-3 h-3" fill="white" />
+                        {language === 'ru' ? 'Рекомендуем' : 
+                         language === 'kz' ? 'Ұсынамыз' : 
+                         'Featured'}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <h2 className="text-xl md:text-2xl font-bold text-white">
+                    {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
+                     language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
+                     selectedTip.title}
+                  </h2>
                 </div>
                 
-                <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
-                   language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
-                   selectedTip.title}
-                </h2>
+                {/* Action Buttons */}
+                <div className="absolute top-4 right-4 z-30 flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
+                    onClick={(e) => toggleSaveArticle(selectedTip.id, e)}
+                  >
+                    <Bookmark 
+                      className="w-5 h-5" 
+                      fill={savedArticles.includes(selectedTip.id) ? "currentColor" : "none"} 
+                    />
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </Button>
               </div>
               
-              {/* Article Info */}
-              <div className="absolute bottom-4 left-4 right-4 z-20">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge className="bg-blue-600 text-white mb-2 border-none">
-                    {selectedTip.category}
-                  </Badge>
+              {/* Article Content - Fixed scrolling issues */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-6">
+                  {/* Article metadata */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>{selectedTip.author.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <p className="text-sm font-medium">{selectedTip.author}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(selectedTip.date).toLocaleDateString()} · {selectedTip.readTime}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-1">
+                      <Badge variant="outline" className="flex items-center space-x-1">
+                        <Eye className="h-3 w-3" />
+                        <span>{Math.floor(Math.random() * 900) + 100}</span>
+                      </Badge>
+                      <Badge variant="outline" className="flex items-center space-x-1">
+                        <ThumbsUp className="h-3 w-3" />
+                        <span>{Math.floor(Math.random() * 50) + 5}</span>
+                      </Badge>
+                    </div>
+                  </div>
                   
-                  {selectedTip.featured && (
-                    <Badge className="bg-yellow-500 text-white border-none flex items-center gap-1.5">
-                      <Star className="w-3 h-3" fill="white" />
-                      {language === 'ru' ? 'Рекомендуем' : 
-                       language === 'kz' ? 'Ұсынамыз' : 
-                       'Featured'}
-                    </Badge>
-                  )}
+                  {/* Full article text - Improved structure */}
+                  <div className="prose dark:prose-invert max-w-none">
+                    {/* Introduction */}
+                    <div className="bg-muted/30 p-4 rounded-lg border border-border/20 mb-6">
+                      <p className="text-lg font-medium">
+                        {language === 'ru' && selectedTip.descriptionRu 
+                          ? selectedTip.descriptionRu 
+                          : language === 'kz' && selectedTip.descriptionKz 
+                            ? selectedTip.descriptionKz 
+                            : selectedTip.description}
+                    </p>
+                    </div>
+                    
+                    {/* Key Takeaways Section */}
+                    <div className="mb-8">
+                      <div className="flex items-start gap-2 mb-4">
+                        <div className="p-2 rounded-full bg-primary/10 text-primary">
+                          <CheckCircle2 className="h-5 w-5" />
+                        </div>
+                        <h3 className="text-xl font-bold mt-1">{t.keyTakeaways}</h3>
+                      </div>
+                      
+                      <div className="bg-card rounded-xl p-4 border border-border/20 shadow-sm">
+                        <ul className="space-y-3">
+                          {Array.from({ length: 3 }).map((_, i) => (
+                            <li key={i} className="flex items-start gap-3">
+                              <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center flex-shrink-0 mt-0.5">
+                                {i + 1}
+                        </div>
+                        <div>
+                                <p className="font-medium">
+                                  {language === 'ru' 
+                                    ? `${selectedTip.descriptionRu?.split(".")[i] || "Важная информация для учащихся"}`
+                                    : language === 'kz'
+                                      ? `${selectedTip.descriptionKz?.split(".")[i] || "Оқушыларға арналған маңызды ақпарат"}`
+                                      : `${selectedTip.description.split(".")[i] || "Important information for students"}`}
+                                </p>
+                        </div>
+                      </li>
+                          ))}
+                        </ul>
+                        </div>
+                        </div>
+                    
+                    {/* Main Content - More structured and useful */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-primary" />
+                        {language === 'ru' ? 'Подробная информация' : language === 'kz' ? 'Толық ақпарат' : 'Detailed Information'}
+                      </h3>
+                      
+                      <div className="space-y-4">
+                        <p>
+                          {language === 'ru' 
+                            ? 'В этом разделе представлена детальная информация о теме. Тщательное изучение материалов поможет лучше подготовиться и добиться высоких результатов.'
+                            : language === 'kz'
+                              ? 'Бұл бөлімде тақырып туралы толық ақпарат берілген. Материалдарды мұқият зерттеу жақсы дайындалуға және жоғары нәтижелерге қол жеткізуге көмектеседі.'
+                              : 'This section provides detailed information about the topic. Careful study of the materials will help you better prepare and achieve high results.'}
+                        </p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                          <div className="bg-muted/20 p-4 rounded-lg border border-border/20">
+                            <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
+                              <Target className="h-4 w-4 text-primary" />
+                              {language === 'ru' ? 'Цели' : language === 'kz' ? 'Мақсаттар' : 'Goals'}
+                            </h4>
+                            <ul className="space-y-2">
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Понимание ключевых концепций и принципов'
+                                    : language === 'kz'
+                                      ? 'Негізгі тұжырымдамалар мен принциптерді түсіну'
+                                      : 'Understanding key concepts and principles'}
+                                </span>
+                      </li>
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Развитие необходимых навыков и стратегий'
+                                    : language === 'kz'
+                                      ? 'Қажетті дағдылар мен стратегияларды дамыту'
+                                      : 'Developing necessary skills and strategies'}
+                                </span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Подготовка к успешной сдаче экзаменов и тестов'
+                                    : language === 'kz'
+                                      ? 'Емтихандар мен тесттерді сәтті тапсыруға дайындық'
+                                      : 'Preparing for successful completion of exams and tests'}
+                                </span>
+                              </li>
+                            </ul>
+                        </div>
+                          
+                          <div className="bg-muted/20 p-4 rounded-lg border border-border/20">
+                            <h4 className="font-semibold text-base mb-2 flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-primary" />
+                              {language === 'ru' ? 'Ресурсы' : language === 'kz' ? 'Ресурстар' : 'Resources'}
+                            </h4>
+                            <ul className="space-y-2">
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">•</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Официальные учебные материалы и руководства'
+                                    : language === 'kz'
+                                      ? 'Ресми оқу материалдары мен нұсқаулықтар'
+                                      : 'Official study materials and guides'}
+                                </span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">•</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Онлайн-курсы и интерактивные практические задания'
+                                    : language === 'kz'
+                                      ? 'Онлайн курстар және интерактивті практикалық тапсырмалар'
+                                      : 'Online courses and interactive practice exercises'}
+                                </span>
+                              </li>
+                              <li className="flex items-start gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">•</div>
+                                <span>
+                                  {language === 'ru' 
+                                    ? 'Сообщества учащихся и форумы для обмена опытом'
+                                    : language === 'kz'
+                                      ? 'Тәжірибе алмасу үшін студенттер қауымдастықтары мен форумдар'
+                                      : 'Student communities and forums for experience sharing'}
+                                </span>
+                      </li>
+                    </ul>
+                          </div>
+                        </div>
+                        
+                        <p>
+                          {language === 'ru' 
+                            ? 'Каждый учебный материал разработан экспертами в своей области, чтобы обеспечить максимальную пользу для учащихся. Следуя рекомендациям, вы сможете значительно улучшить свои показатели.'
+                            : language === 'kz'
+                              ? 'Әрбір оқу материалы оқушыларға барынша пайдалы болу үшін өз саласының мамандарымен әзірленген. Ұсыныстарды орындау арқылы көрсеткіштеріңізді айтарлықтай жақсарта аласыз.'
+                              : 'Each study material is developed by experts in their field to provide maximum benefit to students. By following the recommendations, you can significantly improve your performance.'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Practical Tips Section */}
+                    <div className="mb-8">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <BookMarked className="h-5 w-5 text-primary" />
+                        {language === 'ru' ? 'Практические советы' : language === 'kz' ? 'Практикалық кеңестер' : 'Practical Tips'}
+                      </h3>
+                      
+                      <div className="bg-gradient-to-br from-primary/5 to-blue-500/5 p-5 rounded-lg border border-primary/10">
+                        <ol className="space-y-4 list-decimal ml-5">
+                          <li>
+                            <p className="font-medium">
+                              {language === 'ru' 
+                                ? 'Создайте регулярное расписание занятий и придерживайтесь его'
+                                : language === 'kz'
+                                  ? 'Тұрақты сабақ кестесін жасаңыз және оны ұстаныңыз'
+                                  : 'Create a regular study schedule and stick to it'}
+                            </p>
+                            <p className="text-sm text-foreground/80 mt-1">
+                              {language === 'ru' 
+                                ? 'Регулярность — ключ к эффективному обучению. Выделите конкретное время каждый день для занятий.'
+                                : language === 'kz'
+                                  ? 'Тұрақтылық - тиімді оқытудың кілті. Күн сайын сабаққа нақты уақыт бөліңіз.'
+                                  : 'Consistency is key to effective learning. Set aside specific times each day for studying.'}
+                            </p>
+                          </li>
+                          <li>
+                            <p className="font-medium">
+                              {language === 'ru' 
+                                ? 'Разбивайте материал на небольшие, управляемые части'
+                                : language === 'kz'
+                                  ? 'Материалды кішкене, басқарылатын бөліктерге бөліңіз'
+                                  : 'Break down material into small, manageable chunks'}
+                            </p>
+                            <p className="text-sm text-foreground/80 mt-1">
+                              {language === 'ru' 
+                                ? 'Изучение небольших порций информации более эффективно, чем попытка освоить всё сразу.'
+                                : language === 'kz'
+                                  ? 'Ақпараттың шағын бөліктерін зерттеу бәрін бірден игеруге тырысқаннан гөрі тиімдірек.'
+                                  : 'Studying small portions of information is more effective than trying to master everything at once.'}
+                            </p>
+                          </li>
+                          <li>
+                            <p className="font-medium">
+                              {language === 'ru' 
+                                ? 'Практикуйтесь с реальными примерами экзаменационных заданий'
+                                : language === 'kz'
+                                  ? 'Емтихан тапсырмаларының нақты мысалдарымен практика жасаңыз'
+                                  : 'Practice with real examples of exam tasks'}
+                            </p>
+                            <p className="text-sm text-foreground/80 mt-1">
+                              {language === 'ru' 
+                                ? 'Регулярное решение практических заданий поможет вам ознакомиться с форматом и требованиями экзамена.'
+                                : language === 'kz'
+                                  ? 'Практикалық тапсырмаларды үнемі шешу емтихан форматымен және талаптарымен танысуға көмектеседі.'
+                                  : 'Regularly solving practice tasks will help you become familiar with the exam format and requirements.'}
+                    </p>
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+                    
+                    {/* Tags in a more visually appealing section */}
+                    <div className="bg-muted/20 p-4 rounded-lg border border-border/20 mt-8">
+                      <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-primary" />
+                        {language === 'ru' ? 'Темы и теги' : language === 'kz' ? 'Тақырыптар мен тегтер' : 'Topics & Tags'}
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTip.tags.map(tag => (
+                          <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-primary/10 transition-colors">
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
                 
-                <h2 className="text-xl md:text-2xl font-bold text-white">
-                  {language === 'ru' && selectedTip.titleRu ? selectedTip.titleRu : 
-                   language === 'kz' && selectedTip.titleKz ? selectedTip.titleKz : 
-                   selectedTip.title}
-                </h2>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="absolute top-4 right-4 z-30 flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
-                  onClick={(e) => toggleSaveArticle(selectedTip.id, e)}
-                >
-                  <Bookmark 
-                    className="w-5 h-5" 
-                    fill={savedArticles.includes(selectedTip.id) ? "currentColor" : "none"} 
-                  />
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full"
-                >
-                  <Share2 className="w-5 h-5" />
-                </Button>
+                    {/* Related articles section with improved design */}
+                    <div className="mt-10">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <ArrowUpRight className="h-5 w-5 text-primary" />
+                        {t.relatedArticles}
+                    </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {dummyStudyTips
+                          .filter(tip => tip.id !== selectedTip.id && tip.category === selectedTip.category)
+                          .slice(0, 2)
+                          .map(tip => (
+                        <div 
+                              key={tip.id}
+                              className="bg-card rounded-lg p-4 cursor-pointer hover:shadow-md transition-all hover:border-primary/30 border border-border/20"
+                          onClick={() => {
+                            closeTipModal();
+                                setTimeout(() => openTipModal(tip), 300);
+                          }}
+                        >
+                              <div className="flex items-start gap-3">
+                                <div className="w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-muted/50">
+                            <img 
+                                    src={tip.imageUrl} 
+                                    alt={language === 'ru' && tip.titleRu ? tip.titleRu : 
+                                          language === 'kz' && tip.titleKz ? tip.titleKz : 
+                                          tip.title}
+                                    className="w-full h-full object-cover"
+                            />
+                          </div>
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-sm line-clamp-2 hover:text-primary transition-colors">
+                                    {language === 'ru' && tip.titleRu 
+                                      ? tip.titleRu 
+                                      : language === 'kz' && tip.titleKz 
+                                        ? tip.titleKz 
+                                        : tip.title}
+                          </h4>
+                                  <div className="flex items-center justify-between mt-1">
+                                    <Badge variant="outline" className="text-xs">
+                                      {tip.category}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground flex items-center">
+                            <Clock className="w-3 h-3 mr-1" />
+                                      {tip.readTime}
+                                    </span>
+                                  </div>
+                                </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Floating notification removed - it was causing TypeScript errors */}
     </PublicPageLayout>
   );
 }

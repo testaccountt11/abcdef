@@ -1,12 +1,12 @@
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useTranslations } from '@/hooks/use-translations';
 import { Menu, X, User } from 'lucide-react';
 import { useState } from 'react';
-import logoLight from '@/img/light_version.svg';
-import logoDark from '@/img/dark_version.svg';
+import logoLight from '../img/light_version.svg';
+import logoDark from '../img/dark_version.svg';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export function Navbar() {

@@ -1321,7 +1321,7 @@ export default function Landing() {
         </section>
 
         {/* FAQ SECTION - улучшенная версия с эффектами */}
-        <section id="faq" className="py-24 max-w-7xl mx-auto px-4 relative">
+        <section id="faq" className="py-24 max-w-7xl mx-auto px-4 relative scroll-mt-24">
           {/* Декоративные элементы фона */}
           <div className="absolute inset-0 overflow-hidden">
             <motion.div
@@ -1344,7 +1344,7 @@ export default function Landing() {
             />
           </div>
           
-          <div className="text-center mb-16 relative">
+          <div id="faq-content" className="text-center mb-16 relative">
             <motion.span 
               className="inline-block px-3 py-1 text-sm rounded-full border border-primary/20 bg-primary/5 text-primary/80 mb-4"
               initial={{ opacity: 0, scale: 0.8 }}

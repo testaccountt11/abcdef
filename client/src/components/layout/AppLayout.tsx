@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Menu } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import logoLight from '../../img/light_version.svg';
+import logoDark from '../../img/dark_version.svg';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -9,47 +13,72 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  
+  // Store the collapsed state in localStorage
+  useEffect(() => {
+    const storedCollapsedState = localStorage.getItem('sidebarCollapsed');
+    if (storedCollapsedState) {
+      setIsSidebarCollapsed(storedCollapsedState === 'true');
+    }
+  }, []);
+  
+  // Save the sidebar state when it changes
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', isSidebarCollapsed.toString());
+  }, [isSidebarCollapsed]);
   
   useEffect(() => {
     setIsSidebarOpen(!isMobile);
   }, [isMobile]);
+  
+  // Toggle sidebar collapse state
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+  
+  // Determine which logo to use based on theme
+  const isDarkMode = theme === 'dark' || 
+    (theme === 'system' && typeof window !== 'undefined' && 
+     window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  const logoSrc = isDarkMode ? logoDark : logoLight;
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar (desktop) */}
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {/* Sidebar */}
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+        onToggle={toggleSidebar} 
+        isCollapsed={isSidebarCollapsed} 
+      />
       
       {/* Main Content */}
-      <main className={`main-content flex-1 overflow-y-auto overflow-x-hidden ${isSidebarOpen && !isMobile ? 'md:ml-64' : ''}`}>
+      <main 
+        className={`main-content flex-1 overflow-y-auto overflow-x-hidden transition-all duration-200
+          ${isSidebarOpen && !isMobile 
+            ? isSidebarCollapsed 
+              ? 'md:ml-20' // When collapsed
+              : 'md:ml-64' // When expanded
+            : ''
+          }`}
+      >
         {/* Mobile Header */}
         {isMobile && (
-          <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+          <div className="md:hidden bg-card/80 backdrop-blur-sm border-b border-border/30 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <div className="w-8 h-8 rounded-md bg-primary-600 flex items-center justify-center text-white mr-2">
-                  <i className="ri-stack-line text-xl"></i>
-                </div>
-                <span className="text-xl font-bold text-gray-900">Portfol.IO</span>
+                <img src={logoSrc} alt="Portfol.IO" className="h-8 w-auto mr-2" />
               </div>
               <button
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 onClick={() => setIsSidebarOpen(true)}
+                aria-label="Open menu"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <Menu size={20} />
               </button>
             </div>
           </div>

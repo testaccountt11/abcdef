@@ -11,14 +11,28 @@ import { useRef, useState, useEffect } from "react";
 import { PublicPageLayout } from "@/components/layouts/PublicPageLayout";
 import { useIsMobile } from "@/hooks/use-mobile";
 import React from "react";
-import { useToast } from "@/hooks/use-toast"; // Добавьте этот импорт
-import { Toaster } from "@/components/ui/toaster"; // Добавьте этот импорт
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function PublicAboutUs() {
   const { t, language } = useTranslations();
   const [, navigate] = useLocation();
-  const { toast } = useToast(); // Добавьте эту строку
-  const [isSubmitting, setIsSubmitting] = useState(false); // Добавьте эту строку
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Test toast on component mount
+  React.useEffect(() => {
+    // Short delay to ensure component is fully mounted
+    const timer = setTimeout(() => {
+      toast({
+        title: "Тестовое уведомление",
+        description: "Система уведомлений работает корректно",
+        variant: "default",
+      });
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const [isVisible, setIsVisible] = useState({
     mission: false,
@@ -210,7 +224,7 @@ export default function PublicAboutUs() {
       name: 'Мақажан Маусымжан',
       role: language === 'ru' ? 'Основатель проекта' : language === 'kz' ? 'Жоба негізін қалаушы' : 'Project Founder',
       image: '/src/img/founder.jpg', // Обновленный путь
-      fallbackImage: '/src/img/founder.jpg', // Обновленный путь
+      // fallbackImage: '/src/img/founder.jpg', // Обновленный путь
       bio: language === 'ru' 
         ? 'Талантливый разработчик с опытом создания веб-платформ и успешной реализацией онлайн-магазина.' 
         : language === 'kz' 
@@ -265,6 +279,14 @@ export default function PublicAboutUs() {
   // Add a function to handle form submission
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submitted');
+    
+    // Show immediate toast to confirm toast system works
+    toast({
+      title: "Форма отправляется...",
+      description: "Пожалуйста, подождите",
+      variant: "default",
+    });
     
     // Сохраняем ссылку на форму сразу
     const form = e.currentTarget;
@@ -281,8 +303,11 @@ export default function PublicAboutUs() {
       message: formData.get('message'),
     };
     
+    console.log('Form data:', data);
+    
     try {
       const apiUrl = `${window.location.origin}/api/db/contact`;
+      console.log('Submitting form to:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -295,53 +320,75 @@ export default function PublicAboutUs() {
         }),
       });
       
-      const contentType = response.headers.get('content-type');
+      console.log('Response status:', response.status);
       
-      if (contentType && contentType.includes('application/json')) {
-        const responseData = await response.json();
+      // Check if the response is successful (status code 2xx)
+      if (response.ok) {
+        // Success - Clear form and show success toast
+        console.log('Form submitted successfully');
+        form.reset();
         
-        if (response.ok) {
-          // Показываем успешное уведомление
-          toast({
-            title: language === 'ru' 
-              ? 'Сообщение отправлено!' 
-              : language === 'kz' 
-                ? 'Хабарлама жіберілді!' 
-                : 'Message sent!',
-            description: language === 'ru' 
-              ? 'Мы свяжемся с вами в ближайшее время.' 
-              : language === 'kz' 
-                ? 'Біз сізбен жақын арада байланысамыз.' 
-                : 'We will contact you soon.',
-            variant: "default",
-          });
+        // Show success toast notification
+        toast({
+          title: language === 'ru' 
+            ? 'Сообщение отправлено!' 
+            : language === 'kz' 
+              ? 'Хабарлама жіберілді!' 
+              : 'Message sent!',
+          description: language === 'ru' 
+            ? 'Мы свяжемся с вами в ближайшее время.' 
+            : language === 'kz' 
+              ? 'Біз сізбен жақын арада байланысамыз.' 
+              : 'We will contact you soon.',
+          variant: "default",
+        });
+        
+        // Add a direct DOM message as a backup
+        const formContainer = form.parentElement;
+        if (formContainer) {
+          const successMessage = document.createElement('div');
+          successMessage.className = 'mt-4 p-3 bg-green-100 text-green-800 rounded-md';
+          successMessage.textContent = 'Сообщение успешно отправлено!';
+          formContainer.appendChild(successMessage);
           
-          // Очищаем форму используя сохраненную ссылку
-          form.reset();
-        } else {
-          // Показываем уведомление об ошибке
-          toast({
-            title: language === 'ru' 
-              ? 'Ошибка!' 
-              : language === 'kz' 
-                ? 'Қате!' 
-                : 'Error!',
-            description: language === 'ru' 
-              ? (responseData && responseData.message) || 'Не удалось отправить сообщение. Пожалуйста, попробуйте еще раз.' 
-              : language === 'kz' 
-                ? (responseData && responseData.message) || 'Хабарлама жіберу мүмкін болмады. Тағы жасап көріңіз.' 
-                : (responseData && responseData.message) || 'Failed to send message. Please try again.',
-            variant: "destructive",
-          });
+          // Remove the message after 5 seconds
+          setTimeout(() => {
+            formContainer.removeChild(successMessage);
+          }, 5000);
         }
       } else {
-        const responseText = await response.text();
-        throw new Error("Сервер вернул не JSON ответ");
+        // Error - Show error toast
+        console.error('Error submitting form:', response.status);
+        let errorMessage = language === 'ru' 
+          ? 'Не удалось отправить сообщение. Пожалуйста, попробуйте еще раз.' 
+          : language === 'kz' 
+            ? 'Хабарлама жіберу мүмкін болмады. Тағы жасап көріңіз.' 
+            : 'Failed to send message. Please try again.';
+            
+        try {
+          // Try to get more detailed error message from response
+          const errorData = await response.json();
+          if (errorData && typeof errorData === 'object' && 'message' in errorData) {
+            errorMessage = errorData.message as string;
+          }
+        } catch (e) {
+          console.error('Error parsing response:', e);
+        }
+        
+        toast({
+          title: language === 'ru' 
+            ? 'Ошибка!' 
+            : language === 'kz' 
+              ? 'Қате!' 
+              : 'Error!',
+          description: errorMessage,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error("Исключение при отправке формы:", error);
+      console.error("Exception when sending form:", error);
       
-      // Показываем уведомление об ошибке
+      // Show error toast notification
       toast({
         title: language === 'ru' 
           ? 'Ошибка!' 
@@ -1024,7 +1071,7 @@ export default function PublicAboutUs() {
                     <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-white/20 to-white/5 dark:from-white/5 dark:to-black/20 backdrop-blur-md">
                       {/* Круглое фото */}
                       <div className="absolute inset-3 rounded-full overflow-hidden border-2 border-white/20 shadow-inner">
-                        <img 
+                        {/* <img 
                           src={teamMembers[0].image} 
                           alt={teamMembers[0].name} 
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
@@ -1032,7 +1079,7 @@ export default function PublicAboutUs() {
                             const target = e.target as HTMLImageElement;
                             target.src = teamMembers[0].fallbackImage;
                           }}
-                        />
+                        /> */}
                       </div>
                       
                       {/* Декоративные элементы вокруг фото */}
@@ -1494,7 +1541,7 @@ export default function PublicAboutUs() {
         </section>
       </main>
       
-      {/* Добавьте компонент Toaster */}
+      {/* Убедимся, что компонент Toaster отображается */}
       <Toaster />
     </PublicPageLayout>
   );

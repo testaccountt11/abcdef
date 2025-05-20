@@ -1,95 +1,129 @@
-import { Button } from "@/components/ui/button";
 import { Opportunity } from "@shared/schema";
-import { BookmarkIcon, MapPinIcon, ClockIcon, CalendarIcon } from "lucide-react";
-import { useState } from "react";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "@/hooks/use-translations";
 import { Link } from "wouter";
-import { useTheme } from "@/contexts/ThemeContext";
-import { getTranslation } from "@/lib/translations";
+import { motion } from "framer-motion";
+import { Building2, Calendar, Clock, MapPin, Users, Bookmark } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface OpportunityCardProps {
   opportunity: Opportunity;
+  onClick?: () => void;
+  saved?: boolean;
+  applicantsCount?: number;
 }
 
-export default function OpportunityCard({ opportunity }: OpportunityCardProps) {
-  const [saved, setSaved] = useState(false);
-  const { title, description, company, logoUrl, type, location, duration, deadline } = opportunity;
-  const { language } = useTheme();
-  
-  const getBadgeColor = (type: string) => {
+export default function OpportunityCard({ 
+  opportunity, 
+  onClick,
+  saved = false,
+  applicantsCount = 0
+}: OpportunityCardProps) {
+  const { t, language } = useTranslations();
+  const [isSaved, setIsSaved] = useState(saved);
+
+  const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'internship':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100';
+        return 'bg-blue-500/90 hover:bg-blue-500';
       case 'volunteer':
-        return 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100';
+        return 'bg-green-500/90 hover:bg-green-500';
       case 'competition':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100';
+        return 'bg-purple-500/90 hover:bg-purple-500';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        return 'bg-primary/90 hover:bg-primary';
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
-      <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-        <div className="flex items-start justify-between">
-          <div>
-            <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${getBadgeColor(type)} mb-2`}>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </span>
-            <Link href={`/opportunities/${opportunity.id}`}>
-              <h3 className="font-bold text-gray-900 dark:text-gray-100 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400">{title}</h3>
-            </Link>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{company}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="h-full hover:shadow-lg transition-all duration-200 group">
+        <CardHeader className="relative p-0">
+          <div className="aspect-video relative overflow-hidden rounded-t-lg">
+            <img
+              src={opportunity.logoUrl || '/placeholder-company.jpg'}
+              alt={opportunity.company}
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <Badge className={cn("text-white", getTypeColor(opportunity.type))}>
+                  {opportunity.type}
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-8 w-8 rounded-full bg-white/10 hover:bg-white/20",
+                    isSaved && "text-yellow-400"
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsSaved(!isSaved);
+                  }}
+                >
+                  <Bookmark className={cn("h-4 w-4", isSaved && "fill-yellow-400")} />
+                </Button>
+              </div>
+              {applicantsCount > 0 && (
+                <div className="flex items-center gap-1 text-white/90 text-sm">
+                  <Users className="w-4 h-4" />
+                  <span>{applicantsCount} {language === 'ru' ? 'заявок' : 'applicants'}</span>
+                </div>
+              )}
+            </div>
           </div>
-          {logoUrl && (
-            <img src={logoUrl} alt={company} className="h-8 w-8 object-contain" />
-          )}
-        </div>
-      </div>
-      <div className="p-4">
-        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
-          {location && (
-            <>
-              <MapPinIcon className="h-4 w-4 mr-1" />
-              <span>{location}</span>
-            </>
-          )}
-          
-          {(location && (duration || deadline)) && (
-            <span className="mx-2">•</span>
-          )}
-          
-          {duration ? (
-            <>
-              <ClockIcon className="h-4 w-4 mr-1" />
-              <span>{duration}</span>
-            </>
-          ) : deadline ? (
-            <>
-              <CalendarIcon className="h-4 w-4 mr-1" />
-              <span>Deadline: {deadline}</span>
-            </>
-          ) : null}
-        </div>
-        
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{description}</p>
-        
-        <div className="flex space-x-2">
-          <Link href={`/opportunities/${opportunity.id}`} className="flex-1">
-            <Button className="w-full">
-              {type === 'competition' ? 'Learn More' : 'Apply Now'}
-            </Button>
-          </Link>
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={() => setSaved(!saved)}
-            className={saved ? "text-primary-600 dark:text-primary-400" : "text-gray-700 dark:text-gray-300"}
+        </CardHeader>
+        <CardContent className="p-4">
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+            {opportunity.title}
+          </h3>
+          <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{opportunity.description}</p>
+          <div className="space-y-2">
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Building2 className="w-4 h-4 mr-2 text-primary" />
+              <span>{opportunity.company}</span>
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <MapPin className="w-4 h-4 mr-2 text-primary" />
+              <span>{opportunity.location}</span>
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Clock className="w-4 h-4 mr-2 text-primary" />
+              <span>{opportunity.duration}</span>
+            </div>
+            {opportunity.deadline && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4 mr-2 text-primary" />
+                <span>{new Date(opportunity.deadline).toLocaleDateString()}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Button
+            className={cn(
+              "w-full transition-all duration-200",
+              getTypeColor(opportunity.type)
+            )}
+            onClick={() => onClick?.()}
+            asChild
           >
-            <BookmarkIcon className="h-4 w-4" />
+            <Link href={`/opportunities/${opportunity.id}`}>
+              {language === 'ru' ? 'Подробнее' : 'Learn More'}
+            </Link>
           </Button>
-        </div>
-      </div>
-    </div>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

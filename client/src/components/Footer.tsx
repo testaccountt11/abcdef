@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import logoLight from '@/img/light_version.svg';
 import logoDark from '@/img/dark_version.svg';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useEffect } from "react";
 
 export function Footer() {
   const { t, language } = useTranslations();
@@ -14,6 +15,40 @@ export function Footer() {
      window.matchMedia('(prefers-color-scheme: dark)').matches);
   
   const logoSrc = isDarkMode ? logoDark : logoLight;
+  
+  // Handle hash links properly when the document loads
+  useEffect(() => {
+    // Check if we have a hash in the URL when the component mounts
+    if (window.location.hash === "#faq") {
+      // We need a slight delay to make sure the page is fully loaded
+      setTimeout(() => {
+        const faqSection = document.getElementById('faq');
+        if (faqSection) {
+          faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
+  
+  // Function to handle smooth scrolling to FAQ section
+  const handleScrollToFAQ = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // If we're already on the home page
+    if (window.location.pathname === "/" || window.location.pathname === "") {
+      const faqSection = document.getElementById('faq');
+      if (faqSection) {
+        // Update URL without causing a page reload
+        window.history.pushState(null, '', '/#faq');
+        
+        // Use the scrollIntoView method which works better with scroll-mt-* classes
+        faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      // If we're on another page, navigate to home with hash
+      window.location.href = '/#faq';
+    }
+  };
   
   return (
     <footer className="bg-card/50 backdrop-blur-sm border-t border-border/50 py-16 mt-auto">
@@ -71,7 +106,21 @@ export function Footer() {
                  language === 'ru' ? 'Контакты' : 
                  'Байланыс'}
               </a></li>
-              <li><a href="#" className="text-foreground/70 hover:text-primary">FAQ</a></li>
+              <li className="relative">
+                <div className="absolute inset-0 overflow-hidden">
+                  <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/5 blur-3xl" style={{transform: 'translateX(2.26102px) translateY(-2.26102px)'}}></div>
+                  <div className="absolute bottom-40 right-20 w-72 h-72 rounded-full bg-indigo-500/5 blur-3xl" style={{transform: 'translateX(-38.3258px) translateY(38.3258px)'}}></div>
+                </div>
+                <a 
+                  href="/#faq" 
+                  onClick={handleScrollToFAQ}
+                  className="text-foreground/70 hover:text-primary relative z-10"
+                >
+                  {language === 'en' ? 'FAQ' : 
+                   language === 'ru' ? 'Часто задаваемые вопросы' : 
+                   'Жиі қойылатын сұрақтар'}
+                </a>
+              </li>
               <li><Link href="/publicprivacypolicy" className="text-foreground/70 hover:text-primary">
                 {language === 'en' ? 'Privacy Policy' : 
                  language === 'ru' ? 'Политика конфиденциальности' : 

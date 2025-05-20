@@ -5,384 +5,444 @@ import CourseCard from "@/components/dashboard/CourseCard";
 import OpportunityCard from "@/components/dashboard/OpportunityCard";
 import MentorCard from "@/components/dashboard/MentorCard";
 import ArticleCard from "@/components/dashboard/ArticleCard";
-import { ArrowRightIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { useTranslations } from "@/hooks/use-translations";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ArrowRight, 
+  Briefcase, 
+  Users, 
+  Trophy, 
+  Sparkles,
+  ChevronRight,
+  Calendar,
+  Clock
+} from "lucide-react";
 import { Link } from "wouter";
-import { Course, Opportunity, Mentor, Article } from "@shared/schema";
-import { ApiError } from "@/lib/queryClient";
+import { useState } from "react";
+import { api } from "@/lib/api";
 
-// Define Stats interface to match the API response
 interface Stats {
-  id: number;
-  userId: number;
-  coursesInProgress: number | null;
-  certificatesEarned: number | null;
-  mentorSessions: number | null;
-  opportunitiesSaved: number | null;
+  coursesInProgress: number;
+  certificatesEarned: number;
+  mentorSessions: number;
+  opportunitiesSaved: number;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
+
+const tabVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: {
+      duration: 0.3
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    x: 20,
+    transition: {
+      duration: 0.2
+    }
+  }
+};
+
 export default function Dashboard() {
-  const { user } = useAuthContext();
-  const { toast } = useToast();
-  const { t } = useTranslations();
+  const { language } = useTranslations();
+  const [activeTab, setActiveTab] = useState("courses");
 
-  // Fetch user stats
-  const { data: stats, isLoading: isLoadingStats } = useQuery<Stats>({
-    queryKey: ['/api/stats'],
-    queryFn: async ({ queryKey }) => {
-      const response = await fetch(queryKey[0] as string);
-      if (!response.ok) {
-        throw new Error('Failed to fetch stats');
-      }
-      return response.json();
-    },
-    retry: 1
+  const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
+    queryKey: ["stats"],
+    queryFn: () => fetch(api.stats.get()).then((res) => res.json()),
   });
 
-  // Fetch user courses
-  const { data: courses, isLoading: isLoadingCourses } = useQuery<Course[]>({
-    queryKey: ['/api/user/courses'],
-    queryFn: async ({ queryKey }) => {
-      const response = await fetch(queryKey[0] as string);
-      if (!response.ok) {
-        throw new Error('Failed to fetch courses');
+  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
+    queryKey: ["courses"],
+    queryFn: async () => {
+      console.log('Fetching courses and enrollments...');
+      try {
+        const [coursesResponse, enrollmentsResponse] = await Promise.all([
+          fetch(api.courses.list()).then(async (res) => {
+            if (!res.ok) {
+              throw new Error(`Failed to fetch courses: ${res.statusText}`);
+            }
+            return res.json();
+          }),
+          fetch(api.courses.getEnrollments()).then(async (res) => {
+            if (!res.ok) {
+              throw new Error(`Failed to fetch enrollments: ${res.statusText}`);
+            }
+            return res.json();
+          })
+        ]);
+        
+        console.log('Courses response:', coursesResponse);
+        console.log('Enrollments response:', enrollmentsResponse);
+        
+        // Merge courses with enrollment data
+        const mergedCourses = coursesResponse.map((course: any) => {
+          const enrollment = enrollmentsResponse.find((e: any) => String(e.course_id) === String(course.id));
+          return {
+            ...course,
+            progress: enrollment?.progress || 0,
+            isEnrolled: !!enrollment
+          };
+        });
+
+        // Filter only enrolled courses for the dashboard
+        const enrolledCourses = mergedCourses.filter((course: any) => course.isEnrolled);
+        
+        console.log('Merged courses:', mergedCourses);
+        console.log('Enrolled courses:', enrolledCourses);
+        
+        return enrolledCourses;
+      } catch (error) {
+        console.error('Error fetching courses data:', error);
+        throw error;
       }
-      return response.json();
     },
   });
 
-  // Fetch opportunities
-  const { data: opportunities, isLoading: isLoadingOpportunities } = useQuery<Opportunity[]>({
-    queryKey: ['/api/opportunities'],
-    queryFn: async ({ queryKey }) => {
-      const response = await fetch(queryKey[0] as string);
-      if (!response.ok) {
-        throw new Error('Failed to fetch opportunities');
-      }
-      return response.json();
-    },
+  const { data: opportunities, isLoading: opportunitiesLoading } = useQuery({
+    queryKey: ["opportunities"],
+    queryFn: () => fetch(api.opportunities.list()).then((res) => res.json()),
   });
 
-  // Fetch mentors
-  const { data: mentors, isLoading: isLoadingMentors } = useQuery<Mentor[]>({
-    queryKey: ['/api/mentors'],
-    queryFn: async ({ queryKey }) => {
-      const response = await fetch(queryKey[0] as string);
-      if (!response.ok) {
-        throw new Error('Failed to fetch mentors');
-      }
-      return response.json();
-    },
+  const { data: mentors, isLoading: mentorsLoading } = useQuery({
+    queryKey: ["mentors"],
+    queryFn: () => fetch(api.mentors.list()).then((res) => res.json()),
   });
 
-  // Fetch articles
-  const { data: articles, isLoading: isLoadingArticles } = useQuery<Article[]>({
-    queryKey: ['/api/articles'],
-    queryFn: async ({ queryKey }) => {
-      const response = await fetch(queryKey[0] as string);
-      if (!response.ok) {
-        throw new Error('Failed to fetch articles');
-      }
-      return response.json();
-    },
+  const { data: articles, isLoading: articlesLoading } = useQuery({
+    queryKey: ["articles"],
+    queryFn: () => fetch(api.articles.list()).then((res) => res.json()),
   });
 
   return (
     <AppLayout>
-      <div className="p-6">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
         {/* Welcome Section */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            {t('dashboard.welcome')}, {user?.firstName || user?.username || 'Student'}!
+          <motion.div 
+            variants={itemVariants} 
+            className="relative overflow-hidden space-y-2 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 p-8 rounded-2xl border border-primary/20"
+          >
+            <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]" />
+            <div className="relative">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="absolute -top-4 -right-4"
+              >
+                <Sparkles className="h-8 w-8 text-primary/50" />
+              </motion.div>
+              <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                {language === 'ru' ? 'Добро пожаловать' : 
+                 language === 'kz' ? 'Қош келдіңіз' : 
+                 'Welcome'}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">{t('dashboard.portfolioDesc')}</p>
+              <p className="text-muted-foreground text-lg mt-2">
+                {language === 'ru' 
+                  ? 'Ваш персональный дашборд для обучения и развития'
+                  : language === 'kz'
+                  ? 'Оқу және даму үшін жеке бақылау тақтаңыз'
+                  : 'Your personal dashboard for learning and growth'}
+              </p>
         </div>
-        
-        {/* Announcements Section */}
-        <div className="mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              {t('dashboard.announcement.title')}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-              {t('dashboard.announcement.details')}
-            </p>
-            
-            <div className="space-y-3">
-              {/* New Course Announcement */}
-              <div 
-                className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-md cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                onClick={() => window.location.href = '/courses'}
-              >
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mr-3 mt-1 text-blue-500 dark:text-blue-400">
-                    <i className="ri-book-open-line text-lg"></i>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {t('dashboard.announcement.newCourse')}
-                    </p>
-                    <button 
-                      className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = '/courses/new';
-                      }}
-                    >
-                      {t('dashboard.announcement.viewDetails')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Competition Announcement */}
-              <div 
-                className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-md cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
-                onClick={() => window.location.href = '/opportunities'}
-              >
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mr-3 mt-1 text-purple-500 dark:text-purple-400">
-                    <i className="ri-trophy-line text-lg"></i>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {t('dashboard.announcement.competition')}
-                    </p>
-                    <button 
-                      className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = '/opportunities/competition';
-                      }}
-                    >
-                      {t('dashboard.announcement.viewDetails')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Scholarship Announcement */}
-              <div 
-                className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md cursor-pointer hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-                onClick={() => window.location.href = '/opportunities'}
-              >
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 mr-3 mt-1 text-green-500 dark:text-green-400">
-                    <i className="ri-graduation-cap-line text-lg"></i>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                      {t('dashboard.announcement.scholarship')}
-                    </p>
-                    <button 
-                      className="text-xs text-green-600 dark:text-green-400 hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.location.href = '/opportunities/scholarship';
-                      }}
-                    >
-                      {t('dashboard.announcement.viewDetails')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {isLoadingStats ? (
-            Array(4).fill(0).map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow p-4 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
-                <Skeleton className="h-8 w-8 rounded-md mb-2" />
-                <Skeleton className="h-4 w-24 mb-2" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ))
-          ) : (
-            <>
-              <StatCard 
-                title={t('dashboard.coursesInProgress')} 
-                value={stats?.coursesInProgress || 0} 
-                icon="book-mark-line" 
-                color="primary" 
-              />
-              <StatCard 
-                title={t('dashboard.certificatesEarned')} 
-                value={stats?.certificatesEarned || 0} 
-                icon="award-line" 
-                color="secondary" 
-              />
-              <StatCard 
-                title={t('dashboard.mentorSessions')} 
-                value={stats?.mentorSessions || 0} 
-                icon="group-line" 
-                color="accent" 
-              />
-              <StatCard 
-                title={t('dashboard.opportunitiesSaved')} 
-                value={stats?.opportunitiesSaved || 0} 
-                icon="briefcase-line" 
-                color="purple" 
-              />
-            </>
-          )}
-        </div>
+          {/* Stats Section */}
+          <motion.div 
+            variants={itemVariants} 
+            className="grid gap-4 md:grid-cols-3"
+          >
+            <StatCard
+              title={language === 'ru' ? 'Полученные сертификаты' : 
+                    language === 'kz' ? 'Алынған сертификаттар' : 
+                    'Certificates Earned'}
+              value={stats?.certificatesEarned || 0}
+              icon={<Trophy className="h-5 w-5" />}
+              isLoading={statsLoading}
+            />
+            <StatCard
+              title={language === 'ru' ? 'Сессии с менторами' : 
+                    language === 'kz' ? 'Менторлармен сессиялар' : 
+                    'Mentor Sessions'}
+              value={stats?.mentorSessions || 0}
+              icon={<Users className="h-5 w-5" />}
+              isLoading={statsLoading}
+            />
+            <StatCard
+              title={language === 'ru' ? 'Сохраненные возможности' : 
+                    language === 'kz' ? 'Сақталған мүмкіндіктер' : 
+                    'Saved Opportunities'}
+              value={stats?.opportunitiesSaved || 0}
+              icon={<Briefcase className="h-5 w-5" />}
+              isLoading={statsLoading}
+            />
+          </motion.div>
 
-        {/* Continue Learning Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.continueLearning')}</h2>
-            <Link href="/courses" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {t('dashboard.viewAllCourses')} <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </Link>
+          {/* Quick Actions */}
+          <motion.div 
+            variants={itemVariants}
+            className="grid gap-4 md:grid-cols-3"
+          >
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex items-center justify-between group hover:bg-primary/5"
+              asChild
+            >
+              <Link href="/calendar">
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <span>
+                    {language === 'ru' ? 'Расписание' : 
+                     language === 'kz' ? 'Кесте' : 
+                     'Schedule'}
+                  </span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex items-center justify-between group hover:bg-primary/5"
+              asChild
+            >
+              <Link href="/progress">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-primary" />
+                  <span>
+                    {language === 'ru' ? 'Прогресс' : 
+                     language === 'kz' ? 'Үрдіс' : 
+                     'Progress'}
+                  </span>
+                  </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex items-center justify-between group hover:bg-primary/5"
+              asChild
+            >
+              <Link href="/achievements">
+                <div className="flex items-center gap-3">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  <span>
+                    {language === 'ru' ? 'Достижения' : 
+                     language === 'kz' ? 'Жетістіктер' : 
+                     'Achievements'}
+                  </span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          </motion.div>
+
+          {/* Main Content Tabs */}
+          <motion.div variants={itemVariants}>
+            <div className="bg-card rounded-2xl border shadow-sm overflow-hidden">
+              <Tabs 
+                defaultValue="courses" 
+                className="w-full"
+                onValueChange={setActiveTab}
+              >
+                <div className="border-b px-4">
+                  <div className="flex items-center justify-between py-4">
+                    <TabsList className="h-12">
+                      <TabsTrigger 
+                        value="courses"
+                        className="h-10 px-4 data-[state=active]:bg-primary/10"
+                      >
+                        {language === 'ru' ? 'Курсы' : 
+                         language === 'kz' ? 'Курстар' : 
+                         'Courses'}
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="opportunities"
+                        className="h-10 px-4 data-[state=active]:bg-primary/10"
+                      >
+                        {language === 'ru' ? 'Возможности' : 
+                         language === 'kz' ? 'Мүмкіндіктер' : 
+                         'Opportunities'}
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="mentors"
+                        className="h-10 px-4 data-[state=active]:bg-primary/10"
+                      >
+                        {language === 'ru' ? 'Менторы' : 
+                         language === 'kz' ? 'Менторлар' : 
+                         'Mentors'}
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="articles"
+                        className="h-10 px-4 data-[state=active]:bg-primary/10"
+                      >
+                        {language === 'ru' ? 'Статьи' : 
+                         language === 'kz' ? 'Мақалалар' : 
+                         'Articles'}
+                      </TabsTrigger>
+                    </TabsList>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-9 hover:bg-primary/10"
+                      asChild
+                    >
+                      <Link href={`/${activeTab}`}>
+                        {language === 'ru' ? 'Смотреть все' : 
+                         language === 'kz' ? 'Барлығын көру' : 
+                         'View All'} 
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="p-6">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTab}
+                      variants={tabVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                    >
+                      <TabsContent value="courses" className="mt-0">
             {isLoadingCourses ? (
-              Array(3).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                  <Skeleton className="h-40 w-full" />
-                  <div className="p-4">
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full mb-3" />
-                    <Skeleton className="h-2 w-full mb-3" />
-                    <Skeleton className="h-10 w-full rounded-md" />
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
+                            ))}
                   </div>
+                        ) : courses?.length ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {courses.map((course: any) => (
+                              <CourseCard 
+                                key={course.id} 
+                                course={course} 
+                                progress={course.progress}
+                              />
+                            ))}
                 </div>
-              ))
-            ) : courses && courses.length > 0 ? (
-              courses.map((course: Course) => (
-                <CourseCard key={course.id} course={course} />
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noCourses')}</p>
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            {language === 'ru' 
+                              ? 'У вас пока нет активных курсов' 
+                              : language === 'kz'
+                              ? 'Сізде әлі белсенді курстар жоқ'
+                              : 'You have no active courses yet'}
               </div>
             )}
-          </div>
-        </div>
+                      </TabsContent>
 
-        {/* Recommended Opportunities Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.recommendedOpportunities')}</h2>
-            <Link href="/opportunities" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {t('dashboard.viewAllOpportunities')} <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoadingOpportunities ? (
-              Array(3).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                  <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                    <Skeleton className="h-4 w-24 mb-2" />
-                    <Skeleton className="h-6 w-3/4 mb-1" />
-                    <Skeleton className="h-4 w-1/2" />
+                      <TabsContent value="opportunities" className="mt-0">
+                        {opportunitiesLoading ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
+                            ))}
                   </div>
-                  <div className="p-4">
-                    <Skeleton className="h-4 w-3/4 mb-3" />
-                    <Skeleton className="h-4 w-full mb-4" />
-                    <div className="flex space-x-2">
-                      <Skeleton className="h-10 flex-1 rounded-md" />
-                      <Skeleton className="h-10 w-10 rounded-md" />
+                        ) : opportunities?.length ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {opportunities.map((opportunity: any) => (
+                              <OpportunityCard key={opportunity.id} opportunity={opportunity} />
+                            ))}
+                </div>
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            {language === 'ru' 
+                              ? 'Нет доступных возможностей' 
+                              : language === 'kz'
+                              ? 'Қол жетімді мүмкіндіктер жоқ'
+                              : 'No opportunities available'}
+              </div>
+            )}
+                      </TabsContent>
+
+                      <TabsContent value="mentors" className="mt-0">
+                        {mentorsLoading ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
+                            ))}
                     </div>
-                  </div>
+                        ) : mentors?.length ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {mentors.map((mentor: any) => (
+                              <MentorCard key={mentor.id} mentor={mentor} />
+                            ))}
                 </div>
-              ))
-            ) : opportunities && opportunities.length > 0 ? (
-              opportunities.slice(0, 3).map((opportunity: Opportunity) => (
-                <OpportunityCard key={opportunity.id} opportunity={opportunity} />
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noOpportunities')}</p>
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            {language === 'ru' 
+                              ? 'Нет доступных менторов' 
+                              : language === 'kz'
+                              ? 'Қол жетімді менторлар жоқ'
+                              : 'No mentors available'}
               </div>
             )}
-          </div>
-        </div>
+                      </TabsContent>
 
-        {/* Featured Mentors Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.featuredMentors')}</h2>
-            <Link href="/mentors" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {t('dashboard.viewAllMentors')} <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {isLoadingMentors ? (
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                  <div className="p-4 text-center">
-                    <Skeleton className="h-24 w-24 rounded-full mx-auto mb-3" />
-                    <Skeleton className="h-6 w-3/4 mx-auto mb-1" />
-                    <Skeleton className="h-4 w-1/2 mx-auto mb-2" />
-                    <div className="flex justify-center mb-3">
-                      <Skeleton className="h-6 w-16 rounded-full mx-1" />
-                      <Skeleton className="h-6 w-16 rounded-full mx-1" />
-                      <Skeleton className="h-6 w-16 rounded-full mx-1" />
-                    </div>
-                    <Skeleton className="h-10 w-full rounded-md" />
-                  </div>
-                </div>
-              ))
-            ) : mentors && mentors.length > 0 ? (
-              mentors.map((mentor: Mentor) => (
-                <MentorCard key={mentor.id} mentor={mentor} />
-              ))
-            ) : (
-              <div className="col-span-4 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noMentors')}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Recent Advice Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.recentAdvice')}</h2>
-            <Link href="/advice" className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center dark:text-primary-400 dark:hover:text-primary-300">
-              {t('dashboard.viewAllArticles')} <ArrowRightIcon className="ml-1 h-4 w-4" />
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {isLoadingArticles ? (
-              Array(2).fill(0).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                  <div className="md:flex">
-                    <Skeleton className="md:w-1/3 h-40" />
-                    <div className="p-4 md:w-2/3">
-                      <Skeleton className="h-4 w-24 mb-2" />
-                      <Skeleton className="h-6 w-3/4 mb-1" />
-                      <Skeleton className="h-4 w-full mb-3" />
-                      <div className="flex items-center">
-                        <Skeleton className="h-6 w-6 rounded-full mr-2" />
-                        <Skeleton className="h-4 w-24" />
+                      <TabsContent value="articles" className="mt-0">
+                        {articlesLoading ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {[...Array(3)].map((_, i) => (
+                              <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
+                            ))}
                       </div>
+                        ) : articles?.length ? (
+                          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {articles.map((article: any) => (
+                              <ArticleCard key={article.id} article={article} />
+                            ))}
                     </div>
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            {language === 'ru' 
+                              ? 'Нет доступных статей' 
+                              : language === 'kz'
+                              ? 'Қол жетімді мақалалар жоқ'
+                              : 'No articles available'}
                   </div>
+                        )}
+                      </TabsContent>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-              ))
-            ) : articles && articles.length > 0 ? (
-              articles.slice(0, 2).map((article: Article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))
-            ) : (
-              <div className="col-span-2 text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">{t('dashboard.noArticles')}</p>
+              </Tabs>
               </div>
-            )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </AppLayout>
   );

@@ -418,13 +418,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
   const isHeadHunterCard = !!internship.externalUrl && internship.externalUrl.includes('hh.kz');
   
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -10, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)" }}
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col h-[550px] cursor-pointer"
+    <div 
+      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group hover:shadow-lg flex flex-col h-[550px] cursor-pointer"
       onClick={isHeadHunterCard ? undefined : onClick} // Модальное окно только для не-HeadHunter карточек
     >
       {/* Для HeadHunter карточек используем более компактный заголовок без логотипа */}
@@ -625,7 +620,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
               </Button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -642,17 +637,15 @@ function FeatureCard({
   color: string;
 }) {
   return (
-    <motion.div 
-      whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
-      transition={{ duration: 0.3 }}
-      className="bg-card/60 backdrop-blur-sm border border-border/20 rounded-xl p-6 shadow-sm h-full flex flex-col"
+    <div
+      className="bg-card/60 backdrop-blur-sm border border-border/20 rounded-xl p-6 shadow-sm h-full flex flex-col hover:shadow-lg"
     >
       <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 ${color} shadow-lg`}>
         <Icon className="w-7 h-7 text-white" />
       </div>
       <h3 className="text-xl font-bold mb-3">{title}</h3>
       <p className="text-foreground/70 text-sm">{description}</p>
-    </motion.div>
+    </div>
   );
 }
 

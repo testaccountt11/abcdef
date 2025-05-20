@@ -34,8 +34,8 @@ import {
   MentorApplication
 } from "@shared/schema";
 import { IStorage } from "./storage";
-import { db } from "./db";
 import { eq, and, sql } from "drizzle-orm";
+import { db } from "./db.js";
 
 export class PgStorage implements IStorage {
   [x: string]: any;
@@ -47,7 +47,8 @@ export class PgStorage implements IStorage {
             VALUES (${email}, ${subscriptionDate}) 
             RETURNING *`
       );
-      return result[0];
+      const rows = result as unknown as NewsletterSubscription[];
+      return rows[0];
     } catch (error) {
       console.error("Error creating newsletter subscription:", error);
       throw error;
@@ -56,10 +57,11 @@ export class PgStorage implements IStorage {
 
   async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null> {
     try {
-      const result = await db.execute(
+      const result = await db.execute<Record<string, unknown>>(
         sql`SELECT * FROM newsletter_subscriptions WHERE LOWER(email) = LOWER(${email})`
       );
-      return result[0] || null;
+      const rows = result as unknown as NewsletterSubscription[];
+      return rows[0] || null;
     } catch (error) {
       console.error("Error getting newsletter subscription:", error);
       return null;
@@ -68,12 +70,13 @@ export class PgStorage implements IStorage {
 
   async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
     try {
-      const result = await db.execute(
+      const result = await db.execute<Record<string, unknown>>(
         sql`SELECT * FROM newsletter_subscriptions`
       );
       
-      // Убедимся, что возвращаем массив
-      return Array.isArray(result) ? result : [];
+      // Return result as array
+      const rows = result as unknown as NewsletterSubscription[];
+      return Array.isArray(rows) ? rows : [];
     } catch (error) {
       console.error("Error getting all newsletter subscriptions:", error);
       return [];
@@ -550,3 +553,5 @@ export class PgStorage implements IStorage {
     }
   }
 }
+
+export default PgStorage;

@@ -1,6 +1,6 @@
 import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User schema
@@ -14,14 +14,8 @@ export const users = pgTable("users", {
   profileImage: text("profile_image"),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  firstName: true,
-  lastName: true,
-  email: true,
-  profileImage: true,
-});
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
 
 // Course schema
 export const courses = pgTable("courses", {
@@ -36,16 +30,8 @@ export const courses = pgTable("courses", {
   progress: integer("progress").default(0),
 });
 
-export const insertCourseSchema = createInsertSchema(courses).pick({
-  title: true,
-  description: true,
-  imageUrl: true,
-  category: true,
-  provider: true,
-  isPartnerCourse: true,
-  contactInfo: true,
-  progress: true,
-});
+export const insertCourseSchema = createInsertSchema(courses);
+export const selectCourseSchema = createSelectSchema(courses);
 
 // Enrollment schema to track user course progress
 export const enrollments = pgTable("enrollments", {
@@ -56,12 +42,8 @@ export const enrollments = pgTable("enrollments", {
   completed: boolean("completed").default(false),
 });
 
-export const insertEnrollmentSchema = createInsertSchema(enrollments).pick({
-  userId: true,
-  courseId: true,
-  progress: true,
-  completed: true,
-});
+export const insertEnrollmentSchema = createInsertSchema(enrollments);
+export const selectEnrollmentSchema = createSelectSchema(enrollments);
 
 // Opportunity schema
 export const opportunities = pgTable("opportunities", {
@@ -76,16 +58,8 @@ export const opportunities = pgTable("opportunities", {
   deadline: text("deadline"),
 });
 
-export const insertOpportunitySchema = createInsertSchema(opportunities).pick({
-  title: true,
-  description: true,
-  company: true,
-  logoUrl: true,
-  type: true,
-  location: true,
-  duration: true,
-  deadline: true,
-});
+export const insertOpportunitySchema = createInsertSchema(opportunities);
+export const selectOpportunitySchema = createSelectSchema(opportunities);
 
 // Mentor schema
 export const mentors = pgTable("mentors", {
@@ -98,14 +72,8 @@ export const mentors = pgTable("mentors", {
   contactInfo: text("contact_info"),
 });
 
-export const insertMentorSchema = createInsertSchema(mentors).pick({
-  name: true,
-  title: true,
-  company: true,
-  profileImage: true,
-  skills: true,
-  contactInfo: true,
-});
+export const insertMentorSchema = createInsertSchema(mentors);
+export const selectMentorSchema = createSelectSchema(mentors);
 
 // Article schema for advice section
 export const articles = pgTable("articles", {
@@ -121,17 +89,8 @@ export const articles = pgTable("articles", {
   publishDate: text("publish_date"),
 });
 
-export const insertArticleSchema = createInsertSchema(articles).pick({
-  title: true,
-  content: true,
-  summary: true,
-  category: true,
-  imageUrl: true,
-  authorName: true,
-  authorImage: true,
-  readTime: true,
-  publishDate: true,
-});
+export const insertArticleSchema = createInsertSchema(articles);
+export const selectArticleSchema = createSelectSchema(articles);
 
 // Certificate schema
 export const certificates = pgTable("certificates", {
@@ -146,14 +105,8 @@ export const certificates = pgTable("certificates", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertCertificateSchema = createInsertSchema(certificates).pick({
-  userId: true,
-  title: true,
-  issuer: true,
-  issueDate: true,
-  certificateUrl: true,
-  certificateFile: true,
-});
+export const insertCertificateSchema = createInsertSchema(certificates);
+export const selectCertificateSchema = createSelectSchema(certificates);
 
 // Stats schema for dashboard
 export const stats = pgTable("stats", {
@@ -165,13 +118,8 @@ export const stats = pgTable("stats", {
   opportunitiesSaved: integer("opportunities_saved").default(0),
 });
 
-export const insertStatsSchema = createInsertSchema(stats).pick({
-  userId: true,
-  coursesInProgress: true,
-  certificatesEarned: true,
-  mentorSessions: true,
-  opportunitiesSaved: true,
-});
+export const insertStatsSchema = createInsertSchema(stats);
+export const selectStatsSchema = createSelectSchema(stats);
 
 // Define relations between tables
 export const usersRelations = relations(users, ({ many, one }) => ({
@@ -353,27 +301,35 @@ export const insertContactRequestSchema = createInsertSchema(contactRequests).pi
 // Export all types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type SelectUser = z.infer<typeof selectUserSchema>;
 
 export type Course = typeof courses.$inferSelect;
 export type InsertCourse = z.infer<typeof insertCourseSchema>;
+export type SelectCourse = z.infer<typeof selectCourseSchema>;
 
 export type Enrollment = typeof enrollments.$inferSelect;
 export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
+export type SelectEnrollment = z.infer<typeof selectEnrollmentSchema>;
 
 export type Opportunity = typeof opportunities.$inferSelect;
 export type InsertOpportunity = z.infer<typeof insertOpportunitySchema>;
+export type SelectOpportunity = z.infer<typeof selectOpportunitySchema>;
 
 export type Mentor = typeof mentors.$inferSelect;
 export type InsertMentor = z.infer<typeof insertMentorSchema>;
+export type SelectMentor = z.infer<typeof selectMentorSchema>;
 
 export type Article = typeof articles.$inferSelect;
 export type InsertArticle = z.infer<typeof insertArticleSchema>;
+export type SelectArticle = z.infer<typeof selectArticleSchema>;
 
 export type Certificate = typeof certificates.$inferSelect;
 export type InsertCertificate = z.infer<typeof insertCertificateSchema>;
+export type SelectCertificate = z.infer<typeof selectCertificateSchema>;
 
 export type Stats = typeof stats.$inferSelect;
 export type InsertStats = z.infer<typeof insertStatsSchema>;
+export type SelectStats = z.infer<typeof selectStatsSchema>;
 
 export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;

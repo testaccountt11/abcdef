@@ -1,60 +1,77 @@
-import { Article } from "@shared/schema";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "@/hooks/use-translations";
+import { Link } from "wouter";
+import { motion } from "framer-motion";
+import { Clock, User } from "lucide-react";
 
 interface AdviceCardProps {
-  article: Article;
+  advice: {
+    id: string;
+    title: string;
+    content: string;
+    summary: string;
+    category: string;
+    imageUrl: string;
+    authorName: string;
+    authorImage: string;
+    readTime: number;
+    publishDate: string;
+  };
+  onClick?: () => void;
 }
 
-export default function AdviceCard({ article }: AdviceCardProps) {
-  const { title, content, category, imageUrl, authorName, authorImage, readTime } = article;
-  
-  const getCategoryColor = (category: string) => {
-    const categoryMapping: { [key: string]: string } = {
-      'Career Advice': 'bg-purple-100 text-purple-800',
-      'Admissions': 'bg-blue-100 text-blue-800',
-      'Study Tips': 'bg-green-100 text-green-800',
-      'Exam Prep': 'bg-yellow-100 text-yellow-800',
-      'Technology': 'bg-indigo-100 text-indigo-800'
-    };
-    
-    return categoryMapping[category] || 'bg-gray-100 text-gray-800';
-  };
+export default function AdviceCard({ advice, onClick }: AdviceCardProps) {
+  const { language } = useTranslations();
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
-      <div className="md:flex"> 
-        <div className="md:w-1/3">
-          {imageUrl && (
-            <img 
-              src={imageUrl} 
-              className="w-full h-full object-cover" 
-              alt={title} 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="h-full hover:shadow-lg transition-shadow duration-200">
+        <CardHeader className="relative">
+          <div className="aspect-video relative overflow-hidden rounded-t-lg">
+            <img
+              src={advice.imageUrl || '/placeholder-advice.jpg'}
+              alt={advice.title}
+              className="object-cover w-full h-full"
             />
-          )}
-        </div>
-        <div className="p-4 md:w-2/3">
-          <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${getCategoryColor(category)} mb-2`}>
-            {category}
-          </span>
-          <h3 className="font-bold text-gray-900 mb-1">{title}</h3>
-          <p className="text-sm text-gray-600 mb-3">{content}</p>
-          <div className="flex items-center text-xs text-gray-500">
-            {authorImage && (
-              <img 
-                src={authorImage} 
-                alt={authorName} 
-                className="w-6 h-6 rounded-full mr-2" 
-              />
-            )}
-            <span>{authorName}</span>
-            {readTime && (
-              <>
-                <span className="mx-2">•</span>
-                <span>{readTime}</span>
-              </>
-            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <Badge className="absolute top-2 right-2">
+              {advice.category}
+            </Badge>
           </div>
-        </div>
-      </div>
-    </div>
+        </CardHeader>
+        <CardContent className="p-4">
+          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{advice.title}</h3>
+          <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{advice.summary}</p>
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center">
+              <User className="w-4 h-4 mr-2" />
+              <span>{advice.authorName}</span>
+            </div>
+            <div className="flex items-center">
+              <Clock className="w-4 h-4 mr-2" />
+              <span>{advice.readTime} {language === 'ru' ? 'мин' : 'min'}</span>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="p-4 pt-0">
+          <Button
+            className="w-full"
+            onClick={() => onClick?.()}
+            asChild
+          >
+            <Link href={`/advice/${advice.id}`}>
+              {language === 'ru' ? 'Читать' : 'Read'}
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

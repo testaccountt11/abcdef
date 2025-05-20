@@ -8,9 +8,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 export default function SettingsPanel() {
   const { theme, setTheme, language, setLanguage } = useTheme();
   
-  // Function to get translated text
-  const t = (key: string) => getTranslation(key as any, language);
-  
   // Languages with their display names
   const languages: [Language, string][] = [
     ['en', 'English'],
@@ -23,7 +20,7 @@ export default function SettingsPanel() {
       <div className="flex flex-col space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {language === 'en' ? 'Theme' : language === 'ru' ? 'Тема' : 'Тақырып'}
+            {language === 'en' ? 'Theme' : language === 'ru' ? 'Тема' : 'Режим'}
           </span>
           <TooltipProvider>
             <Tooltip>

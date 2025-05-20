@@ -40,7 +40,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Upload, Check, ChevronRight } from "lucide-react";
+import { Upload, Check, ChevronRight, X } from "lucide-react";
 
 // Define form schema
 const mentorFormSchema = z.object({
@@ -73,6 +73,8 @@ export default function BecomeMentor() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [email, setEmail] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedFormData, setSubmittedFormData] = useState<{firstName: string, lastName: string, email: string} | null>(null);
 
   // Translations for this page
   const translations = {
@@ -146,7 +148,7 @@ export default function BecomeMentor() {
       uploadResume: "Upload Resume",
       fileUploaded: "File uploaded",
       successTitle: "Application Submitted",
-      successMessage: "Thank you for applying to become a mentor. We will review your application and get back to you soon.",
+      successMessage: "We will review your application and get back to you soon.",
       errorTitle: "Submission Failed",
       errorMessage: "There was an error submitting your application. Please try again later.",
       returnHome: "Return to Homepage",
@@ -220,7 +222,7 @@ export default function BecomeMentor() {
       resume: "Резюме",
       resumeDescription: "Загрузите свое резюме (формат PDF)",
       linkedinProfile: "Профиль LinkedIn",
-      linkedinPlaceholder: "https://linkedin.com/in/вашпрофиль",
+      linkedinPlaceholder: "https://linkedin.com/in/yourprofile",
       linkedinDescription: "Поделитесь ссылкой на ваш профиль LinkedIn (необязательно)",
       termsAccepted: "Я согласен с условиями программы менторства",
       submitApplication: "Отправить заявку",
@@ -228,7 +230,7 @@ export default function BecomeMentor() {
       uploadResume: "Загрузить резюме",
       fileUploaded: "Файл загружен",
       successTitle: "Заявка отправлена",
-      successMessage: "Спасибо за подачу заявки на роль ментора. Мы рассмотрим вашу заявку и свяжемся с вами в ближайшее время.",
+      successMessage: "Мы рассмотрим вашу заявку и свяжемся с вами в ближайшее время.",
       errorTitle: "Ошибка отправки",
       errorMessage: "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте позже.",
       returnHome: "Вернуться на главную",
@@ -260,7 +262,7 @@ export default function BecomeMentor() {
       title: "Кәсіби лауазым",
       titlePlaceholder: "Бағдарламалық жасақтама инженері",
       company: "Компания",
-      companyPlaceholder: "ТехКомпания",
+      companyPlaceholder: "Компания",
       experience: "Жұмыс тәжірибесі (жыл)",
       experienceSelect: "Тәжірибе таңдаңыз",
       exp1: "1-3 жыл",
@@ -310,7 +312,7 @@ export default function BecomeMentor() {
       uploadResume: "Түйіндемені жүктеу",
       fileUploaded: "Файл жүктелді",
       successTitle: "Өтініш жіберілді",
-      successMessage: "Тәлімгер болуға өтініш бергеніңіз үшін рахмет. Біз сіздің өтінішіңізді қарастырып, жақын арада сізбен байланысамыз.",
+      successMessage: "Біз сіздің өтінішіңізді қарастырып, жақын арада сізбен байланысады: ${values.email}",
       errorTitle: "Жіберу қатесі",
       errorMessage: "Өтінішті жіберу кезінде қате пайда болды. Кейінірек қайталап көріңіз.",
       returnHome: "Басты бетке оралу",
@@ -372,6 +374,21 @@ export default function BecomeMentor() {
   // Handle form submission
   const onSubmit = async (values: MentorFormValues) => {
     setIsSubmitting(true);
+
+    // Show immediate feedback toast
+    toast({
+      title: language === 'ru' 
+        ? 'Отправка заявки...' 
+        : language === 'kz' 
+          ? 'Өтінім жіберілуде...' 
+          : 'Submitting application...',
+      description: language === 'ru'
+        ? 'Пожалуйста, подождите'
+        : language === 'kz'
+          ? 'Күте тұрыңыз'
+          : 'Please wait',
+    });
+    
     try {
       console.log("Submitting form with values:", values);
       
@@ -439,7 +456,7 @@ export default function BecomeMentor() {
       // Submit the form
       try {
         const response = await fetch(`/api/become-mentor`, {
-          method: "POST",
+        method: "POST",
           body: formData
         });
         
@@ -484,22 +501,95 @@ export default function BecomeMentor() {
       // Всегда показываем сообщение об успехе для улучшения UX
       console.log("Form submission complete - showing success message");
       
-      // Show success message
+      // Сохраняем данные для всплывающего уведомления
+      setSubmittedFormData({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email
+      });
+      setIsSuccess(true);
+      
+      // Show success message with more details
       toast({
         title: t_local.successTitle,
         description: t_local.successMessage,
+        variant: "default",
       });
+
+      // Заменяем форму на красивое сообщение об успешной отправке
+      const formElement = document.getElementById('mentor-application-form');
+      if (formElement) {
+        // Создаем контейнер для успешного сообщения
+        const successElement = document.createElement('div');
+        successElement.className = 'bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 text-center max-w-xl mx-auto animate-fade-in';
+        
+        // Определяем сообщение на основе языка
+        const successTitle = language === 'ru' 
+          ? 'Заявка успешно отправлена!' 
+          : language === 'kz' 
+            ? 'Өтініш сәтті жіберілді!' 
+            : 'Application Successfully Submitted!';
+            
+        const successDescription = language === 'ru'
+          ? `Спасибо, ${values.firstName} ${values.lastName}! Мы получили вашу заявку на роль ментора. Наша команда рассмотрит ее и свяжется с вами в ближайшее время по указанному email: ${values.email}`
+          : language === 'kz'
+            ? `Рахмет, ${values.firstName} ${values.lastName}! Біз сіздің тәлімгер ретіндегі өтінішіңізді алдық. Біздің команда оны қарастырып, жақын арада сізбен көрсетілген email арқылы байланысады: ${values.email}`
+            : `Thank you, ${values.firstName} ${values.lastName}! We have received your application to become a mentor. Our team will review it and contact you soon at the email address you provided: ${values.email}`;
+            
+        const buttonText = language === 'ru'
+          ? 'Перейти к списку менторов'
+          : language === 'kz'
+            ? 'Тәлімгерлер тізіміне өту'
+            : 'Go to Mentors List';
+        
+        // Создаем HTML для успешного сообщения с анимацией
+        successElement.innerHTML = `
+          <div class="flex flex-col items-center">
+            <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-bounce">
+              <svg class="w-12 h-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">${successTitle}</h2>
+            <div class="bg-primary/5 p-4 rounded-lg mb-6">
+              <p class="text-lg text-gray-600 dark:text-gray-300">${successDescription}</p>
+            </div>
+            <button id="go-to-mentors-btn" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+              ${buttonText}
+            </button>
+          </div>
+        `;
+        
+        // Полностью заменяем форму на элемент успеха
+        const formParent = formElement.parentNode;
+        if (formParent) {
+          formParent.replaceChild(successElement, formElement);
+          
+          // Добавляем обработчик события для кнопки
+          const navigateBtn = document.getElementById("go-to-mentors-btn");
+          if (navigateBtn) {
+            navigateBtn.addEventListener("click", () => {
+              navigate("/publicmentors");
+            });
+          }
+        }
+      }
       
       // Reset form
       form.reset();
       setUploadedFile(null);
       
-      // Redirect to mentors page after submission
-      console.log("Will redirect to /publicmentors in 2 seconds");
+      // Автоматически скрываем всплывающее уведомление через 5 секунд
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 5000);
+      
+      // Redirect to mentors page after submission (если пользователь не нажал кнопку сам)
+      console.log("Will redirect to /publicmentors in 5 seconds if user doesn't click the button");
       setTimeout(() => {
         console.log("Redirecting to /publicmentors now");
         navigate("/publicmentors");
-      }, 2000);
+      }, 5000);
       
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -611,6 +701,7 @@ export default function BecomeMentor() {
                 <form 
                   onSubmit={form.handleSubmit(onSubmit)} 
                   className="space-y-8"
+                  id="mentor-application-form"
                   onClick={(e) => console.log("Form clicked", e)}
                 >
                   {/* Use Accordion for better organization */}
@@ -998,52 +1089,6 @@ export default function BecomeMentor() {
                     <Button 
                       type="submit" 
                       disabled={isSubmitting}
-                      onClick={(e) => {
-                        console.log("Submit Button clicked!");
-                        e.preventDefault();
-                        
-                        // Получаем текущие значения формы
-                        const values = form.getValues();
-                        console.log("Current form values:", values);
-                        
-                        // Запускаем валидацию формы
-                        form.trigger().then(isValid => {
-                          console.log("Form validation result:", isValid);
-                          
-                          // Выводим все ошибки
-                          const errors = form.formState.errors;
-                          console.log("Validation errors:", errors);
-                          
-                          // Проверяем и выводим ошибки для каждого поля
-                          const fieldNames = [
-                            "firstName", "lastName", "email", "phone", "title", 
-                            "company", "experience", "specialization", "skills", 
-                            "languages", "bio", "motivation", "availability", "termsAccepted"
-                          ];
-                          
-                          let errorMessages: string[] = [];
-                          fieldNames.forEach(field => {
-                            if (errors[field]) {
-                              console.log(`Error in field ${field}:`, errors[field]);
-                              errorMessages.push(`${field}: ${errors[field].message}`);
-                            }
-                          });
-                          
-                          if (errorMessages.length > 0) {
-                            // Если есть ошибки, показываем их
-                            toast({
-                              title: "Пожалуйста, исправьте ошибки",
-                              description: errorMessages.join(", "),
-                              variant: "destructive",
-                            });
-                            return;
-                          }
-                          
-                          // Если всё в порядке, отправляем форму
-                          console.log("Form is valid, proceeding with submission");
-                          onSubmit(values);
-                        });
-                      }}
                     >
                       {isSubmitting ? t_local.submitting : t_local.submitApplication}
                     </Button>
@@ -1054,6 +1099,35 @@ export default function BecomeMentor() {
           </Card>
         </div>
       </div>
+      
+      {/* Минималистичное всплывающее уведомление */}
+      {isSuccess && submittedFormData && (
+        <div className="fixed bottom-4 right-4 z-50 bg-card border border-primary/20 rounded-lg p-4 shadow-md animate-in fade-in-0 slide-in-from-right-10 duration-300">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Check className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm">
+                {language === 'ru' ? 'Заявка принята!' : 
+                 language === 'kz' ? 'Өтініш қабылданды!' : 
+                 'Application accepted!'}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {`${submittedFormData.firstName} ${submittedFormData.lastName} (${submittedFormData.email})`}
+              </p>
+            </div>
+            <Button 
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 rounded-full ml-2"
+              onClick={() => setIsSuccess(false)}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      )}
     </PublicPageLayout>
   );
 }
