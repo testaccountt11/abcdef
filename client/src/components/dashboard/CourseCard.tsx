@@ -156,7 +156,7 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>{course.studentsCount}</span>
-                  </div>
+        </div>
                 </>
               )}
             </div>
@@ -170,8 +170,8 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
                 <span>{progress}%</span>
               </div>
               <Progress value={progress} />
-            </div>
-          )}
+          </div>
+        )}
         </CardContent>
         <CardFooter className="p-4 pt-0">
           {progress !== undefined ? (
@@ -180,10 +180,10 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
               variant="default"
               asChild
             >
-              <Link href={`/courses/${course.id}`}>
+            <Link href={`/courses/${course.id}`}>
                 {language === 'ru' ? 'Продолжить обучение' : 'Continue Learning'}
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+            </Link>
             </Button>
           ) : (
             <Button 
@@ -217,7 +217,7 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
                 ? (language === 'ru' ? 'Запись...' : 'Enrolling...')
                 : (language === 'ru' ? 'Начать обучение' : 'Start Learning')
               }
-            </Button>
+              </Button>
           )}
         </CardFooter>
       </Card>

@@ -77,7 +77,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 onClick={() => setIsSidebarOpen(true)}
                 aria-label="Open menu"
-              >
+                >
                 <Menu size={20} />
               </button>
             </div>

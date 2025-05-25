@@ -53,12 +53,12 @@ export default function AdviceCard({ advice, onClick }: AdviceCardProps) {
             <div className="flex items-center">
               <User className="w-4 h-4 mr-2" />
               <span>{advice.authorName}</span>
-            </div>
+        </div>
             <div className="flex items-center">
               <Clock className="w-4 h-4 mr-2" />
               <span>{advice.readTime} {language === 'ru' ? 'мин' : 'min'}</span>
-            </div>
-          </div>
+      </div>
+    </div>
         </CardContent>
         <CardFooter className="p-4 pt-0">
           <Button

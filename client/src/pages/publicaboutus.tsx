@@ -323,26 +323,26 @@ export default function PublicAboutUs() {
       console.log('Response status:', response.status);
       
       // Check if the response is successful (status code 2xx)
-      if (response.ok) {
+        if (response.ok) {
         // Success - Clear form and show success toast
         console.log('Form submitted successfully');
         form.reset();
         
         // Show success toast notification
-        toast({
-          title: language === 'ru' 
-            ? 'Сообщение отправлено!' 
-            : language === 'kz' 
-              ? 'Хабарлама жіберілді!' 
-              : 'Message sent!',
-          description: language === 'ru' 
-            ? 'Мы свяжемся с вами в ближайшее время.' 
-            : language === 'kz' 
-              ? 'Біз сізбен жақын арада байланысамыз.' 
-              : 'We will contact you soon.',
-          variant: "default",
-        });
-        
+          toast({
+            title: language === 'ru' 
+              ? 'Сообщение отправлено!' 
+              : language === 'kz' 
+                ? 'Хабарлама жіберілді!' 
+                : 'Message sent!',
+            description: language === 'ru' 
+              ? 'Мы свяжемся с вами в ближайшее время.' 
+              : language === 'kz' 
+                ? 'Біз сізбен жақын арада байланысамыз.' 
+                : 'We will contact you soon.',
+            variant: "default",
+          });
+          
         // Add a direct DOM message as a backup
         const formContainer = form.parentElement;
         if (formContainer) {
@@ -356,7 +356,7 @@ export default function PublicAboutUs() {
             formContainer.removeChild(successMessage);
           }, 5000);
         }
-      } else {
+        } else {
         // Error - Show error toast
         console.error('Error submitting form:', response.status);
         let errorMessage = language === 'ru' 
@@ -375,15 +375,15 @@ export default function PublicAboutUs() {
           console.error('Error parsing response:', e);
         }
         
-        toast({
-          title: language === 'ru' 
-            ? 'Ошибка!' 
-            : language === 'kz' 
-              ? 'Қате!' 
-              : 'Error!',
+          toast({
+            title: language === 'ru' 
+              ? 'Ошибка!' 
+              : language === 'kz' 
+                ? 'Қате!' 
+                : 'Error!',
           description: errorMessage,
-          variant: "destructive",
-        });
+            variant: "destructive",
+          });
       }
     } catch (error) {
       console.error("Exception when sending form:", error);

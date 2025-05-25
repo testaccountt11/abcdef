@@ -175,7 +175,7 @@ const dummyMentors: Mentor[] = [
     title: "Senior Software Engineer",
     company: "TechCorp",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
     bio: "Experienced software engineer with 10+ years in full-stack development. I specialize in React, Node.js, and cloud architecture. I enjoy mentoring junior developers and helping them grow their skills.",
     category: "Software Development",
     skills: ["React", "Node.js", "AWS", "System Design", "Career Guidance"],
@@ -193,7 +193,7 @@ const dummyMentors: Mentor[] = [
     title: "Data Scientist",
     company: "Analytics Co",
     location: "Nur-Sultan, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/women/44.jpg",
     bio: "Data scientist with expertise in machine learning, statistical analysis, and data visualization. I love helping students make sense of data and build compelling portfolios.",
     category: "Data Science",
     skills: ["Python", "Machine Learning", "Statistics", "Data Visualization", "SQL"],
@@ -211,7 +211,7 @@ const dummyMentors: Mentor[] = [
     title: "UX/UI Designer",
     company: "Design Studio",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/men/55.jpg",
     bio: "Passionate designer with a focus on creating intuitive user experiences. I believe in design thinking and user-centered approaches to product development.",
     category: "Design",
     skills: ["UX Design", "UI Design", "Figma", "Design Systems", "Prototyping"],
@@ -229,7 +229,7 @@ const dummyMentors: Mentor[] = [
     title: "Marketing Manager",
     company: "Brand Solutions",
     location: "Nur-Sultan, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/men/67.jpg",
     bio: "Marketing professional focused on digital strategies, branding, and growth marketing. I help new businesses establish their presence and grow their audience.",
     category: "Marketing",
     skills: ["Digital Marketing", "SEO", "Content Strategy", "Social Media", "Analytics"],
@@ -247,7 +247,7 @@ const dummyMentors: Mentor[] = [
     title: "Product Manager",
     company: "Product House",
     location: "Shymkent, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/men/76.jpg",
     bio: "Product manager with experience leading teams and launching successful products. I focus on user-centered design and agile methodologies.",
     category: "Product Management",
     skills: ["Product Strategy", "Agile", "User Research", "Roadmapping", "Product Analytics"],
@@ -265,7 +265,7 @@ const dummyMentors: Mentor[] = [
     title: "Financial Analyst",
     company: "Finance Group",
     location: "Almaty, Kazakhstan",
-    profileImage: "https://cdn-icons-png.flaticon.com/512/8650/8650189.png",
+    profileImage: "https://randomuser.me/api/portraits/women/63.jpg",
     bio: "Finance professional with experience in investment analysis, financial modeling, and strategic planning. I provide guidance on finance careers and skill development.",
     category: "Finance",
     skills: ["Financial Modeling", "Valuation", "Excel", "Investment Analysis", "Financial Planning"],
@@ -279,6 +279,24 @@ const dummyMentors: Mentor[] = [
   }
 ];
 
+// Функция для получения цвета градиента на основе ID ментора
+const getGradientForMentor = (id: number) => {
+  const gradients = [
+    "from-blue-500 to-purple-600",
+    "from-emerald-500 to-teal-600",
+    "from-orange-500 to-amber-600",
+    "from-pink-500 to-rose-600",
+    "from-indigo-500 to-blue-600",
+    "from-cyan-500 to-blue-500",
+    "from-rose-500 to-pink-600",
+    "from-green-500 to-emerald-600",
+    "from-violet-500 to-purple-600",
+    "from-amber-500 to-orange-600"
+  ];
+  
+  return gradients[id % gradients.length];
+};
+
 // Компонент карточки ментора
 function EnhancedMentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (mentor: Mentor) => void }) {
   const { language } = useTranslations();
@@ -287,22 +305,16 @@ function EnhancedMentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (m
   
   const t = translations[language as keyof typeof translations] || translations.en;
   
-  const getInitials = () => {
-    return mentor.name ? mentor.name.split(' ').map(word => word[0]).join('') : 'UN';
-  };
-
   const handleContact = (e: React.MouseEvent) => {
     e.stopPropagation();
     
     if (mentor.contactInfo) {
-      // Если есть контактная информация, можно скопировать её
       navigator.clipboard.writeText(mentor.contactInfo);
       toast({
         title: t.contactCopied,
         description: mentor.contactInfo
       });
     } else {
-      // Иначе показываем сообщение о необходимости оставить заявку
       toast({
         title: t.requestSent,
         description: t.requestSentDesc
@@ -312,27 +324,21 @@ function EnhancedMentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (m
   
   return (
     <div 
-      className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-[400px] flex flex-col border border-gray-100 dark:border-gray-800 cursor-pointer"
+      className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-[400px] flex flex-col cursor-pointer"
       onClick={() => onSelect(mentor)}
     >
       {/* Верхняя часть - фиксированная высота 100px */}
       <div className="h-[100px] px-5 py-4 flex items-center gap-4">
         {/* Фото - фиксированный размер */}
         <div className="flex-shrink-0 w-[65px] h-[65px]">
-          {!imageError && mentor.profileImage ? (
-            <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm">
-              <img 
-                src={mentor.profileImage} 
-                alt={mentor.name} 
-                className="w-full h-full object-cover"
-                onError={() => setImageError(true)}
-              />
-            </div>
-          ) : (
-            <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-primary text-white font-bold text-xl shadow-sm">
-              {getInitials()}
-            </div>
-          )}
+          <div className="w-16 h-16 rounded-full overflow-hidden shadow-sm">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/8650/8650189.png" 
+              alt={mentor.name} 
+              className="w-full h-full object-cover"
+              onError={() => setImageError(true)}
+            />
+          </div>
         </div>
         
         {/* Информация - выровнена и с обрезкой текста */}
@@ -357,93 +363,128 @@ function EnhancedMentorCard({ mentor, onSelect }: { mentor: Mentor; onSelect: (m
       
       {/* Средняя часть - информация о категории, опыте и доступности */}
       <div className="h-[80px] px-5 py-3 bg-gray-50/50 dark:bg-gray-800/20">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-xs text-foreground/70 flex items-center gap-1.5">
-            <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 border-none py-0 h-5">
-              {mentor.category || mentor.title}
-            </Badge>
-            
-            {mentor.available !== undefined && (
-              <span className={`flex items-center gap-1 ${mentor.available ? 'text-green-600' : 'text-red-500'}`}>
-                <span className={`w-2 h-2 rounded-full ${mentor.available ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                {mentor.available ? 
-                  (language === 'ru' ? 'Доступен' : language === 'kz' ? 'Қолжетімді' : 'Available') : 
-                  (language === 'ru' ? 'Недоступен' : language === 'kz' ? 'Қолжетімсіз' : 'Unavailable')
-                }
-              </span>
-            )}
+        <div className="flex flex-wrap gap-1 mb-2">
+          <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 bg-primary/90 text-white border-none text-xs">
+            {language === 'kz' ? 
+              (mentor.category === 'Software Development' ? 'БҚ әзірлеу' : 
+               mentor.category === 'Data Science' ? 'Деректер ғылымы' : 
+               mentor.category === 'Design' ? 'Дизайн' : 
+               mentor.category === 'Marketing' ? 'Маркетинг' :
+               mentor.category === 'Product Management' ? 'Өнімді басқару' :
+               mentor.category === 'Finance' ? 'Қаржы' :
+               mentor.category || mentor.title) : 
+              mentor.category || mentor.title}
           </div>
           
-          {mentor.featured && (
-            <div className="flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
-              <Trophy className="w-3 h-3" />
-              {t.featured}
+          {mentor.available !== undefined && (
+            <div className={`inline-flex items-center rounded-full border px-2.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-xs py-0 h-5 ${
+              mentor.available ? 
+              'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700' : 
+              'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800/50 dark:text-gray-400 dark:border-gray-700'
+            }`}>
+              {mentor.available ? 
+                (language === 'kz' ? 'Оқушылар қабылдайды' : 
+                 language === 'ru' ? 'Оқушылар қабылдайды' : 
+                 'Open for students') : 
+                (language === 'kz' ? 'Топтар жасақталған' : 
+                 language === 'ru' ? 'Топтар жасақталған' : 
+                 'Not accepting students')
+              }
             </div>
           )}
         </div>
         
-        <div className="flex flex-wrap gap-y-2">
-          {mentor.experience && (
-            <div className="text-xs text-foreground/70 flex items-center gap-1 mr-3">
-              <Award className="w-3 h-3" />
-              <span>{mentor.experience} {t.years}</span>
-            </div>
-          )}
-          
+        <div className="flex items-center gap-4 text-xs text-foreground/60">
           {mentor.location && (
-            <div className="text-xs text-foreground/70 flex items-center gap-1 mr-3">
-              <MapPin className="w-3 h-3" />
-              <span className="truncate">{mentor.location}</span>
+            <div className="flex items-center">
+              <MapPin className="w-3 h-3 mr-1" />
+              <span className="truncate max-w-[100px]">{mentor.location}</span>
             </div>
           )}
           
-          {mentor.company && (
-            <div className="text-xs text-foreground/70 flex items-center gap-1 mr-3">
-              <Briefcase className="w-3 h-3" />
-              <span className="truncate">{mentor.company}</span>
-            </div>
-          )}
-          
-          {mentor.languages && mentor.languages.length > 0 && (
-            <div className="text-xs text-foreground/70 flex items-center gap-1 ml-auto">
-              <Globe className="w-3 h-3" />
-              <span className="truncate">{mentor.languages.join(', ')}</span>
+          {mentor.experience && (
+            <div className="flex items-center">
+              <Briefcase className="w-3 h-3 mr-1" />
+              <span>{mentor.experience}</span>
             </div>
           )}
         </div>
       </div>
       
-      {/* Области знаний - скроллится если не помещается */}
-      <div className="px-5 py-4 flex flex-1 flex-col overflow-hidden">
+      {/* Навыки - фиксированная высота */}
+      <div className="h-[100px] px-5 py-3">
         <h4 className="text-xs font-medium text-foreground/70 mb-2">
-          {t.skills}:
+          {language === 'kz' ? 'Дағдылар' : language === 'ru' ? 'Навыки' : t.skills}
         </h4>
         
-        <div className="overflow-y-auto flex-1 mb-2">
-          <div className="flex flex-wrap gap-2">
-            {(mentor.skills || []).filter(Boolean).map((skill, index) => (
-              <span key={index} className="text-xs bg-muted rounded-full px-2 py-0.5">
-                {skill}
-              </span>
-            ))}
+        <div className="flex flex-wrap gap-1 overflow-hidden" style={{ maxHeight: '60px' }}>
+          {(mentor.skills || []).filter(Boolean).map((skill, index) => {
+            const translatedSkill = language === 'kz' ? 
+              (skill === 'React' ? 'React' :
+               skill === 'Node.js' ? 'Node.js' :
+               skill === 'AWS' ? 'AWS' :
+               skill === 'System Design' ? 'Жүйелік дизайн' :
+               skill === 'Career Guidance' ? 'Мансаптық кеңес' :
+               skill === 'Python' ? 'Python' :
+               skill === 'Machine Learning' ? 'Машиналық оқыту' :
+               skill === 'Statistics' ? 'Статистика' :
+               skill === 'Data Visualization' ? 'Деректерді визуализациялау' :
+               skill === 'SQL' ? 'SQL' :
+               skill === 'UX Design' ? 'UX дизайн' :
+               skill === 'UI Design' ? 'UI дизайн' :
+               skill === 'Figma' ? 'Figma' :
+               skill === 'Design Systems' ? 'Дизайн жүйелері' :
+               skill === 'Prototyping' ? 'Прототиптеу' :
+               skill === 'Digital Marketing' ? 'Сандық маркетинг' :
+               skill === 'SEO' ? 'SEO' :
+               skill === 'Content Strategy' ? 'Контент стратегиясы' :
+               skill === 'Social Media' ? 'Әлеуметтік желілер' :
+               skill === 'Analytics' ? 'Аналитика' :
+               skill === 'Product Strategy' ? 'Өнім стратегиясы' :
+               skill === 'Agile' ? 'Agile' :
+               skill === 'User Research' ? 'Пайдаланушы зерттеулері' :
+               skill === 'Roadmapping' ? 'Жол картасы' :
+               skill === 'Product Analytics' ? 'Өнім аналитикасы' :
+               skill === 'Financial Modeling' ? 'Қаржылық модельдеу' :
+               skill === 'Valuation' ? 'Бағалау' :
+               skill === 'Excel' ? 'Excel' :
+               skill === 'Investment Analysis' ? 'Инвестициялық талдау' :
+               skill === 'Financial Planning' ? 'Қаржылық жоспарлау' :
+               skill) : skill;
+            
+            return (
+              <div key={index} className="inline-flex items-center rounded-full border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 text-xs py-0.5 px-2 bg-primary/5 text-primary/80 border-primary/10">
+                {translatedSkill}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Языки - фиксированная высота */}
+      <div className="h-[50px] px-5 py-3 bg-gray-50/50 dark:bg-gray-800/20">
+        {mentor.languages && mentor.languages.length > 0 && (
+          <div className="flex items-center gap-1.5 text-xs text-foreground/60">
+            <Globe className="w-3 h-3" />
+            <span className="truncate">{mentor.languages.join(', ')}</span>
           </div>
-        </div>
-        
-        {/* Кнопка действия - всегда снизу, авто-высота */}
-        <div>
-          <Button 
-            variant="outline"
-            size="sm"
-            className="w-full bg-transparent hover:bg-primary hover:text-white border-primary/20 text-primary transition-all h-9"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleContact(e);
-            }}
-          >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            {t.contactMentor}
-          </Button>
-        </div>
+        )}
+      </div>
+      
+      {/* Кнопка действия - всегда снизу */}
+      <div className="px-5 py-4 mt-auto">
+        <Button 
+          variant="outline"
+          size="sm"
+          className="w-full bg-transparent hover:bg-primary hover:text-white border-primary/20 text-primary transition-all h-9"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleContact(e);
+          }}
+        >
+          <MessageCircle className="w-4 h-4 mr-2" />
+          {language === 'kz' ? 'Толығырақ' : language === 'ru' ? 'Подробнее' : t.learnMore}
+        </Button>
       </div>
     </div>
   );
@@ -466,6 +507,11 @@ export default function Mentors() {
   
   // Функция для открытия модального окна
   const openMentorModal = (mentor: Mentor) => {
+    console.log('Opening modal for mentor:', mentor);
+    if (!mentor) {
+      console.error('Attempted to open modal with no mentor data');
+      return;
+    }
     setSelectedMentor(mentor);
     setIsModalOpen(true);
   };
@@ -481,7 +527,7 @@ export default function Mentors() {
   const t = translations[language as keyof typeof translations] || translations.en;
 
   // Fetch mentors
-  const { data: mentors, isLoading } = useQuery<Mentor[]>({
+  const { data: mentorsFromApi, isLoading } = useQuery<Mentor[]>({
     queryKey: ['/api/mentors'],
     staleTime: Infinity,
     retry: 1,
@@ -498,18 +544,25 @@ export default function Mentors() {
             response = await fetch('/api/v1/mentors');
             if (!response.ok) throw new Error('Second API path failed');
           } catch (e2) {
-            console.warn('All API paths failed, using demo data');
+            console.log('All API paths failed, using demo data:', dummyMentors);
             return dummyMentors;
           }
         }
         
-        return await response.json();
+        const data = await response.json();
+        console.log('API response data:', data);
+        return data && data.length > 0 ? data : dummyMentors;
       } catch (err) {
-        console.warn('Используем демо-данные из-за ошибки API:', err);
+        console.log('Используем демо-данные из-за ошибки API:', err, dummyMentors);
         return dummyMentors;
       }
     }
   });
+
+  // Гарантированно используем демо-данные, если API не вернул результатов
+  const mentors = mentorsFromApi?.length ? mentorsFromApi : dummyMentors;
+  
+  console.log('Mentors data to use:', mentors);
 
   // Apply filters
   const filteredMentors = mentors?.filter((mentor: Mentor) => {
@@ -538,7 +591,20 @@ export default function Mentors() {
       (availabilityFilter === "unavailable" && mentor.available === false);
     
     return matchesSearch && matchesSkill && matchesCompany && matchesAvailability;
-  });
+  }) || [];
+
+  console.log('Filtered mentors:', filteredMentors);
+
+  // Pagination
+  const indexOfLastMentor = currentPage * mentorsPerPage;
+  const indexOfFirstMentor = indexOfLastMentor - mentorsPerPage;
+  const currentMentors = filteredMentors?.slice(indexOfFirstMentor, indexOfLastMentor) || [];
+  const totalPages = Math.ceil((filteredMentors?.length || 0) / mentorsPerPage);
+
+  console.log('Current mentors to display:', currentMentors);
+
+  // Обеспечиваем отображение демо-данных, если filteredMentors пустой
+  const displayMentors = currentMentors.length > 0 ? currentMentors : dummyMentors.slice(0, mentorsPerPage);
 
   // Get unique skills and companies for filters
   const uniqueSkills = Array.from(new Set((mentors || [])
@@ -548,12 +614,6 @@ export default function Mentors() {
   const uniqueCompanies = Array.from(new Set((mentors || [])
     .map(mentor => mentor.company)
     .filter(Boolean)));
-
-  // Pagination
-  const indexOfLastMentor = currentPage * mentorsPerPage;
-  const indexOfFirstMentor = indexOfLastMentor - mentorsPerPage;
-  const currentMentors = filteredMentors?.slice(indexOfFirstMentor, indexOfLastMentor) || [];
-  const totalPages = Math.ceil((filteredMentors?.length || 0) / mentorsPerPage);
 
   // Clear all filters
   const clearFilters = () => {
@@ -569,25 +629,25 @@ export default function Mentors() {
     <AppLayout>
       <div className="py-8 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
+        <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">{t.pageTitle}</h1>
             <p className="text-muted-foreground">{t.pageSubtitle}</p>
-          </div>
+        </div>
 
           {/* Фильтры */}
           <div className="mb-8 bg-card/40 backdrop-blur-sm border border-border/20 rounded-xl p-6 md:p-8 shadow-sm">
             <div className="flex flex-col md:flex-row gap-4 items-start">
               <div className="flex-1 relative w-full">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/50" size={18} />
-                <Input
+            <Input
                   id="search"
                   type="text"
                   placeholder={t.searchPlaceholder}
                   className="pl-10 py-6 text-base"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
               
               <Button 
                 variant="outline"
@@ -617,42 +677,42 @@ export default function Mentors() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Фильтр по навыкам */}
-                    <div>
+          <div>
                       <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
                         <GraduationCap size={14} />
                         {t.skills}
                       </h4>
-                      <Select value={skillFilter} onValueChange={setSkillFilter}>
+            <Select value={skillFilter} onValueChange={setSkillFilter}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder={t.allSkills} />
-                        </SelectTrigger>
-                        <SelectContent>
+              </SelectTrigger>
+              <SelectContent>
                           <SelectItem value="all">{t.allSkills}</SelectItem>
-                          {uniqueSkills.map((skill, index) => (
-                            <SelectItem key={index} value={String(skill)}>{String(skill)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                {uniqueSkills.map((skill, index) => (
+                  <SelectItem key={index} value={String(skill)}>{String(skill)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
                     
                     {/* Фильтр по компании */}
-                    <div>
+          <div>
                       <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
                         <Briefcase size={14} />
                         {t.company}
                       </h4>
-                      <Select value={companyFilter} onValueChange={setCompanyFilter}>
+            <Select value={companyFilter} onValueChange={setCompanyFilter}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder={t.allCompanies} />
-                        </SelectTrigger>
-                        <SelectContent>
+              </SelectTrigger>
+              <SelectContent>
                           <SelectItem value="all">{t.allCompanies}</SelectItem>
-                          {uniqueCompanies.map((company, index) => (
-                            <SelectItem key={index} value={String(company)}>{String(company)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                {uniqueCompanies.map((company, index) => (
+                  <SelectItem key={index} value={String(company)}>{String(company)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
                     
                     {/* Фильтр по доступности */}
                     <div>
@@ -697,8 +757,8 @@ export default function Mentors() {
               {t.found}: <span className="font-medium">
                 {filteredMentors ? filteredMentors.length : 0}
               </span> {filteredMentors && filteredMentors.length === 1 ? t.mentor : t.mentors}
-            </div>
-            
+        </div>
+
             {(searchTerm || skillFilter !== "all" || companyFilter !== "all" || availabilityFilter !== "all") && (
               <Button 
                 variant="ghost" 
@@ -719,10 +779,10 @@ export default function Mentors() {
                 <div key={i} className="h-[400px] animate-pulse bg-muted rounded-lg" />
               ))}
             </div>
-          ) : filteredMentors && filteredMentors.length > 0 ? (
+          ) : displayMentors && displayMentors.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentMentors.map((mentor) => (
+                {displayMentors.map((mentor) => (
                   <EnhancedMentorCard 
                     key={mentor.id} 
                     mentor={mentor}
@@ -768,20 +828,32 @@ export default function Mentors() {
               )}
             </>
           ) : (
-            <div className="text-center py-16 bg-muted/30 rounded-xl">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-                <Users className="w-8 h-8 text-muted-foreground" />
+            <>
+              {/* Показываем демо-данные, если нет отфильтрованных результатов */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                {dummyMentors.slice(0, 3).map((mentor) => (
+                  <EnhancedMentorCard 
+                    key={mentor.id} 
+                    mentor={mentor}
+                    onSelect={openMentorModal} 
+                  />
+                ))}
               </div>
-              <h3 className="text-xl font-semibold mb-2">
-                {t.noMentors}
-              </h3>
-              <p className="text-foreground/70 max-w-md mx-auto mb-6">
-                {t.noMentorsDesc}
-              </p>
-              <Button onClick={clearFilters}>
-                {t.clearFiltersBtn}
-              </Button>
+              <div className="text-center py-8 bg-muted/30 rounded-xl">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                  <Users className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">
+                  {t.noMentors}
+                </h3>
+                <p className="text-foreground/70 max-w-md mx-auto mb-6">
+                  {t.noMentorsDesc}
+                </p>
+                <Button onClick={clearFilters}>
+                  {t.clearFiltersBtn}
+                </Button>
             </div>
+            </>
           )}
         </div>
       </div>
