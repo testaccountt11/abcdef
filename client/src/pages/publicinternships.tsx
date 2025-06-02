@@ -20,6 +20,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Типы для стажировок
 type Internship = {
@@ -41,7 +42,7 @@ type Internship = {
   isPaid: boolean;
   featured: boolean;
   appliedCount?: number;
-  level?: string; // добавим для единообразия с курсами
+  level?: string;
   externalUrl?: string;
 };
 
@@ -235,6 +236,132 @@ const dummyInternships: Internship[] = [
     featured: false,
     appliedCount: 29,
     level: "Beginner"
+  },
+  {
+    id: 10,
+    title: "AI Research Intern",
+    titleRu: "Стажер по исследованиям ИИ",
+    titleKz: "Жасанды интеллект зерттеулері бойынша тәлімгер",
+    company: "AI Innovations Lab",
+    companyLogo: "https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Almaty, Kazakhstan",
+    locationType: "hybrid",
+    description: "Join our AI research team to work on cutting-edge machine learning projects and contribute to innovative solutions.",
+    descriptionRu: "Присоединяйтесь к нашей команде исследований ИИ для работы над передовыми проектами машинного обучения и внесения вклада в инновационные решения.",
+    descriptionKz: "Машиналық оқытудың озық жобаларымен жұмыс істеу және инновациялық шешімдерге үлес қосу үшін біздің ЖИ зерттеу тобына қосылыңыз.",
+    duration: "6 months",
+    applicationDeadline: "2024-01-15",
+    category: "Technology",
+    skills: ["Python", "TensorFlow", "PyTorch", "Deep Learning"],
+    isPaid: true,
+    featured: true,
+    appliedCount: 78,
+    level: "Advanced"
+  },
+  {
+    id: 11,
+    title: "Sustainability Intern",
+    titleRu: "Стажер по устойчивому развитию",
+    titleKz: "Тұрақты даму бойынша тәлімгер",
+    company: "Green Future Initiative",
+    companyLogo: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Astana, Kazakhstan",
+    locationType: "onsite",
+    description: "Work on environmental projects and help develop sustainable business practices while learning about green technologies.",
+    descriptionRu: "Работайте над экологическими проектами и помогайте разрабатывать устойчивые бизнес-практики, изучая зеленые технологии.",
+    descriptionKz: "Жасыл технологиялар туралы білім ала отырып, экологиялық жобалармен жұмыс істеңіз және тұрақты бизнес тәжірибесін дамытуға көмектесіңіз.",
+    duration: "4 months",
+    applicationDeadline: "2024-01-20",
+    category: "Management",
+    skills: ["Project Management", "Environmental Science", "Data Analysis", "Sustainability"],
+    isPaid: true,
+    featured: false,
+    appliedCount: 42,
+    level: "Intermediate"
+  },
+  {
+    id: 12,
+    title: "Mobile App Development Intern",
+    titleRu: "Стажер по разработке мобильных приложений",
+    titleKz: "Мобильді қосымшаларды әзірлеу бойынша тәлімгер",
+    company: "AppCraft Solutions",
+    companyLogo: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Remote",
+    locationType: "remote",
+    description: "Develop mobile applications for iOS and Android platforms while learning modern mobile development practices.",
+    descriptionRu: "Разрабатывайте мобильные приложения для платформ iOS и Android, изучая современные практики мобильной разработки.",
+    descriptionKz: "Заманауи мобильді әзірлеу тәжірибелерін үйрене отырып, iOS және Android платформалары үшін мобильді қосымшаларды әзірлеңіз.",
+    duration: "5 months",
+    applicationDeadline: "2024-01-25",
+    category: "Technology",
+    skills: ["React Native", "Swift", "Kotlin", "Mobile UI/UX"],
+    isPaid: true,
+    featured: true,
+    appliedCount: 65,
+    level: "Intermediate"
+  },
+  {
+    id: 13,
+    title: "Digital Marketing Analytics Intern",
+    titleRu: "Стажер по аналитике цифрового маркетинга",
+    titleKz: "Сандық маркетинг аналитикасы бойынша тәлімгер",
+    company: "Digital Growth Agency",
+    companyLogo: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Almaty, Kazakhstan",
+    locationType: "hybrid",
+    description: "Learn to analyze marketing campaigns and optimize digital strategies using data-driven insights.",
+    descriptionRu: "Научитесь анализировать маркетинговые кампании и оптимизировать цифровые стратегии, используя данные.",
+    descriptionKz: "Деректерге негізделген түсініктерді қолдана отырып, маркетингтік науқандарды талдау және сандық стратегияларды оңтайландыруды үйреніңіз.",
+    duration: "3 months",
+    applicationDeadline: "2024-02-01",
+    category: "Marketing",
+    skills: ["Google Analytics", "Data Visualization", "Marketing Analytics", "Excel"],
+    isPaid: false,
+    featured: false,
+    appliedCount: 38,
+    level: "Beginner"
+  },
+  {
+    id: 14,
+    title: "Blockchain Development Intern",
+    titleRu: "Стажер по разработке блокчейн",
+    titleKz: "Блокчейн әзірлеу бойынша тәлімгер",
+    company: "Crypto Innovations",
+    companyLogo: "https://images.unsplash.com/photo-1639762681057-408e52192e55?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Remote",
+    locationType: "remote",
+    description: "Work on blockchain projects and smart contracts while learning about decentralized technologies.",
+    descriptionRu: "Работайте над блокчейн-проектами и смарт-контрактами, изучая децентрализованные технологии.",
+    descriptionKz: "Таратылған технологиялар туралы білім ала отырып, блокчейн жобалары мен смарт-шарттармен жұмыс істеңіз.",
+    duration: "6 months",
+    applicationDeadline: "2024-02-10",
+    category: "Technology",
+    skills: ["Solidity", "Web3.js", "Ethereum", "Smart Contracts"],
+    isPaid: true,
+    featured: true,
+    appliedCount: 55,
+    level: "Advanced"
+  },
+  {
+    id: 15,
+    title: "UX Research Intern",
+    titleRu: "Стажер по UX-исследованиям",
+    titleKz: "UX зерттеулері бойынша тәлімгер",
+    company: "User Experience Lab",
+    companyLogo: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
+    location: "Astana, Kazakhstan",
+    locationType: "hybrid",
+    description: "Conduct user research and usability testing to improve product experiences and interface design.",
+    descriptionRu: "Проводите исследования пользователей и тестирование удобства использования для улучшения опыта продукта и дизайна интерфейса.",
+    descriptionKz: "Өнім тәжірибесі мен интерфейс дизайнын жақсарту үшін пайдаланушыларды зерттеу және пайдалану ыңғайлылығын тестілеу жүргізіңіз.",
+    duration: "4 months",
+    applicationDeadline: "2024-02-15",
+    category: "Design",
+    skills: ["User Research", "Usability Testing", "Figma", "User Interviews"],
+    isPaid: true,
+    featured: false,
+    appliedCount: 47,
+    level: "Intermediate"
   }
 ];
 
@@ -349,6 +476,210 @@ function getLocalizedLevel(level: string, language: string): string {
   return level;
 }
 
+// Add the getLocalizedSkill function
+function getLocalizedSkill(skill: string, language: string): string {
+  const skillMap: Record<string, Record<string, string>> = {
+    'JavaScript': {
+      'ru': 'JavaScript',
+      'kz': 'JavaScript'
+    },
+    'React': {
+      'ru': 'React',
+      'kz': 'React'
+    },
+    'Node.js': {
+      'ru': 'Node.js',
+      'kz': 'Node.js'
+    },
+    'Python': {
+      'ru': 'Python',
+      'kz': 'Python'
+    },
+    'Machine Learning': {
+      'ru': 'Машинное обучение',
+      'kz': 'Машиналық оқыту'
+    },
+    'SQL': {
+      'ru': 'SQL',
+      'kz': 'SQL'
+    },
+    'Data Visualization': {
+      'ru': 'Визуализация данных',
+      'kz': 'Деректерді визуализациялау'
+    },
+    'Figma': {
+      'ru': 'Figma',
+      'kz': 'Figma'
+    },
+    'Adobe XD': {
+      'ru': 'Adobe XD',
+      'kz': 'Adobe XD'
+    },
+    'UI Design': {
+      'ru': 'UI дизайн',
+      'kz': 'UI дизайн'
+    },
+    'Prototyping': {
+      'ru': 'Прототипирование',
+      'kz': 'Прототиптеу'
+    },
+    'Excel': {
+      'ru': 'Excel',
+      'kz': 'Excel'
+    },
+    'Financial Modeling': {
+      'ru': 'Финансовое моделирование',
+      'kz': 'Қаржылық модельдеу'
+    },
+    'Data Analysis': {
+      'ru': 'Анализ данных',
+      'kz': 'Деректерді талдау'
+    },
+    'Copywriting': {
+      'ru': 'Копирайтинг',
+      'kz': 'Копирайтинг'
+    },
+    'Content Strategy': {
+      'ru': 'Контент-стратегия',
+      'kz': 'Контент-стратегия'
+    },
+    'SEO': {
+      'ru': 'SEO',
+      'kz': 'SEO'
+    },
+    'Editing': {
+      'ru': 'Редактирование',
+      'kz': 'Редакциялау'
+    },
+    'Project Planning': {
+      'ru': 'Планирование проектов',
+      'kz': 'Жобаларды жоспарлау'
+    },
+    'Risk Management': {
+      'ru': 'Управление рисками',
+      'kz': 'Тәуекелдерді басқару'
+    },
+    'Agile': {
+      'ru': 'Agile',
+      'kz': 'Agile'
+    },
+    'Scrum': {
+      'ru': 'Scrum',
+      'kz': 'Scrum'
+    },
+    'Adobe Illustrator': {
+      'ru': 'Adobe Illustrator',
+      'kz': 'Adobe Illustrator'
+    },
+    'Photoshop': {
+      'ru': 'Photoshop',
+      'kz': 'Photoshop'
+    },
+    'Typography': {
+      'ru': 'Типографика',
+      'kz': 'Типография'
+    },
+    'Brand Design': {
+      'ru': 'Бренд-дизайн',
+      'kz': 'Бренд-дизайн'
+    },
+    'Manual Testing': {
+      'ru': 'Ручное тестирование',
+      'kz': 'Қолмен тестілеу'
+    },
+    'Test Case Design': {
+      'ru': 'Разработка тест-кейсов',
+      'kz': 'Тест-кестерді әзірлеу'
+    },
+    'Regression Testing': {
+      'ru': 'Регрессионное тестирование',
+      'kz': 'Регрессиялық тестілеу'
+    },
+    'Bug Reporting': {
+      'ru': 'Отчеты об ошибках',
+      'kz': 'Қателер туралы есептер'
+    },
+    'TensorFlow': {
+      'ru': 'TensorFlow',
+      'kz': 'TensorFlow'
+    },
+    'PyTorch': {
+      'ru': 'PyTorch',
+      'kz': 'PyTorch'
+    },
+    'Deep Learning': {
+      'ru': 'Глубокое обучение',
+      'kz': 'Терең оқыту'
+    },
+    'Project Management': {
+      'ru': 'Управление проектами',
+      'kz': 'Жобаларды басқару'
+    },
+    'Environmental Science': {
+      'ru': 'Экология',
+      'kz': 'Экология'
+    },
+    'Sustainability': {
+      'ru': 'Устойчивое развитие',
+      'kz': 'Тұрақты даму'
+    },
+    'React Native': {
+      'ru': 'React Native',
+      'kz': 'React Native'
+    },
+    'Swift': {
+      'ru': 'Swift',
+      'kz': 'Swift'
+    },
+    'Kotlin': {
+      'ru': 'Kotlin',
+      'kz': 'Kotlin'
+    },
+    'Mobile UI/UX': {
+      'ru': 'Мобильный UI/UX',
+      'kz': 'Мобильді UI/UX'
+    },
+    'Google Analytics': {
+      'ru': 'Google Analytics',
+      'kz': 'Google Analytics'
+    },
+    'Marketing Analytics': {
+      'ru': 'Маркетинговая аналитика',
+      'kz': 'Маркетингтік аналитика'
+    },
+    'Solidity': {
+      'ru': 'Solidity',
+      'kz': 'Solidity'
+    },
+    'Web3.js': {
+      'ru': 'Web3.js',
+      'kz': 'Web3.js'
+    },
+    'Ethereum': {
+      'ru': 'Ethereum',
+      'kz': 'Ethereum'
+    },
+    'Smart Contracts': {
+      'ru': 'Смарт-контракты',
+      'kz': 'Смарт-шарттар'
+    },
+    'User Research': {
+      'ru': 'Исследование пользователей',
+      'kz': 'Пайдаланушыларды зерттеу'
+    },
+    'Usability Testing': {
+      'ru': 'Тестирование удобства',
+      'kz': 'Ыңғайлылықты тестілеу'
+    },
+    'User Interviews': {
+      'ru': 'Интервью с пользователями',
+      'kz': 'Пайдаланушылармен сұхбат'
+    }
+  };
+
+  return skillMap[skill]?.[language] || skill;
+}
+
 // Компонент карточки стажировки
 interface InternshipCardProps {
   internship: Internship;
@@ -364,80 +695,49 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
   index,
   language = 'ru'
 }) => {
-  const { t, language: currentLanguage } = useTranslations();
-  const getLocalizedTitle = () => {
-    if (language === 'ru' && internship.titleRu) {
-      return internship.titleRu;
-    } else if (language === 'kz' && internship.titleKz) {
-      return internship.titleKz;
-    }
-    return internship.title;
-  };
-  
-  const getLocalizedDescription = () => {
-    if (language === 'ru' && internship.descriptionRu) {
-      return internship.descriptionRu;
-    } else if (language === 'kz' && internship.descriptionKz) {
-      return internship.descriptionKz;
-    }
-    return internship.description;
-  };
-  
-  const getLocalizedCategory = () => {
-    if (language === 'ru') {
-      return getCategoryRu(internship.category);
-    } else if (language === 'kz') {
-      return getCategoryKz(internship.category);
-    }
-    return internship.category;
-  };
-  
-  const getLocalizedLocationType = () => {
-    if (language === 'ru') {
-      return getLocationTypeRu(internship.locationType);
-    } else if (language === 'kz') {
-      return getLocationTypeKz(internship.locationType);
-    }
-    return internship.locationType === 'remote' ? 'Remote' : 
-           internship.locationType === 'onsite' ? 'On-site' : 
-           'Hybrid';
-  };
-
-  const getLocalizedLevel = () => {
-    if (!internship.level) return "";
-    
-    if (language === 'ru') {
-      return getLevelRu(internship.level);
-    } else if (language === 'kz') {
-      return getLevelKz(internship.level);
-    }
-    return internship.level;
-  };
+  const { t } = useTranslations();
   
   // Check if this is a HeadHunter internship based on externalUrl
   const isHeadHunterCard = !!internship.externalUrl && internship.externalUrl.includes('hh.kz');
   
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isHeadHunterCard && onClick) {
+      onClick();
+    }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isHeadHunterCard && internship.externalUrl) {
+      window.open(internship.externalUrl, '_blank');
+    } else if (onClick) {
+      onClick();
+    }
+  };
+  
   return (
     <div 
-      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group hover:shadow-lg flex flex-col h-[550px] cursor-pointer"
-      onClick={isHeadHunterCard ? undefined : onClick} // Модальное окно только для не-HeadHunter карточек
+      className="bg-white dark:bg-white border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-md group hover:shadow-lg flex flex-col h-[550px] cursor-pointer"
+      onClick={handleCardClick}
     >
       {/* Для HeadHunter карточек используем более компактный заголовок без логотипа */}
       {isHeadHunterCard ? (
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6">
           <div className="flex justify-between items-center">
             <Badge className="bg-white/20 text-white hover:bg-white/30">HeadHunter</Badge>
-            <Badge className="bg-primary/80 text-white">{getLocalizedCategory()}</Badge>
+            <Badge className="bg-primary/80 text-white">{getLocalizedCategory(internship.category, language)}</Badge>
           </div>
           <h3 className="text-xl font-bold text-white mt-4 mb-1 line-clamp-2">
-            {getLocalizedTitle()}
+            {getLocalizedTitle(internship, language)}
           </h3>
           <div className="flex items-center text-white/80 mt-2 text-sm">
             <Building2 className="w-4 h-4 mr-2" />
             <span>{internship.company}</span>
             <div className="mx-2 w-1 h-1 rounded-full bg-white/40"></div>
             <MapPin className="w-4 h-4 mr-1" />
-            <span>{internship.location}</span>
+            <span>{getLocalizedLocationType(internship.locationType, language)}</span>
           </div>
         </div>
       ) : (
@@ -445,13 +745,11 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
           <img 
             src={internship.companyLogo} 
-            alt={getLocalizedTitle()} 
+            alt={getLocalizedTitle(internship, language)} 
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {
-              // При ошибке загрузки используем градиентный фон с названием компании
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';
-              // Добавляем gradient div вместо изображения
               const parent = target.parentElement;
               if (parent) {
                 const gradientDiv = document.createElement('div');
@@ -465,22 +763,25 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
             }} 
           />
           {/* Category badge */}
-          <Badge className="absolute top-4 left-4 z-20 bg-blue-600 text-white border-none">
-            {getLocalizedCategory()}
+          <Badge className="absolute top-4 left-4 z-20 bg-primary text-white border-none">
+            {getLocalizedCategory(internship.category, language)}
           </Badge>
-          {/* Level indicator */}
-          {internship.level && (
-            <div className="absolute top-4 right-4 z-20 bg-black/70 text-xs text-white px-2 py-1 rounded-full flex items-center">
-              <Star className="w-3 h-3 mr-1 text-yellow-400" />
-              <span>{getLocalizedLevel()}</span>
-            </div>
-          )}
           {/* Company name in bottom corner */}
           <div className="absolute bottom-4 left-4 z-20 text-white text-sm font-medium">
             <Badge variant="outline" className="bg-black/70 text-white border-white/30">
               {internship.company}
             </Badge>
           </div>
+          {/* Featured badge */}
+          {internship.featured && (
+            <div className="absolute top-4 right-4 z-20">
+              <Badge className="bg-yellow-500 text-white border-none">
+                {language === 'ru' ? 'Рекомендуемая' : 
+                 language === 'kz' ? 'Ұсынылған' : 
+                 'Featured'}
+              </Badge>
+            </div>
+          )}
         </div>
       )}
       
@@ -490,7 +791,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
         {!isHeadHunterCard && (
           <div className="h-14 mb-3">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight line-clamp-2">
-              {getLocalizedTitle()}
+              {getLocalizedTitle(internship, language)}
             </h3>
           </div>
         )}
@@ -499,28 +800,30 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
         {isHeadHunterCard && (
           <div className="mb-3">
             <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-none">
-              {getLocalizedLocationType()}
+              {getLocalizedLocationType(internship.locationType, language)}
             </Badge>
             {internship.level && (
               <Badge className="ml-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-none">
-                {getLocalizedLevel()}
+                {getLocalizedLevel(internship.level || 'Beginner', language)}
               </Badge>
             )}
           </div>
         )}
         
-        {/* Описание */}
-        <div className={`${isHeadHunterCard ? 'h-20' : 'h-14'} mb-3`}>
+        {/* Описание - показываем только для не-HeadHunter карточек */}
+        {!isHeadHunterCard && (
+          <div className="h-14 mb-3">
           <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
-            {getLocalizedDescription()}
+              {getLocalizedDescription(internship, language)}
           </p>
         </div>
+        )}
         
         {/* Skills */}
         <div className="h-8 mb-5 flex flex-wrap gap-2">
           {internship.skills.slice(0, 3).map((skill: string, i: number) => (
             <Badge key={i} variant="secondary" className="text-xs font-normal bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-none">
-              {skill}
+              {getLocalizedSkill(skill, language)}
             </Badge>
           ))}
           {internship.skills.length > 3 && (
@@ -530,7 +833,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           )}
         </div>
         
-        {/* Internship details */}
+        {/* Internship details - показываем только для не-HeadHunter карточек */}
+        {!isHeadHunterCard && (
         <div className="grid grid-cols-3 gap-2 mb-6 text-center text-xs text-gray-600 dark:text-gray-400 h-16">
           <div className="flex flex-col items-center justify-center">
             <Clock className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
@@ -544,7 +848,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           </div>
           <div className="flex flex-col items-center justify-center">
             <MapPin className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
-            <span>{internship.location}</span>
+              <span>{getLocalizedLocationType(internship.locationType, language)}</span>
           </div>
           <div className="flex flex-col items-center justify-center">
             <Calendar className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
@@ -558,6 +862,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
             </span>
           </div>
         </div>
+        )}
         
         {/* Action bar */}
         <div className="mt-auto">
@@ -590,17 +895,8 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           
           {/* Button */}
               <Button 
-            className={`w-full ${isHeadHunterCard ? 'bg-[#1560b2] hover:bg-[#0f4c8e]' : 'bg-blue-600 hover:bg-blue-700'} text-white font-medium rounded-lg transition-all duration-300`}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isHeadHunterCard && internship.externalUrl) {
-                // Для HeadHunter карточек - открываем внешнюю ссылку
-                window.open(internship.externalUrl, '_blank');
-              } else {
-                // Для обычных карточек - открываем модальное окно
-                if (onClick) onClick();
-              }
-            }}
+            className={`w-full ${isHeadHunterCard ? 'bg-[#1560b2] hover:bg-[#0f4c8e]' : 'bg-primary hover:bg-primary/90'} text-white font-medium rounded-lg transition-all duration-300`}
+            onClick={handleButtonClick}
           >
             {isHeadHunterCard ? (
               <>
@@ -612,7 +908,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
             ) : (
               <>
                 {language === 'ru' ? 'Подать заявку' : 
-                 language === 'kz' ? 'Өтініш беру' : 
+                 language === 'kz' ? 'Өтінім беру' : 
                  'Apply Now'}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </>
@@ -658,9 +954,9 @@ const HeadHunterWidget: React.FC = () => {
     const loadWidget = async () => {
       try {
         setIsLoading(true);
-    // Создаем скрипт
+        // Создаем скрипт с правильными параметрами
     const script = document.createElement('script');
-    script.src = "https://api.hh.ru/widgets/vacancies/search?count=6&locale=RU&links_color=1560b2&border_color=1560b2&employment=project&employment=volunteer&employment=probation&label=internship&host=hh.kz";
+        script.src = "https://api.hh.ru/widgets/vacancies/search?count=6&locale=RU&links_color=1560b2&border_color=1560b2&area=40&employment=volunteer&employment=probation";
     script.className = "hh-script";
     script.async = true;
         
@@ -678,6 +974,8 @@ const HeadHunterWidget: React.FC = () => {
     // Вставляем скрипт в DOM
     const widgetContainer = document.getElementById('hh-widget-container');
     if (widgetContainer) {
+          // Очищаем контейнер перед добавлением нового скрипта
+          widgetContainer.innerHTML = '';
       widgetContainer.appendChild(script);
     }
       } catch (error) {
@@ -691,19 +989,25 @@ const HeadHunterWidget: React.FC = () => {
     // Очистка при размонтировании
     return () => {
       const widgetContainer = document.getElementById('hh-widget-container');
-      const script = widgetContainer?.querySelector('.hh-script');
-      if (widgetContainer && script) {
-        widgetContainer.removeChild(script);
+      if (widgetContainer) {
+        widgetContainer.innerHTML = '';
       }
     };
   }, []);
   
   return (
-    <div id="hh-widget-container" className="w-full rounded-xl overflow-hidden bg-white p-4 shadow-sm">
-      <h3 className="text-xl font-bold mb-4">HeadHunter Internships</h3>
-      {isLoading && <div className="text-center py-4">Загрузка...</div>}
-      {error && <div className="text-red-500 text-center py-4">{error}</div>}
-      {/* Виджет будет загружен сюда */}
+    <div id="hh-widget-container" className="w-full rounded-xl overflow-hidden bg-white dark:bg-gray-900 p-4 shadow-sm">
+      {isLoading && (
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )}
+      {error && (
+        <div className="text-red-500 text-center py-4 flex items-center justify-center">
+          <X className="w-4 h-4 mr-2" />
+          {error}
+        </div>
+      )}
     </div>
   );
 };
@@ -711,81 +1015,87 @@ const HeadHunterWidget: React.FC = () => {
 // Добавьте типы и функции для работы с HeadHunter API
 
 // Тип для данных о вакансии с HeadHunter
-type HHVacancy = {
-  id: string;
-  name: string;
-  employer: {
-    name: string;
-    logo_urls?: {
-      original?: string;
-      90?: string;
-    }
-  };
-  area: {
-    name: string;
-  };
-  salary?: {
-    from?: number;
-    to?: number;
-    currency?: string;
-  };
-  snippet: {
-    requirement?: string;
-    responsibility?: string;
-  };
-  schedule?: {
-    id: string;
-    name: string;
-  };
-  experience?: {
-    id: string;
-    name: string;
-  };
-  key_skills?: {
-    name: string;
-  }[];
-  published_at: string;
-  alternate_url: string;
-  description?: string;
-  professional_roles?: {
-    name: string;
-  }[];
-}
+// Используем тип HHVacancy из @/types/headhunter
+
+// Добавляем импорт API клиента
+import { headHunterAPI } from '../lib/headhunter';
+import type { HHVacancy } from '../types/headhunter';
 
 export default function PublicInternships() {
-  // Существующие состояния
   const { t, language } = useTranslations();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<string>("newest");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
-  // Новые состояния для HeadHunter
-  const [hhInternships, setHHInternships] = useState<Internship[]>([]);
-  const [hhLoading, setHHLoading] = useState<boolean>(false);
-  const [showHHInternships, setShowHHInternships] = useState<boolean>(false);
-  
-  // 1. Сохраняем состояния для модального окна
-  const [showModal, setShowModal] = useState<boolean>(false);
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
   const [currentInternship, setCurrentInternship] = useState<Internship | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
+  
+  // HeadHunter states
+  const [showHHInternships, setShowHHInternships] = useState(false);
+  const [hhVacancies, setHHVacancies] = useState<HHVacancy[]>([]);
+  const [isLoadingHH, setIsLoadingHH] = useState(false);
+  const [hhError, setHHError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   
   useTheme();
   const isMobile = useIsMobile();
   
-  // Функция для получения и адаптации данных с HeadHunter
-  const fetchHeadHunterInternships = useCallback(async () => {
-    setHHLoading(true);
+  // Функция для загрузки данных с HeadHunter
+  const fetchHeadHunterData = async (page: number = 1) => {
+    setIsLoadingHH(true);
+    setHHError(null);
     try {
-      // Исправить URL API
-      const response = await fetch('/api/hh-jobs?text=стажировка+стажер+intern+практика&employment=probation&area=159');
-      const data = await response.json();
+      console.log('Fetching HeadHunter data...');
+      const response = await headHunterAPI.searchVacancies({
+        page: page - 1,
+        text: 'стажировка OR стажер OR intern OR практика',
+        area: '40',
+        employment: 'probation,volunteer',
+        per_page: 100,
+        period: 30 // За последние 30 дней
+      });
+
+      console.log('HeadHunter response:', response);
       
-      if (!data.items || data.items.length === 0) {
-        console.log('Нет данных о стажировках от API HeadHunter');
-        return [];
+      if (!response.items || response.items.length === 0) {
+        console.log('No internships found in response');
+        setHHError('Стажировки не найдены');
+        setHHVacancies([]);
+        return;
       }
       
-      // Преобразование данных в формат вашего приложения
-      const adaptedData = data.items.map((vacancy: { id: string; name: any; employer: { name: any; logo_urls: { original: any; }; }; area: { name: any; }; schedule: { id: string; }; snippet: { responsibility: any; }; description: any; professional_roles: { name: any; }[]; key_skills: any[]; salary: null; alternate_url: any; }) => ({
+      setHHVacancies(response.items);
+      setTotalPages(response.pages);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error fetching HH data:', error);
+      setHHError(error instanceof Error ? error.message : 'Failed to fetch vacancies');
+      setHHVacancies([]);
+    } finally {
+      setIsLoadingHH(false);
+    }
+  };
+
+  // Загружаем данные при переключении на HeadHunter
+  useEffect(() => {
+    if (showHHInternships) {
+      console.log('Loading HeadHunter data...');
+      fetchHeadHunterData(1);
+    }
+  }, [showHHInternships]);
+
+  // Комбинированные данные для отображения
+  const allInternships = useMemo(() => {
+    console.log('showHHInternships:', showHHInternships);
+    console.log('hhVacancies:', hhVacancies);
+    
+    if (showHHInternships) {
+      // Преобразуем вакансии HeadHunter в формат стажировок
+      return hhVacancies.map(vacancy => ({
         id: parseInt(vacancy.id),
         title: vacancy.name,
         titleRu: vacancy.name,
@@ -793,40 +1103,30 @@ export default function PublicInternships() {
         company: vacancy.employer.name,
         companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
         location: vacancy.area.name,
-        locationType: vacancy.schedule?.id === 'remote' ? 'remote' : 'onsite',
-        description: vacancy.snippet?.responsibility || vacancy.description || '',
-        descriptionRu: vacancy.snippet?.responsibility || vacancy.description || '',
-        descriptionKz: vacancy.snippet?.responsibility || vacancy.description || '',
+        locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
+                      vacancy.schedule?.id === 'fullDay' ? 'onsite' : 'hybrid') as 'remote' | 'onsite' | 'hybrid',
+        description: vacancy.snippet?.responsibility || '',
+        descriptionRu: vacancy.snippet?.responsibility || '',
+        descriptionKz: vacancy.snippet?.responsibility || '',
         duration: '3 months',
         applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
         category: vacancy.professional_roles?.[0]?.name || 'Technology',
         skills: vacancy.key_skills?.map(skill => skill.name) || [],
-        isPaid: vacancy.salary !== null,
+        isPaid: !!vacancy.salary,
         featured: false,
         appliedCount: Math.floor(Math.random() * 50) + 5,
         level: 'Beginner',
         externalUrl: vacancy.alternate_url
       }));
-      
-      setHHInternships(adaptedData);
-      return adaptedData;
-    } catch (error) {
-      console.error('Ошибка при получении данных HeadHunter:', error);
-      return [];
-    } finally {
-      setHHLoading(false);
+    } else {
+      // Используем локальные стажировки из Portfol.IO
+      return dummyInternships.map(internship => ({
+        ...internship,
+        // Обновляем даты, чтобы они были актуальными
+        applicationDeadline: new Date(Date.now() + Math.floor(Math.random() * 30) * 24*60*60*1000).toISOString()
+      }));
     }
-  }, []);
-  
-  // 2. Исправить useEffect для выполнения только при монтировании
-  useEffect(() => {
-    fetchHeadHunterInternships();
-  }, [fetchHeadHunterInternships]);
-  
-  // Комбинированные данные для отображения
-  const allInternships = useMemo(() => {
-    return showHHInternships ? hhInternships : dummyInternships;
-  }, [showHHInternships, hhInternships]);
+  }, [showHHInternships, hhVacancies]);
   
   // Scroller references
   const targetRef = useRef(null);
@@ -868,66 +1168,16 @@ export default function PublicInternships() {
 
   // Добавьте этот useEffect для загрузки данных только при необходимости
   useEffect(() => {
-    if (showHHInternships && hhInternships.length === 0 && !hhLoading) {
+    if (showHHInternships && allInternships.length === 0 && !isLoadingHH) {
       fetchHeadHunterData();
     }
   }, [showHHInternships]);
 
-  // Функция загрузки данных
-  const fetchHeadHunterData = async () => {
-    setHHLoading(true);
-    
-    try {
-      // Запрос к нашему API эндпоинту
-      const response = await fetch('/api/hh-jobs?text=стажировка+стажер+intern+практика&employment=probation&area=159');
-      const data = await response.json();
-      
-      if (!data.items || data.items.length === 0) {
-        console.log('Нет данных о стажировках от API HeadHunter');
-        return;
-      }
-
-      // Преобразуем данные из HeadHunter в формат нашего приложения
-      const adaptedData = data.items.map((vacancy: HHVacancy) => ({
-        id: parseInt(vacancy.id),
-        title: vacancy.name,
-        titleRu: vacancy.name,
-        titleKz: vacancy.name,
-        company: vacancy.employer.name,
-        companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
-        location: vacancy.area.name,
-        locationType: vacancy.schedule?.id === 'remote' ? 'remote' : 'onsite',
-        description: vacancy.snippet?.responsibility || vacancy.description || '',
-        descriptionRu: vacancy.snippet?.responsibility || vacancy.description || '',
-        descriptionKz: vacancy.snippet?.responsibility || vacancy.description || '',
-        duration: '3 months', // Это значение можно получать из vacancy.schedule если оно есть
-        applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(), // Можно получать из vacancy.published_at
-        category: vacancy.professional_roles?.[0]?.name || 'Technology',
-        skills: vacancy.key_skills?.map(skill => skill.name) || [],
-        isPaid: vacancy.salary !== null,
-        featured: false,
-        appliedCount: Math.floor(Math.random() * 50) + 5, // Это значение можно получать из vacancy.applications_count если оно есть
-        level: vacancy.experience?.id === 'noExperience' ? 'Beginner' : 'Intermediate',
-        externalUrl: vacancy.alternate_url
-      }));
-
-      setHHInternships(adaptedData);
-    } catch (error) {
-      console.error('Ошибка при получении данных HeadHunter:', error);
-    } finally {
-      setHHLoading(false);
-    }
-  };
-
-  // Добавляем useEffect для загрузки данных при монтировании компонента
-  useEffect(() => {
-    fetchHeadHunterData();
-  }, []);
-
   // 2. Модифицируем функцию handleInternshipClick, чтобы она работала только для не-HeadHunter карточек
   const handleInternshipClick = (internship: Internship) => {
-    // Открываем модальное окно только если это не HeadHunter карточка
-    if (!internship.externalUrl || !internship.externalUrl.includes('hh.kz')) {
+    if (internship.externalUrl) {
+      window.open(internship.externalUrl, '_blank');
+    } else {
       setCurrentInternship(internship);
       setShowModal(true);
     }
@@ -937,6 +1187,16 @@ export default function PublicInternships() {
   const closeModal = () => {
     setShowModal(false);
     setCurrentInternship(null);
+  };
+
+  // Функция для обработки кнопки "Подать заявку"
+  const handleApplyClick = (internship: Internship) => {
+    if (internship.externalUrl) {
+      window.open(internship.externalUrl, '_blank');
+    } else {
+      window.location.href = `/apply/${internship.id}`;
+    }
+    closeModal();
   };
 
   // Добавьте эту функцию в компонент PublicInternships
@@ -1201,27 +1461,74 @@ export default function PublicInternships() {
             <div className="inline-flex rounded-md shadow-sm bg-muted p-1">
               <button
                 onClick={() => setShowHHInternships(false)}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`px-4 py-2 text-sm font-medium rounded-md flex items-center gap-2 ${
                   !showHHInternships 
                     ? 'bg-background text-primary shadow-sm' 
                     : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
-                {language === 'ru' ? 'Portfol.IO' : language === 'kz' ? 'Portfol.IO' : 'Portfol.IO'}
+                <Building2 className="w-4 h-4" />
+                {language === 'ru' ? 'Стажировки Portfol.IO' : 
+                 language === 'kz' ? 'Portfol.IO тағылымдамалары' : 
+                 'Portfol.IO Internships'}
               </button>
               <button
-                onClick={() => setShowHHInternships(true)}
-                className={`px-4 py-2 text-sm font-medium rounded-md flex items-center ${
+                onClick={() => {
+                  setShowHHInternships(true);
+                  fetchHeadHunterData(1);
+                }}
+                className={`px-4 py-2 text-sm font-medium rounded-md flex items-center gap-2 ${
                   showHHInternships 
                     ? 'bg-background text-primary shadow-sm' 
                     : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
-                HeadHunter
-                {hhLoading && <span className="ml-2 animate-spin">⟳</span>}
+                <Globe className="w-4 h-4" />
+                {language === 'ru' ? 'Вакансии HeadHunter' : 
+                 language === 'kz' ? 'HeadHunter вакансиялары' : 
+                 'HeadHunter Jobs'}
+                {isLoadingHH && (
+                  <div className="ml-2 animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                )}
               </button>
               </div>
             </div>
+          
+          {/* Показываем состояние загрузки */}
+          {isLoadingHH && showHHInternships && (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-3 text-foreground/70">
+                {language === 'ru' ? 'Загрузка вакансий...' : 
+                 language === 'kz' ? 'Вакансиялар жүктелуде...' : 
+                 'Loading vacancies...'}
+              </span>
+            </div>
+          )}
+
+          {/* Показываем ошибку */}
+          {hhError && showHHInternships && (
+            <div className="text-center py-8">
+              <div className="inline-flex items-center justify-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 dark:bg-red-800/10 dark:text-red-400">
+                <X className="w-5 h-5 mr-2" />
+                <span>
+                  {language === 'ru' ? 'Ошибка загрузки вакансий' : 
+                   language === 'kz' ? 'Вакансияларды жүктеу қатесі' : 
+                   'Error loading vacancies'}
+                </span>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={() => fetchHeadHunterData(1)}
+                className="mt-4"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                {language === 'ru' ? 'Попробовать снова' : 
+                 language === 'kz' ? 'Қайталап көру' : 
+                 'Try Again'}
+              </Button>
+            </div>
+          )}
           
           {/* Основной блок с фильтрацией и карточками */}
           {(() => {
@@ -1236,7 +1543,7 @@ export default function PublicInternships() {
             
             // Функция фильтрации стажировок с учетом всех фильтров
             const getFilteredInternships = () => {
-              return (showHHInternships ? hhInternships : dummyInternships).filter(internship => {
+              return (showHHInternships ? allInternships : dummyInternships).filter(internship => {
                 // Поиск по тексту с учетом переводов
                 const matchesSearch = searchTerm === "" || 
                   // Поиск в заголовке
@@ -1346,15 +1653,15 @@ export default function PublicInternships() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/50" size={18} />
                   <Input
                         placeholder={
-                          language === 'ru' ? 'Поиск по названию, компании или навыкам...' : 
-                          language === 'kz' ? 'Атау, компания немесе дағдылар бойынша іздеу...' : 
-                          'Search by title, company or skills...'
+                          language === 'ru' ? (showHHInternships ? 'Поиск по названию вакансии или компании...' : 'Поиск по названию, компании или навыкам...') : 
+                          language === 'kz' ? (showHHInternships ? 'Вакансия немесе компания атауы бойынша іздеу...' : 'Атау, компания немесе дағдылар бойынша іздеу...') : 
+                          (showHHInternships ? 'Search by job title or company...' : 'Search by title, company or skills...')
                         }
                         className="pl-10 py-6 text-base"
                         value={searchTerm}
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
-                          setCurrentPage(1); // Сбрасываем на первую страницу при изменении поиска
+                          setCurrentPage(1);
                         }}
                   />
                 </div>
@@ -1365,9 +1672,9 @@ export default function PublicInternships() {
                       onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                     >
                       <Filter size={16} />
-                      {language === 'ru' ? 'Расширенные фильтры' : 
-                      language === 'kz' ? 'Кеңейтілген сүзгілер' : 
-                      'Advanced Filters'}
+                      {language === 'ru' ? (showHHInternships ? 'Расширенный поиск' : 'Расширенные фильтры') : 
+                       language === 'kz' ? (showHHInternships ? 'Кеңейтілген іздеу' : 'Кеңейтілген сүзгілер') : 
+                       (showHHInternships ? 'Advanced Search' : 'Advanced Filters')}
                     </Button>
               </div>
               
@@ -1384,9 +1691,9 @@ export default function PublicInternships() {
                         {/* Фильтр по категории */}
               <div>
                           <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? 'Категория' : 
-                            language === 'kz' ? 'Санат' : 
-                            'Category'}
+                            {language === 'ru' ? (showHHInternships ? 'Сфера деятельности' : 'Категория') : 
+                             language === 'kz' ? (showHHInternships ? 'Қызмет саласы' : 'Санат') : 
+                             (showHHInternships ? 'Field' : 'Category')}
                           </Label>
                           <Select 
                             value={categoryFilter}
@@ -1400,9 +1707,9 @@ export default function PublicInternships() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">
-                                {language === 'ru' ? 'Все категории' : 
-                                language === 'kz' ? 'Барлық санаттар' : 
-                                'All Categories'}
+                                {language === 'ru' ? (showHHInternships ? 'Все сферы' : 'Все категории') : 
+                                 language === 'kz' ? (showHHInternships ? 'Барлық салалар' : 'Барлық санаттар') : 
+                                 (showHHInternships ? 'All Fields' : 'All Categories')}
                               </SelectItem>
                               <SelectItem value="Technology">
                                 {language === 'ru' ? 'Технологии' : 
@@ -1446,9 +1753,9 @@ export default function PublicInternships() {
                         {/* Фильтр по типу локации */}
                         <div>
                           <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? 'Тип работы' : 
-                            language === 'kz' ? 'Жұмыс түрі' : 
-                            'Work Type'}
+                            {language === 'ru' ? (showHHInternships ? 'Формат работы' : 'Тип работы') : 
+                             language === 'kz' ? (showHHInternships ? 'Жұмыс форматы' : 'Жұмыс түрі') : 
+                             (showHHInternships ? 'Work Format' : 'Work Type')}
                           </Label>
                           <Select 
                             value={locationFilter}
@@ -1462,9 +1769,9 @@ export default function PublicInternships() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">
-                                {language === 'ru' ? 'Все типы' : 
-                                language === 'kz' ? 'Барлық түрлері' : 
-                                'All Types'}
+                                {language === 'ru' ? (showHHInternships ? 'Все форматы' : 'Все типы') : 
+                                 language === 'kz' ? (showHHInternships ? 'Барлық форматтар' : 'Барлық түрлері') : 
+                                 (showHHInternships ? 'All Formats' : 'All Types')}
                               </SelectItem>
                               <SelectItem value="remote">
                                 {language === 'ru' ? 'Удаленно' : 
@@ -1488,9 +1795,9 @@ export default function PublicInternships() {
                         {/* Фильтр по длительности */}
               <div>
                           <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? 'Длительность' : 
-                            language === 'kz' ? 'Ұзақтығы' : 
-                            'Duration'}
+                            {language === 'ru' ? (showHHInternships ? 'Опыт работы' : 'Длительность') : 
+                             language === 'kz' ? (showHHInternships ? 'Жұмыс тәжірибесі' : 'Ұзақтығы') : 
+                             (showHHInternships ? 'Experience' : 'Duration')}
                           </Label>
                           <Select 
                             value={durationFilter}
@@ -1504,9 +1811,9 @@ export default function PublicInternships() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">
-                                {language === 'ru' ? 'Любая длительность' : 
-                                language === 'kz' ? 'Кез келген ұзақтық' : 
-                                'Any Duration'}
+                                {language === 'ru' ? (showHHInternships ? 'Любой опыт' : 'Любая длительность') : 
+                                 language === 'kz' ? (showHHInternships ? 'Кез келген тәжірибе' : 'Кез келген ұзақтық') : 
+                                 (showHHInternships ? 'Any Experience' : 'Any Duration')}
                               </SelectItem>
                               <SelectItem value="short">
                                 {language === 'ru' ? 'Короткая (до 3 месяцев)' : 
@@ -1530,9 +1837,9 @@ export default function PublicInternships() {
                         {/* Фильтр по оплате */}
                         <div>
                           <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? 'Оплата' : 
-                            language === 'kz' ? 'Төлем' : 
-                            'Payment'}
+                            {language === 'ru' ? (showHHInternships ? 'Зарплата' : 'Оплата') : 
+                             language === 'kz' ? (showHHInternships ? 'Жалақы' : 'Төлем') : 
+                             (showHHInternships ? 'Salary' : 'Payment')}
                           </Label>
                           <Select 
                             value={paymentFilter}
@@ -1546,9 +1853,9 @@ export default function PublicInternships() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">
-                                {language === 'ru' ? 'Все типы' : 
-                                language === 'kz' ? 'Барлық түрлері' : 
-                                'All Types'}
+                                {language === 'ru' ? (showHHInternships ? 'Любая зарплата' : 'Все типы') : 
+                                 language === 'kz' ? (showHHInternships ? 'Кез келген жалақы' : 'Барлық түрлері') : 
+                                 (showHHInternships ? 'Any Salary' : 'All Types')}
                               </SelectItem>
                               <SelectItem value="paid">
                                 {language === 'ru' ? 'Оплачиваемые' : 
@@ -1567,9 +1874,9 @@ export default function PublicInternships() {
                         {/* Фильтр по уровню */}
                         <div>
                           <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? 'Уровень' : 
-                            language === 'kz' ? 'Деңгей' : 
-                            'Level'}
+                            {language === 'ru' ? (showHHInternships ? 'Уровень позиции' : 'Уровень') : 
+                             language === 'kz' ? (showHHInternships ? 'Позиция деңгейі' : 'Деңгей') : 
+                             (showHHInternships ? 'Position Level' : 'Level')}
                           </Label>
                           <Select 
                             value={levelFilter}
@@ -1583,9 +1890,9 @@ export default function PublicInternships() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">
-                                {language === 'ru' ? 'Все уровни' : 
-                                language === 'kz' ? 'Барлық деңгейлер' : 
-                                'All Levels'}
+                                {language === 'ru' ? (showHHInternships ? 'Все уровни' : 'Все уровни') : 
+                                 language === 'kz' ? (showHHInternships ? 'Барлық деңгейлер' : 'Барлық деңгейлер') : 
+                                 (showHHInternships ? 'All Levels' : 'All Levels')}
                               </SelectItem>
                               <SelectItem value="Beginner">
                                 {language === 'ru' ? 'Начинающий' : 
@@ -1615,9 +1922,9 @@ export default function PublicInternships() {
                           className="text-sm"
                         >
                           <RotateCcw className="w-3.5 h-3.5 mr-2" />
-                          {language === 'ru' ? 'Сбросить все фильтры' : 
-                          language === 'kz' ? 'Барлық сүзгілерді қалпына келтіру' : 
-                          'Reset All Filters'}
+                          {language === 'ru' ? (showHHInternships ? 'Сбросить все фильтры' : 'Сбросить все фильтры') : 
+                           language === 'kz' ? (showHHInternships ? 'Барлық сүзгілерді қалпына келтіру' : 'Барлық сүзгілерді қалпына келтіру') : 
+                           (showHHInternships ? 'Reset All Filters' : 'Reset All Filters')}
                         </Button>
                       </div>
                     </motion.div>
@@ -1628,9 +1935,9 @@ export default function PublicInternships() {
                 <div className="border-t border-border/20 pt-8">
                   <div className="flex justify-between items-center mb-6">
                     <p className="text-foreground/70">
-                      {language === 'ru' ? 'Найдено стажировок: ' : 
-                      language === 'kz' ? 'Табылған тағылымдамалар: ' : 
-                      'Internships found: '}
+                      {language === 'ru' ? (showHHInternships ? 'Найдено вакансий: ' : 'Найдено стажировок: ') : 
+                       language === 'kz' ? (showHHInternships ? 'Табылған вакансиялар: ' : 'Табылған тағылымдамалар: ') : 
+                       (showHHInternships ? 'Vacancies found: ' : 'Internships found: ')}
                       <span className="font-semibold text-foreground">{sortedInternships.length}</span>
                     </p>
                     
@@ -1652,21 +1959,21 @@ export default function PublicInternships() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="popularity">
-                            {language === 'ru' ? 'Популярность' : 
-                            language === 'kz' ? 'Танымалдылық' : 
-                            'Popularity'}
+                            {language === 'ru' ? (showHHInternships ? 'Популярность вакансии' : 'Популярность') : 
+                             language === 'kz' ? (showHHInternships ? 'Вакансия танымалдылығы' : 'Танымалдылық') : 
+                             (showHHInternships ? 'Vacancy Popularity' : 'Popularity')}
                           </SelectItem>
                           <SelectItem value="newest">
-                            {language === 'ru' ? 'Сначала новые' : 
-                            language === 'kz' ? 'Жаңалары алдымен' : 
-                            'Newest first'}
+                            {language === 'ru' ? (showHHInternships ? 'Сначала новые вакансии' : 'Сначала новые') : 
+                             language === 'kz' ? (showHHInternships ? 'Жаңа вакансиялар алдымен' : 'Жаңалары алдымен') : 
+                             (showHHInternships ? 'Newest Vacancies First' : 'Newest First')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
                   </div>
               </div>
                   
-                  {/* Сетка карточек стажировок */}
+                  {/* Сетка карточек */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {currentInternships.length > 0 ? (
                       currentInternships.map((internship, index) => (
@@ -1675,20 +1982,21 @@ export default function PublicInternships() {
                           internship={internship}
                           index={index}
                           onClick={() => handleInternshipClick(internship)}
+                          language={language}
                       />
                     ))
                 ) : (
                       <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col items-center justify-center py-16 text-center">
                         <FolderX className="w-16 h-16 text-muted-foreground mb-4" />
                         <h3 className="text-xl font-bold mb-2">
-                          {language === 'ru' ? 'Стажировки не найдены' : 
-                          language === 'kz' ? 'Тағылымдамалар табылмады' : 
-                          'No Internships Found'}
+                          {language === 'ru' ? (showHHInternships ? 'Вакансии не найдены' : 'Стажировки не найдены') : 
+                           language === 'kz' ? (showHHInternships ? 'Вакансиялар табылмады' : 'Тағылымдамалар табылмады') : 
+                           (showHHInternships ? 'No Vacancies Found' : 'No Internships Found')}
                         </h3>
                         <p className="text-foreground/70 max-w-md">
-                          {language === 'ru' ? 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.' : 
-                          language === 'kz' ? 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.' : 
-                          'Try changing your search criteria or filters for better results.'}
+                          {language === 'ru' ? (showHHInternships ? 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.' : 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.') : 
+                           language === 'kz' ? (showHHInternships ? 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.' : 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.') : 
+                           (showHHInternships ? 'Try changing your search criteria or filters for better results.' : 'Try changing your search criteria or filters for better results.')}
                         </p>
                         <Button 
                           className="mt-6"
@@ -1696,9 +2004,9 @@ export default function PublicInternships() {
                           onClick={clearAllFilters}
                         >
                           <RotateCcw className="w-4 h-4 mr-2" />
-                          {language === 'ru' ? 'Сбросить фильтры' : 
-                          language === 'kz' ? 'Сүзгілерді қалпына келтіру' : 
-                          'Reset Filters'}
+                          {language === 'ru' ? (showHHInternships ? 'Сбросить фильтры' : 'Сбросить фильтры') : 
+                           language === 'kz' ? (showHHInternships ? 'Сүзгілерді қалпына келтіру' : 'Сүзгілерді қалпына келтіру') : 
+                           (showHHInternships ? 'Reset Filters' : 'Reset Filters')}
                         </Button>
                   </div>
                 )}
@@ -1718,7 +2026,6 @@ export default function PublicInternships() {
                         
                         {/* Номера страниц */}
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                          // Показываем ограниченное количество страниц для лучшего UX
                           if (
                             page === 1 ||
                             page === totalPages ||
@@ -1738,7 +2045,6 @@ export default function PublicInternships() {
                             );
                           }
                           
-                          // Показываем троеточие вместо большого количества страниц
                           if (
                             (page === currentPage - 2 && currentPage > 3) ||
                             (page === currentPage + 2 && currentPage < totalPages - 2)
@@ -1784,10 +2090,9 @@ export default function PublicInternships() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30 z-10"></div>
               <img 
                 src={currentInternship.companyLogo} 
-                alt={currentInternship.title} 
+                alt={getLocalizedTitle(currentInternship, language)} 
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  // Fallback при ошибке загрузки изображения
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   const parent = target.parentElement;
@@ -1850,7 +2155,7 @@ export default function PublicInternships() {
                      language === 'kz' ? 'Сипаттама' : 
                      'Description'}
                   </h3>
-                  <p className="text-foreground/80 mb-6 whitespace-pre-line">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
                     {getLocalizedDescription(currentInternship, language)}
                   </p>
                   
@@ -1860,7 +2165,7 @@ export default function PublicInternships() {
                      'Required Skills'}
                   </h3>
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {currentInternship.skills.map((skill, i) => (
+                    {currentInternship.skills.map((skill: string, i: number) => (
                       <Badge key={i} variant="secondary" className="bg-primary/10 text-primary">
                         {skill}
                       </Badge>
@@ -1944,11 +2249,23 @@ export default function PublicInternships() {
                   </div>
                   
                   <div className="mt-8">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white">
-                      {language === 'ru' ? 'Подать заявку' : 
-                      language === 'kz' ? 'Өтініш беру' : 
-                      'Apply Now'}
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90 text-white"
+                      onClick={() => handleApplyClick(currentInternship)}
+                    >
+                      {currentInternship.externalUrl ? (
+                        <>
+                          {language === 'ru' ? 'Перейти к вакансии' : 
+                           language === 'kz' ? 'Вакансияға өту' : 
+                           'Go to Vacancy'}
+                          <ExternalLink className="ml-2 w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          Подать заявку
                       <ArrowRight className="ml-2 w-4 h-4" />
+                        </>
+                      )}
             </Button>
           </div>
         </div>
@@ -1956,6 +2273,103 @@ export default function PublicInternships() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Модальное окно для просмотра деталей стажировки */}
+      {isModalOpen && selectedInternship && (
+        <Dialog open={isModalOpen} onOpenChange={closeModal}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">
+                {getLocalizedTitle(selectedInternship, language)}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="grid gap-6">
+              {/* Информация о компании */}
+              <div className="flex items-center gap-4">
+                <img
+                  src={selectedInternship.companyLogo}
+                  alt={selectedInternship.company}
+                  className="w-16 h-16 object-contain rounded-lg"
+                />
+                <div>
+                  <h3 className="font-semibold text-lg">{selectedInternship.company}</h3>
+                  <p className="text-muted-foreground">
+                    {getLocalizedCategory(selectedInternship.category, language)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Основная информация */}
+              <div className="space-y-4">
+                <p className="text-lg">
+                  {getLocalizedDescription(selectedInternship, language)}
+                </p>
+
+                {/* Детали */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-muted-foreground" />
+                    <span>{selectedInternship.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building className="h-5 w-5 text-muted-foreground" />
+                    <span>
+                      {getLocalizedLocationType(selectedInternship.locationType, language)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <span>{selectedInternship.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                    <span>
+                      {new Date(selectedInternship.applicationDeadline).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Навыки */}
+                <div className="space-y-2">
+                  <h4 className="font-semibold">
+                    {language === 'ru' ? 'Требуемые навыки' :
+                     language === 'kz' ? 'Қажетті дағдылар' :
+                     'Required Skills'}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedInternship.skills.map((skill, index) => (
+                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Кнопки действий */}
+              <div className="flex justify-end gap-4">
+                {selectedInternship.externalUrl && (
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(selectedInternship.externalUrl, '_blank')}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    {language === 'ru' ? 'Открыть на HeadHunter' :
+                     language === 'kz' ? 'HeadHunter-де ашу' :
+                     'Open on HeadHunter'}
+                  </Button>
+                )}
+                <Button onClick={closeModal}>
+                  {language === 'ru' ? 'Закрыть' :
+                   language === 'kz' ? 'Жабу' :
+                   'Close'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </PublicPageLayout>
   );

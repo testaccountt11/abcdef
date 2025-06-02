@@ -30,8 +30,8 @@ export default defineConfig({
       "@contexts": path.resolve(__dirname, "./client/src/contexts"),
       "@ui": path.resolve(__dirname, "./client/src/components/ui"),
       "@shared": path.resolve(__dirname, "./shared"),
-      "@assets": path.resolve(__dirname, "./client/src/assets"),
-    },
+      "@assets": path.resolve(__dirname, "./client/src/assets")
+    }
   },
   root: path.resolve(__dirname, "client"),
   build: {

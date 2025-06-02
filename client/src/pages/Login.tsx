@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,13 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
-import { useAuthContext } from "@/contexts/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { Separator } from "@/components/ui/separator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslations } from "@/hooks/use-translations";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 const loginFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -26,8 +25,9 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 const Login: React.FC = () => {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const { login } = useAuthContext();
   const { t } = useTranslations();
+  const { login } = useAuthContext();
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
@@ -46,42 +46,34 @@ const Login: React.FC = () => {
   };
 
   const onSubmit = async (values: LoginFormValues) => {
+    setIsLoading(true);
     try {
-      console.log("Attempting to login with email:", values.email);
-      
       const response = await fetch('/api/login/direct', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        email: values.email,
-        password: values.password
-        }),
-        credentials: 'include'
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || response.statusText || 'Ошибка входа');
-      }
-      
+
       const data = await response.json();
-      
-      if (data.user) {
-        login(data.user);
-        toast({
-          title: "Success",
-          description: "Logged in successfully",
-        });
-        setLocation('/dashboard');
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
-    } catch (error: any) {
-      console.error("Login error:", error);
+
+      login(data.user);
+      setLocation('/dashboard');
       
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description: error.message || "Failed to login. Please check your credentials and try again.",
+        description: error instanceof Error ? error.message : "Invalid email or password",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,7 +102,12 @@ const Login: React.FC = () => {
                     <FormItem>
                       <FormLabel>{t('auth.email')}</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="john.doe@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="john.doe@example.com" 
+                          {...field} 
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -123,7 +120,12 @@ const Login: React.FC = () => {
                     <FormItem>
                       <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          {...field} 
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -139,8 +141,12 @@ const Login: React.FC = () => {
                     {t('auth.forgotPassword')}
                   </Button>
                 </div>
-                <Button type="submit" className="w-full">
-                  {t('auth.signin.button')}
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? t('auth.signingIn') : t('auth.signin.button')}
                 </Button>
                 
                 <div className="relative my-4">
@@ -148,7 +154,9 @@ const Login: React.FC = () => {
                     <Separator className="w-full" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">{t('auth.signin.alternative')}</span>
+                    <span className="bg-background px-2 text-muted-foreground">
+                      {t('auth.signin.alternative')}
+                    </span>
                   </div>
                 </div>
                 
@@ -157,6 +165,7 @@ const Login: React.FC = () => {
                   variant="outline" 
                   className="w-full" 
                   onClick={handleGoogleSignIn}
+                  disabled={isLoading}
                 >
                   <FcGoogle className="mr-2 h-4 w-4" />
                   {t('auth.signin.google')}
@@ -168,7 +177,7 @@ const Login: React.FC = () => {
             <div className="text-center text-sm">
               {t('auth.noAccount')}{" "}
               <Button 
-                variant="link" 
+                variant="link"
                 className="p-0 h-auto font-medium" 
                 onClick={() => setLocation('/register')}
               >
@@ -183,7 +192,7 @@ const Login: React.FC = () => {
         <button
           className="w-11 h-11 flex items-center justify-center rounded-full bg-background shadow-md border border-border text-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
           onClick={() => setLocation('/')}
-          aria-label="Назад на главную"
+          aria-label="Back to home"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />

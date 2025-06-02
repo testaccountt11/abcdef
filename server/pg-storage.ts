@@ -31,24 +31,255 @@ import {
   InsertNewsletterSubscription,
   mentorApplications,
   InsertMentorApplication,
-  MentorApplication
+  MentorApplication,
+  newsletterSubscriptions
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { eq, and, sql } from "drizzle-orm";
 import { db } from "./db.js";
+import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import type { AnyPgColumn, PgTableWithColumns } from "drizzle-orm/pg-core";
+
+// Define table types
+const IsDrizzleTable = Symbol.for('IsDrizzleTable');
+type DrizzleTable<T> = T & { [key: symbol]: true };
+
+// Add [IsDrizzleTable] symbol to all tables
+const addIsDrizzleTable = <T extends PgTableWithColumns<any>>(table: T): T => {
+  (table as any)[Symbol.for('IsDrizzleTable')] = true;
+  return table;
+};
+
+// Define table schemas
+const usersTable = addIsDrizzleTable(pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull(),
+  password: text("password").notNull(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name"),
+  email: text("email").notNull(),
+  profileImage: text("profile_image")
+}));
+
+const newsletterSubscriptionsTable = addIsDrizzleTable(pgTable("newsletter_subscriptions", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  subscriptionDate: timestamp("subscription_date").notNull()
+}));
+
+const coursesTable = addIsDrizzleTable(pgTable("courses", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url"),
+  category: text("category").notNull(),
+  provider: text("provider").notNull(),
+  isPartnerCourse: boolean("is_partner_course"),
+  contactInfo: text("contact_info")
+}));
+
+const enrollmentsTable = addIsDrizzleTable(pgTable("enrollments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  courseId: integer("course_id").notNull(),
+  progress: integer("progress").notNull(),
+  enrollmentDate: timestamp("enrollment_date").notNull(),
+  completed: boolean("completed").notNull().default(false)
+}));
+
+const opportunitiesTable = addIsDrizzleTable(pgTable("opportunities", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  duration: text("duration"),
+  type: text("type").notNull(),
+  company: text("company").notNull(),
+  logoUrl: text("logo_url"),
+  location: text("location").notNull(),
+  deadline: text("deadline")
+}));
+
+const mentorsTable = addIsDrizzleTable(pgTable("mentors", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  title: text("title").notNull(),
+  contactInfo: text("contact_info"),
+  profileImage: text("profile_image"),
+  company: text("company").notNull(),
+  skills: text("skills").array()
+}));
+
+const articlesTable = addIsDrizzleTable(pgTable("articles", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  imageUrl: text("image_url"),
+  category: text("category").notNull(),
+  content: text("content").notNull(),
+  summary: text("summary").notNull(),
+  authorName: text("author_name").notNull(),
+  authorImage: text("author_image"),
+  readTime: text("read_time"),
+  publishDate: text("publish_date")
+}));
+
+const certificatesTable = addIsDrizzleTable(pgTable("certificates", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  userId: integer("user_id").notNull(),
+  issuer: text("issuer").notNull(),
+  issueDate: text("issue_date").notNull(),
+  certificateUrl: text("certificate_url"),
+  certificateFile: text("certificate_file"),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at")
+}));
+
+const statsTable = addIsDrizzleTable(pgTable("stats", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  coursesInProgress: integer("courses_in_progress"),
+  certificatesEarned: integer("certificates_earned"),
+  mentorSessions: integer("mentor_sessions"),
+  opportunitiesSaved: integer("opportunities_saved")
+}));
+
+const achievementsTable = addIsDrizzleTable(pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  requirement: text("requirement").notNull(),
+  requiredValue: integer("required_value"),
+  points: integer("points"),
+  isHidden: boolean("is_hidden"),
+  createdAt: timestamp("created_at")
+}));
+
+const userAchievementsTable = addIsDrizzleTable(pgTable("user_achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  achievementId: integer("achievement_id").notNull(),
+  progress: integer("progress").notNull(),
+  completedValue: integer("completed_value"),
+  completedAt: timestamp("completed_at")
+}));
+
+const badgesTable = addIsDrizzleTable(pgTable("badges", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  level: integer("level"),
+  requiredPoints: integer("required_points"),
+  isRare: boolean("is_rare"),
+  createdAt: timestamp("created_at")
+}));
+
+// Define table types
+interface UserBadgeTable {
+  id: number;
+  userId: number;
+  badgeId: number;
+  earnedAt: Date | null;
+  displayOnProfile: boolean;
+}
+
+interface ContactRequestTable {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  phone: string | null;
+  status: string;
+  createdAt: Date;
+}
+
+interface MentorApplicationTable {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  title: string;
+  company: string;
+  skills: string;
+  bio: string;
+  availability: string;
+  mentorship_goals: string;
+  experience: string;
+  expertise: string;
+  languages: string[];
+  specialization: string[];
+  motivation: string;
+  preferred_students: string | null;
+  additional_info: string | null;
+  linkedin_profile: string | null;
+  resume_url: string | null;
+  status: string;
+  created_at: Date;
+}
+
+// Update table definitions
+const userBadgesTable = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  badgeId: integer("badge_id").notNull(),
+  earnedAt: timestamp("earned_at"),
+  displayOnProfile: boolean("display_on_profile").default(true)
+}) satisfies PgTableWithColumns<any>;
+
+const contactRequestsTable = pgTable("contact_requests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  phone: text("phone"),
+  status: text("status").notNull().default('pending'),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+}) satisfies PgTableWithColumns<any>;
+
+const mentorApplicationsTable = pgTable("mentor_applications", {
+  id: serial("id").primaryKey(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  title: text("title").notNull(),
+  company: text("company").notNull(),
+  skills: text("skills").notNull(),
+  bio: text("bio").notNull(),
+  availability: text("availability").notNull(),
+  mentorship_goals: text("mentorship_goals").notNull(),
+  experience: text("experience").notNull(),
+  expertise: text("expertise").notNull(),
+  languages: text("languages").array().notNull(),
+  specialization: text("specialization").array().notNull(),
+  motivation: text("motivation").notNull(),
+  preferred_students: text("preferred_students"),
+  additional_info: text("additional_info"),
+  linkedin_profile: text("linkedin_profile"),
+  resume_url: text("resume_url"),
+  status: text("status").notNull().default('pending'),
+  created_at: timestamp("created_at").defaultNow().notNull()
+});
+
+// Helper function to convert comma-separated string to array
+function stringToArray(value: string | null): string[] {
+  if (!value) return [];
+  return value.split(',').map(s => s.trim()).filter(Boolean);
+}
 
 export class PgStorage implements IStorage {
   [x: string]: any;
+
   async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
     try {
-      const { email, subscriptionDate } = subscription;
-      const result = await db.execute(
-        sql`INSERT INTO newsletter_subscriptions (email, subscription_date) 
-            VALUES (${email}, ${subscriptionDate}) 
-            RETURNING *`
-      );
-      const rows = result as unknown as NewsletterSubscription[];
-      return rows[0];
+      const result = await db.insert(newsletterSubscriptionsTable).values(subscription).returning();
+      return result[0] as NewsletterSubscription;
     } catch (error) {
       console.error("Error creating newsletter subscription:", error);
       throw error;
@@ -57,11 +288,12 @@ export class PgStorage implements IStorage {
 
   async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null> {
     try {
-      const result = await db.execute<Record<string, unknown>>(
-        sql`SELECT * FROM newsletter_subscriptions WHERE LOWER(email) = LOWER(${email})`
-      );
-      const rows = result as unknown as NewsletterSubscription[];
-      return rows[0] || null;
+      const result = await db
+        .select()
+        .from(newsletterSubscriptionsTable)
+        .where(eq(newsletterSubscriptionsTable.email, email))
+        .limit(1);
+      return (result[0] as NewsletterSubscription) || null;
     } catch (error) {
       console.error("Error getting newsletter subscription:", error);
       return null;
@@ -70,13 +302,8 @@ export class PgStorage implements IStorage {
 
   async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
     try {
-      const result = await db.execute<Record<string, unknown>>(
-        sql`SELECT * FROM newsletter_subscriptions`
-      );
-      
-      // Return result as array
-      const rows = result as unknown as NewsletterSubscription[];
-      return Array.isArray(rows) ? rows : [];
+      const result = await db.select().from(newsletterSubscriptionsTable);
+      return result as NewsletterSubscription[];
     } catch (error) {
       console.error("Error getting all newsletter subscriptions:", error);
       return [];
@@ -85,75 +312,82 @@ export class PgStorage implements IStorage {
 
   // Users
   async getUser(id: number): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, id))
+      .limit(1);
+    return result[0] as User;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, username))
+      .limit(1);
+    return result[0] as User;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
+    return result[0] as User;
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(user).returning();
-    return result[0];
+    const result = await db.insert(usersTable).values(user).returning();
+    return result[0] as User;
   }
 
   async updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined> {
-    const result = await db.update(users).set(user).where(eq(users.id, id)).returning();
-    return result[0];
+    const result = await db
+      .update(usersTable)
+      .set(user)
+      .where(eq(usersTable.id, id))
+      .returning();
+    return result[0] as User;
   }
   
   // Courses
-  async getCourses(): Promise<Course[]> {
-    return await db.select().from(courses);
-  }
-
   async getCourse(id: number): Promise<Course | undefined> {
-    const result = await db.select().from(courses).where(eq(courses.id, id)).limit(1);
-    return result[0];
-  }
-
-  async createCourse(course: InsertCourse): Promise<Course> {
-    const result = await db.insert(courses).values(course).returning();
-    return result[0];
-  }
-
-  async getUserCourses(userId: number): Promise<Course[]> {
-    // Join enrollments with courses to get the courses a user is enrolled in
     const result = await db
       .select()
-      .from(courses)
-      .innerJoin(enrollments, eq(enrollments.courseId, courses.id))
-      .where(eq(enrollments.userId, userId));
+      .from(coursesTable)
+      .where(eq(coursesTable.id, id))
+      .limit(1);
+    return result[0] as Course;
+  }
 
-    return result.map(r => ({
-      id: r.courses.id,
-      title: r.courses.title,
-      description: r.courses.description,
-      imageUrl: r.courses.imageUrl,
-      category: r.courses.category,
-      provider: r.courses.provider,
-      isPartnerCourse: r.courses.isPartnerCourse,
-      contactInfo: r.courses.contactInfo,
-      progress: r.enrollments.progress
-    }));
+  async getCourses(): Promise<Course[]> {
+    const result = await db.select().from(coursesTable);
+    return result as Course[];
+  }
+
+  async getEnrolledCourses(userId: number): Promise<Course[]> {
+    const result = await db
+      .select()
+      .from(coursesTable)
+      .innerJoin(enrollmentsTable, eq(coursesTable.id, enrollmentsTable.courseId))
+      .where(eq(enrollmentsTable.userId, userId));
+    return result.map(row => ({
+      ...row.courses,
+      progress: row.enrollments.progress
+    })) as Course[];
   }
   
   // Enrollments
   async getEnrollment(userId: number, courseId: number): Promise<Enrollment | undefined> {
     const result = await db
       .select()
-      .from(enrollments)
+      .from(enrollmentsTable)
       .where(
         and(
-          eq(enrollments.userId, userId),
-          eq(enrollments.courseId, courseId)
+          eq(enrollmentsTable.userId, userId),
+          eq(enrollmentsTable.courseId, courseId)
         )
       )
       .limit(1);
@@ -162,291 +396,494 @@ export class PgStorage implements IStorage {
   }
 
   async createEnrollment(enrollment: InsertEnrollment): Promise<Enrollment> {
-    const result = await db.insert(enrollments).values(enrollment).returning();
-    return result[0];
+    const result = await db.insert(enrollmentsTable as any).values({
+      userId: enrollment.userId,
+      courseId: enrollment.courseId,
+      progress: enrollment.progress || 0,
+      enrollmentDate: new Date(),
+      completed: enrollment.completed || false
+    }).returning();
+
+    const enrollmentResult = {
+      id: result[0].id,
+      userId: result[0].userId,
+      courseId: result[0].courseId,
+      progress: result[0].progress,
+      completed: result[0].completed
+    };
+
+    return enrollmentResult as Enrollment;
   }
 
   async updateEnrollmentProgress(userId: number, courseId: number, progress: number): Promise<Enrollment | undefined> {
     const result = await db
-      .update(enrollments)
+      .update(enrollmentsTable)
       .set({ progress })
       .where(
         and(
-          eq(enrollments.userId, userId),
-          eq(enrollments.courseId, courseId)
+          eq(enrollmentsTable.userId, userId),
+          eq(enrollmentsTable.courseId, courseId)
         )
       )
       .returning();
     
-    return result[0];
+    return result[0] as Enrollment;
   }
   
   // Opportunities
   async getOpportunities(): Promise<Opportunity[]> {
-    return await db.select().from(opportunities);
+    const result = await db
+      .select({
+        id: opportunitiesTable.id,
+        title: opportunitiesTable.title,
+        description: opportunitiesTable.description,
+        duration: opportunitiesTable.duration,
+        type: opportunitiesTable.type,
+        company: opportunitiesTable.company,
+        logoUrl: opportunitiesTable.logoUrl,
+        location: opportunitiesTable.location,
+        deadline: opportunitiesTable.deadline
+      })
+      .from(opportunitiesTable as any);
+    return result.map(row => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      duration: row.duration,
+      type: row.type,
+      company: row.company,
+      logoUrl: row.logoUrl,
+      location: row.location,
+      deadline: row.deadline
+    }));
   }
 
   async getOpportunity(id: number): Promise<Opportunity | undefined> {
-    const result = await db.select().from(opportunities).where(eq(opportunities.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select({
+        id: opportunitiesTable.id,
+        title: opportunitiesTable.title,
+        description: opportunitiesTable.description,
+        duration: opportunitiesTable.duration,
+        type: opportunitiesTable.type,
+        company: opportunitiesTable.company,
+        logoUrl: opportunitiesTable.logoUrl,
+        location: opportunitiesTable.location,
+        deadline: opportunitiesTable.deadline
+      })
+      .from(opportunitiesTable as any)
+      .where(eq(opportunitiesTable.id as any, id))
+      .limit(1);
+    return result[0] ? {
+      id: result[0].id,
+      title: result[0].title,
+      description: result[0].description,
+      duration: result[0].duration,
+      type: result[0].type,
+      company: result[0].company,
+      logoUrl: result[0].logoUrl,
+      location: result[0].location,
+      deadline: result[0].deadline
+    } : undefined;
   }
 
   async createOpportunity(opportunity: InsertOpportunity): Promise<Opportunity> {
-    const result = await db.insert(opportunities).values(opportunity).returning();
-    return result[0];
+    const result = await db.insert(opportunitiesTable as any).values({
+      title: opportunity.title,
+      description: opportunity.description,
+      duration: opportunity.duration,
+      type: opportunity.type,
+      company: opportunity.company,
+      logoUrl: opportunity.logoUrl,
+      location: opportunity.location,
+      deadline: opportunity.deadline
+    }).returning();
+    return {
+      id: result[0].id,
+      title: result[0].title,
+      description: result[0].description,
+      duration: result[0].duration,
+      type: result[0].type,
+      company: result[0].company,
+      logoUrl: result[0].logoUrl,
+      location: result[0].location,
+      deadline: result[0].deadline
+    };
   }
   
   // Mentors
   async getMentors(): Promise<Mentor[]> {
-    return await db.select().from(mentors);
+    const result = await db.select().from(mentorsTable);
+    return result as Mentor[];
   }
 
   async getMentor(id: number): Promise<Mentor | undefined> {
-    const result = await db.select().from(mentors).where(eq(mentors.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(mentorsTable)
+      .where(eq(mentorsTable.id, id))
+      .limit(1);
+    return result[0] as Mentor;
   }
 
   async createMentor(mentor: InsertMentor): Promise<Mentor> {
-    const result = await db.insert(mentors).values(mentor).returning();
-    return result[0];
+    const result = await db.insert(mentorsTable).values(mentor).returning();
+    return result[0] as Mentor;
   }
   
   // Articles
   async getArticles(): Promise<Article[]> {
-    return await db.select().from(articles);
+    const result = await db.select().from(articlesTable);
+    return result as Article[];
   }
 
   async getArticle(id: number): Promise<Article | undefined> {
-    const result = await db.select().from(articles).where(eq(articles.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(articlesTable)
+      .where(eq(articlesTable.id, id))
+      .limit(1);
+    return result[0] as Article;
   }
 
   async createArticle(article: InsertArticle): Promise<Article> {
-    const result = await db.insert(articles).values(article).returning();
-    return result[0];
+    const result = await db.insert(articlesTable).values(article).returning();
+    return result[0] as Article;
   }
   
   // Certificates
   async getUserCertificates(userId: number): Promise<Certificate[]> {
-    return await db.select().from(certificates).where(eq(certificates.userId, userId));
+    const result = await db
+      .select()
+      .from(certificatesTable)
+      .where(eq(certificatesTable.userId, userId));
+    return result as Certificate[];
   }
 
   async getCertificate(id: number): Promise<Certificate | undefined> {
-    const result = await db.select().from(certificates).where(eq(certificates.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select()
+      .from(certificatesTable)
+      .where(eq(certificatesTable.id, id))
+      .limit(1);
+    return result[0] as Certificate;
   }
 
   async createCertificate(certificate: InsertCertificate): Promise<Certificate> {
-    const result = await db.insert(certificates).values(certificate).returning();
-    return result[0];
+    const result = await db.insert(certificatesTable).values(certificate).returning();
+    return result[0] as Certificate;
   }
   
   // Stats
   async getUserStats(userId: number): Promise<Stats | undefined> {
-    const result = await db.select().from(stats).where(eq(stats.userId, userId)).limit(1);
-    return result[0];
+    const result = await db
+      .select({
+        id: statsTable.id,
+        userId: statsTable.userId,
+        coursesInProgress: statsTable.coursesInProgress,
+        certificatesEarned: statsTable.certificatesEarned,
+        mentorSessions: statsTable.mentorSessions,
+        opportunitiesSaved: statsTable.opportunitiesSaved
+      })
+      .from(statsTable)
+      .where(eq(statsTable.userId, userId))
+      .limit(1);
+    return result[0] as Stats;
   }
 
   async createUserStats(userStats: InsertStats): Promise<Stats> {
-    const result = await db.insert(stats).values(userStats).returning();
-    return result[0];
+    const result = await db.insert(statsTable).values({
+      userId: userStats.userId,
+      coursesInProgress: userStats.coursesInProgress || 0,
+      certificatesEarned: userStats.certificatesEarned || 0,
+      mentorSessions: userStats.mentorSessions || 0,
+      opportunitiesSaved: userStats.opportunitiesSaved || 0
+    }).returning();
+    return result[0] as Stats;
   }
 
   async updateUserStats(userId: number, userStats: Partial<InsertStats>): Promise<Stats | undefined> {
     const result = await db
-      .update(stats)
-      .set(userStats)
-      .where(eq(stats.userId, userId))
+      .update(statsTable)
+      .set({
+        ...userStats,
+        userId
+      })
+      .where(eq(statsTable.userId, userId))
       .returning();
     
-    return result[0];
+    return result[0] as Stats;
   }
   
   // Achievement methods
   async getAchievements(): Promise<Achievement[]> {
-    return await db.select().from(achievements);
+    const result = await db
+      .select({
+        id: achievementsTable.id,
+        name: achievementsTable.name,
+        description: achievementsTable.description,
+        category: achievementsTable.category,
+        iconUrl: achievementsTable.iconUrl,
+        requirement: achievementsTable.requirement,
+        requiredValue: achievementsTable.requiredValue,
+        points: achievementsTable.points,
+        isHidden: achievementsTable.isHidden,
+        createdAt: achievementsTable.createdAt
+      })
+      .from(achievementsTable);
+    return result as Achievement[];
   }
   
   async getAchievement(id: number): Promise<Achievement | undefined> {
-    const result = await db.select().from(achievements).where(eq(achievements.id, id)).limit(1);
-    return result[0];
+    const result = await db
+      .select({
+        id: achievementsTable.id,
+        name: achievementsTable.name,
+        description: achievementsTable.description,
+        category: achievementsTable.category,
+        iconUrl: achievementsTable.iconUrl,
+        requirement: achievementsTable.requirement,
+        requiredValue: achievementsTable.requiredValue,
+        points: achievementsTable.points,
+        isHidden: achievementsTable.isHidden,
+        createdAt: achievementsTable.createdAt
+      })
+      .from(achievementsTable)
+      .where(eq(achievementsTable.id, id))
+      .limit(1);
+    return result[0] as Achievement;
   }
   
   async getAchievementByName(name: string): Promise<Achievement | undefined> {
-    const result = await db.select().from(achievements).where(eq(achievements.name, name)).limit(1);
+    const result = await db.select().from(achievementsTable).where(eq(achievementsTable.name, name)).limit(1);
     return result[0];
   }
   
   async createAchievement(achievement: InsertAchievement): Promise<Achievement> {
-    const result = await db.insert(achievements).values(achievement).returning();
-    return result[0];
+    const result = await db.insert(achievementsTable).values({
+      name: achievement.name,
+      description: achievement.description,
+      category: achievement.category,
+      iconUrl: achievement.iconUrl,
+      requirement: achievement.requirement,
+      requiredValue: achievement.requiredValue,
+      points: achievement.points,
+      isHidden: achievement.isHidden,
+      createdAt: new Date()
+    }).returning();
+    return result[0] as Achievement;
   }
   
   async getUserAchievements(userId: number): Promise<(UserAchievement & { achievement: Achievement })[]> {
     const result = await db
-      .select()
-      .from(userAchievements)
-      .innerJoin(achievements, eq(userAchievements.achievementId, achievements.id))
-      .where(eq(userAchievements.userId, userId));
-    
-    return result.map(r => ({
-      ...r.user_achievements,
-      achievement: r.achievements
+      .select({
+        id: userAchievementsTable.id,
+        userId: userAchievementsTable.userId,
+        achievementId: userAchievementsTable.achievementId,
+        progress: userAchievementsTable.progress,
+        completedValue: userAchievementsTable.completedValue,
+        completedAt: userAchievementsTable.completedAt,
+        achievement: {
+          id: achievementsTable.id,
+          name: achievementsTable.name,
+          description: achievementsTable.description,
+          category: achievementsTable.category,
+          iconUrl: achievementsTable.iconUrl,
+          requirement: achievementsTable.requirement,
+          requiredValue: achievementsTable.requiredValue,
+          points: achievementsTable.points,
+          isHidden: achievementsTable.isHidden,
+          createdAt: achievementsTable.createdAt
+        }
+      })
+      .from(userAchievementsTable as any)
+      .leftJoin(
+        achievementsTable as any,
+        eq(userAchievementsTable.achievementId as any, achievementsTable.id as any)
+      )
+      .where(eq(userAchievementsTable.userId as any, userId));
+
+    const achievements = result.map(row => ({
+      id: row.id,
+      userId: row.userId,
+      achievementId: row.achievementId,
+      progress: row.progress,
+      completedValue: row.completedValue,
+      earnedAt: row.completedAt,
+      isComplete: row.completedAt !== null,
+      achievement: row.achievement
     }));
+
+    return achievements as (UserAchievement & { achievement: Achievement })[];
   }
   
   async getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined> {
-    const result = await db
+    const [result] = await db
       .select()
-      .from(userAchievements)
-      .where(
-        and(
-          eq(userAchievements.userId, userId),
-          eq(userAchievements.achievementId, achievementId)
-        )
-      )
+      .from(userAchievementsTable)
+      .where(sql`${userAchievementsTable.userId} = ${userId} AND ${userAchievementsTable.achievementId} = ${achievementId}`)
       .limit(1);
     
-    return result[0];
+    if (!result) return undefined;
+    
+    return {
+      id: result.id,
+      userId: result.userId,
+      achievementId: result.achievementId,
+      progress: result.progress,
+      completedValue: result.completedValue,
+      earnedAt: result.completedAt,
+      isComplete: result.completedAt !== null
+    };
   }
   
-  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
-    const result = await db.insert(userAchievements).values(userAchievement).returning();
+  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement & { achievement: Achievement }> {
+    const result = await db.insert(userAchievementsTable).values({
+      userId: userAchievement.userId,
+      achievementId: userAchievement.achievementId,
+      progress: userAchievement.progress || 0,
+      completedValue: userAchievement.completedValue,
+      completedAt: userAchievement.isComplete ? new Date() : null
+    }).returning();
+
+    const achievement = await this.getAchievement(userAchievement.achievementId);
     
-    // Check for badge qualification if achievement is complete
-    if (userAchievement.isComplete) {
-      await this.checkAndAwardBadges(userAchievement.userId);
+    if (!achievement) {
+      throw new Error(`Achievement with id ${userAchievement.achievementId} not found`);
     }
-    
-    return result[0];
+
+    return {
+      ...result[0],
+      isComplete: result[0].completedAt !== null,
+      earnedAt: result[0].completedAt,
+      achievement
+    } as UserAchievement & { achievement: Achievement };
   }
   
-  async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined> {
-    const userAchievement = await this.getUserAchievementProgress(userId, achievementId);
-    if (!userAchievement) return undefined;
-    
-    const achievement = await this.getAchievement(achievementId);
-    if (!achievement) return undefined;
-    
-    // If progress meets the required value, mark as complete
-    const isComplete = progress >= (achievement.requiredValue ?? 1);
-    const wasComplete = userAchievement.isComplete;
-    
+  async updateUserAchievement(userId: number, achievementId: number, progress: number): Promise<(UserAchievement & { achievement: Achievement }) | undefined> {
     const result = await db
-      .update(userAchievements)
-      .set({ 
+      .update(userAchievementsTable)
+      .set({
         progress,
-        isComplete,
-        earnedAt: isComplete && !wasComplete ? new Date() : userAchievement.earnedAt,
-        completedValue: isComplete ? progress : userAchievement.completedValue
+        completedAt: progress >= 100 ? new Date() : null
       })
       .where(
         and(
-          eq(userAchievements.userId, userId),
-          eq(userAchievements.achievementId, achievementId)
+          eq(userAchievementsTable.userId, userId),
+          eq(userAchievementsTable.achievementId, achievementId)
         )
       )
       .returning();
-    
-    // Check for badge qualification if achievement is newly completed
-    if (isComplete && !wasComplete) {
-      await this.checkAndAwardBadges(userId);
+
+    if (!result[0]) {
+      return undefined;
     }
+
+    const achievement = await this.getAchievement(achievementId);
     
-    return result[0];
+    if (!achievement) {
+      return undefined;
+    }
+
+    return {
+      ...result[0],
+      isComplete: result[0].completedAt !== null,
+      earnedAt: result[0].completedAt,
+      achievement
+    } as UserAchievement & { achievement: Achievement };
   }
   
   async completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
-    const userAchievement = await this.getUserAchievementProgress(userId, achievementId);
-    
-    if (!userAchievement) {
-      // If the user doesn't have this achievement tracked yet, create it
-      const achievement = await this.getAchievement(achievementId);
-      if (!achievement) return undefined;
-      
-      return this.createUserAchievement({
-        userId,
-        achievementId,
-        progress: completedValue,
-        isComplete: true,
-        completedValue
-      });
-    }
-    
-    const result = await db
-      .update(userAchievements)
+    const [result] = await db
+      .update(userAchievementsTable)
       .set({
         progress: completedValue,
-        isComplete: true,
-        earnedAt: new Date(),
-        completedValue
+        completedAt: new Date()
       })
-      .where(
-        and(
-          eq(userAchievements.userId, userId),
-          eq(userAchievements.achievementId, achievementId)
-        )
-      )
+      .where(sql`${userAchievementsTable.userId} = ${userId} AND ${userAchievementsTable.achievementId} = ${achievementId}`)
       .returning();
     
-    // Check for badge qualification
-    await this.checkAndAwardBadges(userId);
+    if (!result) return undefined;
     
-    return result[0];
+    return {
+      id: result.id,
+      userId: result.userId,
+      achievementId: result.achievementId,
+      progress: result.progress,
+      completedValue: result.completedValue,
+      earnedAt: result.completedAt,
+      isComplete: result.completedAt !== null
+    };
   }
   
   // Badge methods
   async getBadges(): Promise<Badge[]> {
-    return await db.select().from(badges);
+    return await db.select().from(badgesTable);
   }
   
   async getBadge(id: number): Promise<Badge | undefined> {
-    const result = await db.select().from(badges).where(eq(badges.id, id)).limit(1);
+    const result = await db.select().from(badgesTable).where(eq(badgesTable.id, id)).limit(1);
     return result[0];
   }
   
   async getBadgeByName(name: string): Promise<Badge | undefined> {
-    const result = await db.select().from(badges).where(eq(badges.name, name)).limit(1);
+    const result = await db.select().from(badgesTable).where(eq(badgesTable.name, name)).limit(1);
     return result[0];
   }
   
   async createBadge(badge: InsertBadge): Promise<Badge> {
-    const result = await db.insert(badges).values(badge).returning();
+    const result = await db.insert(badgesTable).values(badge).returning();
     return result[0];
   }
   
   async getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge })[]> {
     const result = await db
-      .select()
-      .from(userBadges)
-      .innerJoin(badges, eq(userBadges.badgeId, badges.id))
-      .where(eq(userBadges.userId, userId));
+      .select({
+        id: userBadgesTable.id,
+        userId: userBadgesTable.userId,
+        badgeId: userBadgesTable.badgeId,
+        earnedAt: userBadgesTable.earnedAt,
+        displayOnProfile: userBadgesTable.displayOnProfile,
+        badge: badgesTable
+      })
+      .from(userBadgesTable)
+      .innerJoin(
+        badgesTable,
+        eq(userBadgesTable.badgeId, badgesTable.id)
+      )
+      .where(eq(userBadgesTable.userId, userId));
     
     return result.map(r => ({
-      ...r.user_badges,
-      badge: r.badges
+      id: r.id,
+      userId: r.userId,
+      badgeId: r.badgeId,
+      earnedAt: r.earnedAt || null,
+      displayOnProfile: r.displayOnProfile,
+      badge: r.badge
     }));
   }
   
   async awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge> {
     // Check if user already has this badge
-    const existing = await db
+    const [existing] = await db
       .select()
-      .from(userBadges)
-      .where(
-        and(
-          eq(userBadges.userId, userId),
-          eq(userBadges.badgeId, badgeId)
-        )
-      )
+      .from(userBadgesTable)
+      .where(eq(userBadgesTable.userId, userId))
+      .where(eq(userBadgesTable.badgeId, badgeId))
       .limit(1);
     
-    if (existing.length > 0) {
-      return existing[0];
+    if (existing) {
+      return {
+        id: existing.id,
+        userId: existing.userId,
+        badgeId: existing.badgeId,
+        earnedAt: existing.earnedAt || null,
+        displayOnProfile: existing.displayOnProfile
+      };
     }
     
-    const result = await db
-      .insert(userBadges)
+    const [result] = await db
+      .insert(userBadgesTable)
       .values({
         userId,
         badgeId,
@@ -455,22 +892,32 @@ export class PgStorage implements IStorage {
       })
       .returning();
     
-    return result[0];
+    return {
+      id: result.id,
+      userId: result.userId,
+      badgeId: result.badgeId,
+      earnedAt: result.earnedAt || null,
+      displayOnProfile: result.displayOnProfile
+    };
   }
   
   async updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined> {
-    const result = await db
-      .update(userBadges)
+    const [result] = await db
+      .update(userBadgesTable)
       .set({ displayOnProfile })
-      .where(
-        and(
-          eq(userBadges.userId, userId),
-          eq(userBadges.badgeId, badgeId)
-        )
-      )
+      .where(eq(userBadgesTable.userId, userId))
+      .where(eq(userBadgesTable.badgeId, badgeId))
       .returning();
     
-    return result[0];
+    if (!result) return undefined;
+
+    return {
+      id: result.id,
+      userId: result.userId,
+      badgeId: result.badgeId,
+      earnedAt: result.earnedAt || null,
+      displayOnProfile: result.displayOnProfile
+    };
   }
   
   async checkAndAwardBadges(userId: number): Promise<Badge[]> {
@@ -506,14 +953,79 @@ export class PgStorage implements IStorage {
   }
 
   async createContactRequest(contactRequest: InsertContactRequest): Promise<ContactRequest> {
-    const [request] = await db.insert(contactRequests).values(contactRequest).returning();
-    return request;
+    const [result] = await db
+      .insert(contactRequestsTable)
+      .values({
+        ...contactRequest,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    return {
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      subject: result.subject,
+      message: result.message,
+      phone: result.phone,
+      status: result.status,
+      createdAt: result.createdAt
+    };
   }
 
   async createMentorApplication(application: InsertMentorApplication): Promise<MentorApplication> {
     try {
-      const result = await db.insert(mentorApplications).values(application).returning();
-      return result[0];
+      const [result] = await db
+        .insert(mentorApplicationsTable)
+        .values({
+          first_name: application.first_name,
+          last_name: application.last_name,
+          email: application.email,
+          phone: application.phone,
+          title: application.title,
+          company: application.company,
+          skills: application.skills,
+          bio: application.bio,
+          availability: application.availability,
+          mentorship_goals: application.mentorship_goals,
+          experience: application.experience,
+          expertise: application.expertise,
+          languages: application.languages,
+          specialization: application.specialization,
+          motivation: application.motivation,
+          preferred_students: application.preferred_students,
+          additional_info: application.additional_info,
+          linkedin_profile: application.linkedin_profile,
+          resume_url: application.resume_url || null,
+          status: 'pending',
+          created_at: new Date()
+        })
+        .returning();
+      
+      return {
+        id: result.id,
+        first_name: result.first_name,
+        last_name: result.last_name,
+        email: result.email,
+        phone: result.phone,
+        title: result.title,
+        company: result.company,
+        skills: result.skills,
+        bio: result.bio,
+        availability: result.availability,
+        mentorship_goals: result.mentorship_goals,
+        experience: result.experience,
+        expertise: result.expertise,
+        languages: result.languages as string[],
+        specialization: result.specialization as string[],
+        motivation: result.motivation,
+        preferred_students: result.preferred_students,
+        additional_info: result.additional_info,
+        linkedin_profile: result.linkedin_profile,
+        resume_url: result.resume_url,
+        status: result.status,
+        created_at: result.created_at
+      };
     } catch (error) {
       console.error("Error creating mentor application:", error);
       throw error;
@@ -522,8 +1034,38 @@ export class PgStorage implements IStorage {
 
   async getMentorApplicationByEmail(email: string): Promise<MentorApplication | null> {
     try {
-      const result = await db.select().from(mentorApplications).where(eq(mentorApplications.email, email)).limit(1);
-      return result[0] || null;
+      const [result] = await db
+        .select()
+        .from(mentorApplicationsTable)
+        .where(eq(mentorApplicationsTable.email, email))
+        .limit(1);
+
+      if (!result) return null;
+
+      return {
+        id: result.id,
+        first_name: result.first_name,
+        last_name: result.last_name,
+        email: result.email,
+        phone: result.phone,
+        title: result.title,
+        company: result.company,
+        skills: result.skills,
+        bio: result.bio,
+        availability: result.availability,
+        mentorship_goals: result.mentorship_goals,
+        experience: result.experience,
+        expertise: result.expertise,
+        languages: result.languages as string[],
+        specialization: result.specialization as string[],
+        motivation: result.motivation,
+        preferred_students: result.preferred_students,
+        additional_info: result.additional_info,
+        linkedin_profile: result.linkedin_profile,
+        resume_url: result.resume_url,
+        status: result.status,
+        created_at: result.created_at
+      };
     } catch (error) {
       console.error("Error getting mentor application:", error);
       return null;
@@ -532,7 +1074,31 @@ export class PgStorage implements IStorage {
 
   async getAllMentorApplications(): Promise<MentorApplication[]> {
     try {
-      return await db.select().from(mentorApplications);
+      const results = await db.select().from(mentorApplicationsTable);
+      return results.map(result => ({
+        id: result.id,
+        first_name: result.first_name,
+        last_name: result.last_name,
+        email: result.email,
+        phone: result.phone,
+        title: result.title,
+        company: result.company,
+        skills: result.skills,
+        bio: result.bio,
+        availability: result.availability,
+        mentorship_goals: result.mentorship_goals,
+        experience: result.experience,
+        expertise: result.expertise,
+        languages: result.languages as string[],
+        specialization: result.specialization as string[],
+        motivation: result.motivation,
+        preferred_students: result.preferred_students,
+        additional_info: result.additional_info,
+        linkedin_profile: result.linkedin_profile,
+        resume_url: result.resume_url,
+        status: result.status,
+        created_at: result.created_at
+      }));
     } catch (error) {
       console.error("Error getting all mentor applications:", error);
       return [];
@@ -541,16 +1107,130 @@ export class PgStorage implements IStorage {
 
   async updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication | null> {
     try {
-      const result = await db
-        .update(mentorApplications)
+      const [result] = await db
+        .update(mentorApplicationsTable)
         .set({ status })
-        .where(eq(mentorApplications.id, id))
+        .where(eq(mentorApplicationsTable.id, id))
         .returning();
-      return result[0] || null;
+
+      if (!result) return null;
+
+      return {
+        id: result.id,
+        first_name: result.first_name,
+        last_name: result.last_name,
+        email: result.email,
+        phone: result.phone,
+        title: result.title,
+        company: result.company,
+        skills: result.skills,
+        bio: result.bio,
+        availability: result.availability,
+        mentorship_goals: result.mentorship_goals,
+        experience: result.experience,
+        expertise: result.expertise,
+        languages: result.languages as string[],
+        specialization: result.specialization as string[],
+        motivation: result.motivation,
+        preferred_students: result.preferred_students,
+        additional_info: result.additional_info,
+        linkedin_profile: result.linkedin_profile,
+        resume_url: result.resume_url,
+        status: result.status,
+        created_at: result.created_at
+      };
     } catch (error) {
       console.error("Error updating mentor application status:", error);
       return null;
     }
+  }
+
+  // Add missing methods
+  async createCourse(course: InsertCourse): Promise<Course> {
+    const result = await db.insert(coursesTable).values({
+      title: course.title,
+      description: course.description,
+      imageUrl: course.imageUrl,
+      category: course.category,
+      provider: course.provider,
+      isPartnerCourse: course.isPartnerCourse || false,
+      contactInfo: course.contactInfo
+    }).returning();
+    return result[0] as Course;
+  }
+
+  async getUserCourses(userId: number): Promise<Course[]> {
+    const result = await db
+      .select({
+        id: coursesTable.id,
+        title: coursesTable.title,
+        description: coursesTable.description,
+        imageUrl: coursesTable.imageUrl,
+        category: coursesTable.category,
+        provider: coursesTable.provider,
+        isPartnerCourse: coursesTable.isPartnerCourse,
+        contactInfo: coursesTable.contactInfo,
+        progress: enrollmentsTable.progress,
+        completed: enrollmentsTable.completed
+      })
+      .from(coursesTable)
+      .leftJoin(
+        enrollmentsTable,
+        eq(coursesTable.id, enrollmentsTable.courseId)
+      )
+      .where(eq(enrollmentsTable.userId, userId));
+
+    return result.map(row => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      imageUrl: row.imageUrl,
+      category: row.category,
+      provider: row.provider,
+      isPartnerCourse: row.isPartnerCourse || false,
+      contactInfo: row.contactInfo,
+      progress: row.progress || 0,
+      completed: row.completed || false
+    })) as Course[];
+  }
+
+  async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<(UserAchievement & { achievement: Achievement }) | undefined> {
+    const result = await db
+      .update(userAchievementsTable as any)
+      .set({
+        progress,
+        completedAt: progress >= 100 ? new Date() : null
+      })
+      .where(
+        and(
+          eq(userAchievementsTable.userId as any, userId),
+          eq(userAchievementsTable.achievementId as any, achievementId)
+        )
+      )
+      .returning();
+
+    if (!result[0]) {
+      return undefined;
+    }
+
+    const achievement = await this.getAchievement(achievementId);
+    
+    if (!achievement) {
+      return undefined;
+    }
+
+    const userAchievement = {
+      id: result[0].id,
+      userId: result[0].userId,
+      achievementId: result[0].achievementId,
+      progress: result[0].progress,
+      completedValue: result[0].completedValue,
+      earnedAt: result[0].completedAt,
+      isComplete: result[0].completedAt !== null,
+      achievement
+    };
+
+    return userAchievement as UserAchievement & { achievement: Achievement };
   }
 }
 

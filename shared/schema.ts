@@ -515,45 +515,77 @@ export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
 // Mentor Application Schema
 export const mentorApplications = pgTable('mentor_applications', {
   id: serial('id').primaryKey(),
-  firstName: text('first_name').notNull(),
-  lastName: text('last_name').notNull(),
+  first_name: text('first_name').notNull(),
+  last_name: text('last_name').notNull(),
   email: text('email').notNull(),
   phone: text('phone').notNull(),
   title: text('title').notNull(),
   company: text('company').notNull(),
-  experience: text('experience').notNull(),
-  specialization: text('specialization').notNull(),
   skills: text('skills').notNull(),
-  languages: text('languages').array(),
   bio: text('bio').notNull(),
-  motivation: text('motivation').notNull(),
   availability: text('availability').notNull(),
-  resumeUrl: text('resume_url'),
-  linkedinProfile: text('linkedin_profile'),
+  mentorship_goals: text('mentorship_goals').notNull(),
+  experience: text('experience').notNull(),
+  expertise: text('expertise').notNull(),
+  languages: text('languages').array().notNull(),
+  specialization: text('specialization').array().notNull(),
+  motivation: text('motivation').notNull(),
+  preferred_students: text('preferred_students'),
+  additional_info: text('additional_info'),
+  resume_url: text('resume_url'),
+  linkedin_profile: text('linkedin_profile'),
   status: text('status').default('pending').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  created_at: timestamp('created_at').defaultNow().notNull()
 });
 
-export const insertMentorApplicationSchema = createInsertSchema(mentorApplications).pick({
-  firstName: true,
-  lastName: true,
-  email: true,
-  phone: true,
-  title: true,
-  company: true,
-  experience: true,
-  specialization: true,
-  skills: true,
-  languages: true,
-  bio: true,
-  motivation: true,
-  availability: true,
-  resumeUrl: true,
-  linkedinProfile: true,
-  status: true
+export const insertMentorApplicationSchema = z.object({
+  first_name: z.string(),
+  last_name: z.string(),
+  email: z.string().email(),
+  phone: z.string(),
+  title: z.string(),
+  company: z.string(),
+  skills: z.string(),
+  bio: z.string(),
+  availability: z.string(),
+  mentorship_goals: z.string(),
+  experience: z.string(),
+  expertise: z.string(),
+  languages: z.array(z.string()),
+  specialization: z.array(z.string()),
+  motivation: z.string(),
+  preferred_students: z.string().optional(),
+  additional_info: z.string().optional(),
+  resume_url: z.string().optional(),
+  linkedin_profile: z.string().optional(),
+  status: z.string().default('pending')
 });
 
-export type MentorApplication = typeof mentorApplications.$inferSelect;
+export type MentorApplication = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  title: string;
+  company: string;
+  skills: string;
+  bio: string;
+  availability: string;
+  mentorship_goals: string;
+  experience: string;
+  expertise: string;
+  languages: string[];
+  specialization: string[];
+  motivation: string;
+  preferred_students: string | null;
+  additional_info: string | null;
+  resume_url: string | null;
+  linkedin_profile: string | null;
+  status: string;
+  created_at: Date;
+};
+
 export type InsertMentorApplication = z.infer<typeof insertMentorApplicationSchema>;
 
 // Добавим в IStorage

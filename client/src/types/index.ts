@@ -64,3 +64,6 @@ export interface ApiResponse<T> {
   error?: string;
   message?: string;
 } 
+
+export * from './internship';
+export * from './message'; 

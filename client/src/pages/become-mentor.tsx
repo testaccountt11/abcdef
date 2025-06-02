@@ -509,13 +509,6 @@ export default function BecomeMentor() {
       });
       setIsSuccess(true);
       
-      // Show success message with more details
-      toast({
-        title: t_local.successTitle,
-        description: t_local.successMessage,
-        variant: "default",
-      });
-
       // Заменяем форму на красивое сообщение об успешной отправке
       const formElement = document.getElementById('mentor-application-form');
       if (formElement) {
@@ -1099,35 +1092,6 @@ export default function BecomeMentor() {
           </Card>
         </div>
       </div>
-      
-      {/* Минималистичное всплывающее уведомление */}
-      {isSuccess && submittedFormData && (
-        <div className="fixed bottom-4 right-4 z-50 bg-card border border-primary/20 rounded-lg p-4 shadow-md animate-in fade-in-0 slide-in-from-right-10 duration-300">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 p-2 rounded-full">
-              <Check className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-semibold text-sm">
-                {language === 'ru' ? 'Заявка принята!' : 
-                 language === 'kz' ? 'Өтініш қабылданды!' : 
-                 'Application accepted!'}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {`${submittedFormData.firstName} ${submittedFormData.lastName} (${submittedFormData.email})`}
-              </p>
-            </div>
-            <Button 
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 rounded-full ml-2"
-              onClick={() => setIsSuccess(false)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-      )}
     </PublicPageLayout>
   );
 }

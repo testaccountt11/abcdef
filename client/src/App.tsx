@@ -2,6 +2,9 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { TranslationsProvider } from "@/contexts/TranslationsContext";
+import { AuthProvider, useAuthContext } from "@/contexts/AuthContext";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Courses from "@/pages/Courses";
@@ -16,14 +19,9 @@ import MyCertificates from "@/pages/MyCertificates";
 import Achievements from "@/pages/Achievements";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { useEffect } from "react";
 import Landing from "@/pages/Landing";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
-
-// Import public pages
 import PublicAboutUs from "@/pages/publicaboutus";
 import PublicCourses from "@/pages/publiccourses";
 import PublicInternships from "@/pages/publicinternships";
@@ -32,55 +30,41 @@ import PublicStudyTips from "@/pages/publicstudytips";
 import PublicPrivacyPolicy from "@/pages/publicprivacypolicy";
 import PublicTermsOfUse from "@/pages/publictermsofuse";
 import BecomeMentor from "@/pages/become-mentor";
+import PublicOpportunities from "@/pages/PublicOpportunities";
+import { useEffect } from "react";
 
 // List of public routes that don't require authentication
 const PUBLIC_ROUTES = ['/', '/login', '/register', '/publicaboutus', '/publiccourses', '/publicinternships', '/publicmentors', '/publicstudytips', '/publicprivacypolicy', '/publictermsofuse', '/become-mentor'];
 
-function Router() {
+// List of routes that should redirect to dashboard when logged in
+const REDIRECT_ROUTES = ['/login', '/register'];
+
+function AppContent() {
   const [location, setLocation] = useLocation();
+  const { user, loading } = useAuthContext();
 
-  // Redirect to login if not on public routes and not authenticated
+  // Handle authentication redirects
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/user');
-        
-        // If not authenticated and not on a public route, redirect to login
-        if (!response.ok && !PUBLIC_ROUTES.some(route => location.startsWith(route))) {
-          setLocation('/login');
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        // Only redirect if not on a public route
-        if (!PUBLIC_ROUTES.some(route => location.startsWith(route))) {
-          setLocation('/login');
-        }
+    if (!loading) {
+      if (user && REDIRECT_ROUTES.includes(location)) {
+        setLocation('/dashboard');
+      } else if (!user && !PUBLIC_ROUTES.includes(location)) {
+        setLocation('/login');
       }
-    };
+    }
+  }, [user, loading, location, setLocation]);
 
-    checkAuth();
-  }, [location, setLocation]);
+  // Show loading state
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Switch>
+      {/* Public routes - accessible without authentication */}
       <Route path="/" component={Landing} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/courses" component={Courses} />
-      <Route path="/catalog" component={CourseCatalog} />
-      <Route path="/courses/:id" component={CourseDetail} />
-      <Route path="/opportunities" component={Opportunities} />
-      <Route path="/opportunities/:id" component={OpportunityDetail} />
-      <Route path="/mentors" component={Mentors} />
-      <Route path="/mentors/:id" component={MentorDetail} />
-      <Route path="/advice" component={Advice} />
-      <Route path="/certificates" component={MyCertificates} />
-      <Route path="/achievements" component={Achievements} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
-      <Route path="/profile" component={Profile} />
-      <Route path="/settings" component={Settings} />
-      
-      {/* Public pages */}
       <Route path="/publicaboutus" component={PublicAboutUs} />
       <Route path="/publiccourses" component={PublicCourses} />
       <Route path="/publicinternships" component={PublicInternships} />
@@ -89,7 +73,29 @@ function Router() {
       <Route path="/publicprivacypolicy" component={PublicPrivacyPolicy} />
       <Route path="/publictermsofuse" component={PublicTermsOfUse} />
       <Route path="/become-mentor" component={BecomeMentor} />
-      
+      <Route path="/opportunities" component={PublicOpportunities} />
+
+      {/* Protected routes - only accessible when authenticated */}
+      {user && (
+        <>
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/dashboard/opportunities" component={Opportunities} />
+          <Route path="/courses" component={Courses} />
+          <Route path="/catalog" component={CourseCatalog} />
+          <Route path="/courses/:id" component={CourseDetail} />
+          <Route path="/opportunities" component={Opportunities} />
+          <Route path="/opportunities/:id" component={OpportunityDetail} />
+          <Route path="/mentors" component={Mentors} />
+          <Route path="/mentors/:id" component={MentorDetail} />
+          <Route path="/advice" component={Advice} />
+          <Route path="/certificates" component={MyCertificates} />
+          <Route path="/achievements" component={Achievements} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/settings" component={Settings} />
+        </>
+      )}
+
+      {/* 404 route */}
       <Route component={NotFound} />
     </Switch>
   );
@@ -98,12 +104,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <Router />
-          <Toaster />
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <TranslationsProvider>
+            <AppContent />
+            <Toaster />
+          </TranslationsProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

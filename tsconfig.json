@@ -22,8 +22,9 @@
       "@contexts/*": ["./client/src/contexts/*"],
       "@ui/*": ["./client/src/components/ui/*"],
       "@shared/*": ["./shared/*"]
-    }
+    },
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.test.ts", "**/*.test.tsx", "jest.setup.ts"],
   "exclude": ["node_modules"]
 }

@@ -348,7 +348,11 @@ export default function PublicAboutUs() {
         if (formContainer) {
           const successMessage = document.createElement('div');
           successMessage.className = 'mt-4 p-3 bg-green-100 text-green-800 rounded-md';
-          successMessage.textContent = 'Сообщение успешно отправлено!';
+          successMessage.textContent = language === 'ru' 
+            ? 'Сообщение успешно отправлено!' 
+            : language === 'kz' 
+              ? 'Хабарлама сәтті жіберілді!' 
+              : 'Message sent successfully!';
           formContainer.appendChild(successMessage);
           
           // Remove the message after 5 seconds

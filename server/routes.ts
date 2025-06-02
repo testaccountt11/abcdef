@@ -26,6 +26,7 @@ import fs from "fs";
 import express from "express";
 import { db } from './db.js';
 import { sql, eq } from 'drizzle-orm';
+import { mentor_applications } from './src/db/schema';
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -64,52 +65,70 @@ const resumeUpload = multer({
   }
 });
 
-// Создание таблицы mentor_applications при запуске сервера
-(async () => {
-  try {
-    // Проверяем существование таблицы и ее структуру
-    const tableExists = await db.execute(`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
+interface ColumnInfo {
+  column_name: string;
+  data_type: string;
+  is_nullable: string;
+  column_default: string | null;
+}
+
+// Replace raw SQL queries with sql template literals
+const tableColumnsQuery = sql`
+  SELECT column_name, data_type, is_nullable
+  FROM information_schema.columns
         WHERE table_name = 'mentor_applications'
-      );
+  ORDER BY ordinal_position
+`;
+
+const tableInfo = await db.execute(sql`
+  SELECT column_name, data_type, is_nullable
+  FROM information_schema.columns
+  WHERE table_name = 'mentor_applications'
+  ORDER BY ordinal_position
     `);
     
-    if (tableExists.rows[0].exists) {
+if (tableInfo.rows.length > 0) {
       console.log("Table mentor_applications exists, checking structure...");
       
-      // Получаем все NOT NULL колонки без дефолтных значений
-      const mandatoryColumns = await db.execute(`
-        SELECT column_name, data_type, is_nullable, column_default
-        FROM information_schema.columns 
-        WHERE table_name = 'mentor_applications'
+  const mandatoryColumns = await db.select()
+    .from(sql`information_schema.columns`)
+    .where(sql`table_name = 'mentor_applications'
         AND is_nullable = 'NO'
         AND column_default IS NULL
-        AND column_name != 'id'
-      `);
+        AND column_name != 'id'`) as ColumnInfo[];
       
-      console.log("Mandatory columns without defaults:", mandatoryColumns.rows);
+  console.log("Mandatory columns without defaults:", mandatoryColumns);
       
-      // Делаем все обязательные колонки nullable или добавляем дефолтные значения
-      for (const col of mandatoryColumns.rows) {
-        try {
-          const columnName = col.column_name as string;
-          const dataType = col.data_type as string;
+  for (const col of mandatoryColumns) {
+    try {
+      const columnName = col.column_name;
+      const dataType = col.data_type;
+      
+      if (!columnName) {
+        console.error("Column name is undefined, skipping...");
+        continue;
+      }
+
+      console.log(`Processing column: ${columnName} (${dataType})`);
           const defaultValue = getDefaultValueForColumn(columnName, dataType);
       
           if (defaultValue) {
-            // Добавляем дефолтное значение
-        await db.execute(`
+        const alterQuery = sql`
           ALTER TABLE mentor_applications
-              ALTER COLUMN ${columnName} SET DEFAULT ${defaultValue}
-        `);
+          ALTER COLUMN ${sql.identifier(columnName)} 
+          SET DEFAULT ${sql.raw(defaultValue)}
+        `;
+        console.log("Executing alter query:", alterQuery);
+        await db.execute(alterQuery);
             console.log(`Added default value ${defaultValue} to column ${columnName}`);
           } else {
-            // Делаем колонку nullable
-        await db.execute(`
+        const dropNotNullQuery = sql`
           ALTER TABLE mentor_applications
-              ALTER COLUMN ${columnName} DROP NOT NULL
-        `);
+          ALTER COLUMN ${sql.identifier(columnName)} 
+          DROP NOT NULL
+        `;
+        console.log("Executing drop not null query:", dropNotNullQuery);
+        await db.execute(dropNotNullQuery);
             console.log(`Made column ${columnName} nullable`);
           }
         } catch (alterError) {
@@ -117,22 +136,19 @@ const resumeUpload = multer({
         }
       }
       
-      // Выводим обновленную структуру таблицы
-      const updatedStructure = await db.execute(`
-        SELECT column_name, data_type, is_nullable, column_default
-        FROM information_schema.columns
-        WHERE table_name = 'mentor_applications'
-        ORDER BY ordinal_position
-        `);
-      console.log("Updated mentor_applications table structure:", updatedStructure.rows);
+  const updatedStructure = await db.select()
+    .from(sql`information_schema.columns`)
+    .where(sql`table_name = 'mentor_applications'`)
+    .orderBy(sql`ordinal_position`) as ColumnInfo[];
+  console.log("Updated mentor_applications table structure:", updatedStructure);
     }
-  } catch (error) {
-    console.error("Error checking/updating mentor_applications table:", error);
-  }
-})();
 
 // Функция для определения дефолтных значений по типу колонки
 function getDefaultValueForColumn(columnName: string, dataType: string): string | null {
+  if (!columnName || !dataType) {
+    return null;
+  }
+
   switch (columnName) {
     case 'company':
       return "'Independent'";
@@ -151,7 +167,7 @@ function getDefaultValueForColumn(columnName: string, dataType: string): string 
     case 'bio':
     case 'message':
     case 'motivation':
-      return "''"; // Пустая строка
+      return "''";
     default:
       if (dataType.includes('text')) {
         return "''";
@@ -164,7 +180,7 @@ function getDefaultValueForColumn(columnName: string, dataType: string): string 
       } else if (dataType.includes('date')) {
         return "CURRENT_DATE";
       }
-      return null; // Нет подходящего дефолтного значения
+      return null;
   }
 }
 
@@ -355,23 +371,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByEmail(email);
       
       if (!user) {
-        return res.status(404).json({ message: "User not found. Please register first." });
+        return res.status(401).json({ message: "Invalid email or password" });
       }
       
-      // Check password
-      if (user.password !== password) { // In production, use proper password comparison
-        return res.status(401).json({ message: "Invalid password" });
+      // Check password (in production, use proper password comparison)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Invalid email or password" });
       }
       
-      // Login the user
+      // Login the user and create session
       req.login(user, (err) => {
         if (err) {
-          return res.status(500).json({ message: "Error logging in" });
+          console.error("Session creation error:", err);
+          return res.status(500).json({ message: "Error creating session" });
         }
-        return res.json({ user: { ...user, password: undefined } });
+        
+        // Return user data without sensitive information
+        const safeUser = {
+          ...user,
+          password: undefined
+        };
+        
+        return res.json({ user: safeUser });
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
   
@@ -382,14 +407,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.post("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.status(200).json({ message: "Logged out successfully" });
+    if (!req.user) {
+      return res.status(200).json({ message: "Already logged out" });
+    }
+    
+    req.logout((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Error during logout" });
+      }
+      
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Session destruction error:", err);
+          return res.status(500).json({ message: "Error clearing session" });
+        }
+        
+        res.clearCookie('connect.sid');
+        res.json({ message: "Logged out successfully" });
+      });
     });
   });
   
-  app.get("/api/user", isAuthenticated, (req, res) => {
-    // Return the current authenticated user
-    res.json({ user: { ...req.user, password: undefined } });
+  app.get("/api/user", (req, res) => {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    // Return user data without sensitive information
+    const safeUser = {
+      ...req.user,
+      password: undefined
+    };
+    
+    res.json({ user: safeUser });
   });
   
   // Course routes
@@ -1019,24 +1070,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Processing form data in /api/become-mentor");
       console.log("Request body:", req.body);
       
-      // Получаем данные из тела запроса
       const { 
         email, 
         firstName, 
         lastName, 
         phone, 
-        education, 
+        education: title, 
         experience, 
         languages, 
         skills, 
         message,
-        motivation, // Явно добавляем поле motivation
+        motivation,
         company = 'Independent',
         specialization = 'General',
-        availability = '1-2' // Добавляем availability с дефолтным значением
+        availability = '1-2'
       } = req.body;
       
-      // Проверяем обязательные поля
+      // Validate required fields
       if (!email || !firstName || !lastName) {
         console.error("Missing required fields:", { email, firstName, lastName });
         return res.status(400).json({
@@ -1054,214 +1104,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Use motivation or message for the motivation field
-      const motivationValue = motivation || message || '';
+      // Format arrays
+      const languagesArray = languages ? (Array.isArray(languages) ? languages : [languages]) : [];
+      const skillsArray = skills ? (typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : Array.isArray(skills) ? skills : [skills]) : [];
       
-      // Получаем информацию о загруженном файле, если он есть
+      // Get resume file info
       const resumeFile = req.file ? req.file.filename : null;
       
-      console.log("Mentor application data:", { 
-        email, 
-        firstName, 
-        lastName, 
-        company,
-        specialization,
-        availability,
-        motivation: motivationValue,
-      });
-      console.log("Resume file:", resumeFile);
-      
-      // Проверим, есть ли company в req.body напрямую
-      if (!req.body.company) {
-        console.log("Company field is missing in request body. Setting default value.");
-        req.body.company = 'Independent';
-      }
-      
-      console.log("Company field value:", req.body.company);
-      
-      // Modified array formatting function
-      const formatPgArray = (input: string | string[] | undefined): string => {
-        if (!input) return "ARRAY[]::text[]";
-        
-        let items: string[] = [];
-        if (Array.isArray(input)) {
-          items = input;
-        } else if (typeof input === 'string') {
-          items = [input];
-        }
-        
-        // Format as ARRAY constructor with properly escaped strings
-        const escapedItems = items.map(item => `'${item.replace(/'/g, "''")}'`);
-        return `ARRAY[${escapedItems.join(",")}]::text[]`;
-      };
-      
-      // Escape single quotes in text fields to prevent SQL injection
-      const escapeSql = (text: string | undefined): string => {
-        if (!text) return '';
-        return text.replace(/'/g, "''");
-      };
-      
-      const fullName = escapeSql(`${firstName} ${lastName}`);
-      const emailEscaped = escapeSql(email);
-      const phoneEscaped = escapeSql(phone || '');
-      const educationEscaped = escapeSql(education || '');
-      const experienceEscaped = escapeSql(experience || '');
-      const messageEscaped = escapeSql(message || '');
-      const resumePathEscaped = escapeSql(resumeFile || '');
-      // Use "Independent" as a fallback value to avoid NULL constraint issues
-      const companyEscaped = escapeSql(company) || 'Independent';
-      const specializationEscaped = escapeSql(specialization) || 'General';
-      
-      // Format arrays properly
-      const languagesFormatted = formatPgArray(languages);
-      const skillsFormatted = formatPgArray(skills);
-      
-      console.log("Formatted languages:", languagesFormatted);
-      console.log("Formatted skills:", skillsFormatted);
-      
-      // Проверим структуру таблицы, используя строковые литералы
-      const tableColumnsQuery = `
-        SELECT column_name, data_type, is_nullable
-        FROM information_schema.columns 
-        WHERE table_name = 'mentor_applications'
-        ORDER BY ordinal_position
-      `;
-      const tableColumns = await db.execute(tableColumnsQuery);
-      
-      console.log("Table columns with details:", tableColumns.rows);
-      
-      // Формируем SQL-запрос как строку
-      let query = "";
-      
-      // Если колонка first_name существует, используем ее
-      if (tableColumns.rows.some((col: any) => col.column_name === 'first_name')) {
-        query = `
-          INSERT INTO mentor_applications 
-          (first_name, last_name, email, phone, title, experience, languages, skills, bio, resume_file, company, specialization, motivation, availability) 
-          VALUES (
-            '${escapeSql(firstName)}', 
-            '${escapeSql(lastName)}', 
-            '${emailEscaped}', 
-            '${phoneEscaped}', 
-            '${educationEscaped}', 
-            '${experienceEscaped}', 
-            ${languagesFormatted}, 
-            ${skillsFormatted}, 
-            '${messageEscaped}',
-            '${resumePathEscaped}',
-            COALESCE('${companyEscaped}', 'Independent'),
-            COALESCE('${specializationEscaped}', 'General'),
-            '${motivationValue}',
-            '${escapeSql(req.body.availability || '1-2')}'
-          ) 
-          RETURNING id
-        `;
-      } else {
-        // Альтернативный запрос с колонкой name
-        query = `
-          INSERT INTO mentor_applications 
-          (name, email, phone, title, experience, languages, skills, bio, resume_file, company, specialization, motivation, availability) 
-          VALUES (
-            '${fullName}', 
-            '${emailEscaped}', 
-            '${phoneEscaped}', 
-            '${educationEscaped}', 
-            '${experienceEscaped}', 
-            ${languagesFormatted}, 
-            ${skillsFormatted}, 
-            '${messageEscaped}',
-            '${resumePathEscaped}',
-            COALESCE('${companyEscaped}', 'Independent'),
-            COALESCE('${specializationEscaped}', 'General'),
-            '${motivationValue}',
-            '${escapeSql(req.body.availability || '1-2')}'
-          ) 
-          RETURNING id
-        `;
-      }
-      
-      console.log("Executing query:", query);
-      // Log all prepared values for debugging
-      console.log("Prepared values:", {
-        firstName: escapeSql(firstName),
-        lastName: escapeSql(lastName),
-        email: emailEscaped,
-        phone: phoneEscaped,
-        title: educationEscaped,
-        experience: experienceEscaped,
-        languages: languagesFormatted,
-        skills: skillsFormatted,
-        message: messageEscaped,
-        resumeFile: resumePathEscaped,
-        company: companyEscaped,
-        companyDirectValue: req.body.company,
-        hasCompanyField: 'company' in req.body,
-        specialization: specializationEscaped,
-        specializationDirectValue: req.body.specialization,
-        hasSpecializationField: 'specialization' in req.body,
-        motivation: motivationValue,
-        availability: req.body.availability || '1-2'
-      });
-      
-      // Double-check if 'company' column exists and is required
-      const companyColumnQuery = `
-        SELECT column_name, is_nullable, column_default
-        FROM information_schema.columns 
-        WHERE table_name = 'mentor_applications' AND column_name = 'company'
-      `;
-      const companyColumn = await db.execute(companyColumnQuery);
-      console.log("Company column details:", companyColumn.rows);
-      
-      // Last resort: try altering the table to add a default value
-      if (companyColumn.rows.length > 0 && companyColumn.rows[0].is_nullable === 'NO' && !companyColumn.rows[0].column_default) {
-        try {
-          console.log("Attempting to add default value to company column");
-          const alterQuery = `
-            ALTER TABLE mentor_applications
-            ALTER COLUMN company SET DEFAULT 'Independent'
-          `;
-          await db.execute(alterQuery);
-          console.log("Successfully added default value to company column");
-        } catch (alterError) {
-          console.error("Failed to add default value:", alterError);
-        }
-      }
-      
-      const result = await db.execute(query);
-      
-      res.json({ success: true, id: result.rows[0].id });
-    } catch (dbError) {
-      console.error("Database error details:", {
-        message: (dbError as any).message,
-        code: (dbError as any).code,
-        detail: (dbError as any).detail,
-        hint: (dbError as any).hint,
-        position: (dbError as any).position,
-        table: (dbError as any).table,
-        column: (dbError as any).column,
-        constraint: (dbError as any).constraint,
-        stack: (dbError as any).stack
-      });
-      
-      // Проверим структуру таблицы для диагностики
       try {
-        const tableStructure = await db.execute(`
-          SELECT column_name, data_type, is_nullable, column_default
-          FROM information_schema.columns 
-          WHERE table_name = 'mentor_applications'
-          ORDER BY ordinal_position
-        `);
-        console.log("Table structure for mentor_applications:", tableStructure.rows);
-      } catch (schemaError) {
-        console.error("Error fetching schema:", schemaError);
+        // Insert using drizzle-orm
+        const result = await db.insert(mentor_applications).values({
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          phone: phone || null,
+          title: title || null,
+          company: company,
+          specialization: specialization,
+          availability: availability,
+          experience: experience || '1-3',
+          languages: languagesArray,
+          skills: skillsArray,
+          bio: message || '',
+          message: message || '',
+          motivation: motivation || message || '',
+          resume_file: resumeFile,
+          status: 'pending'
+        }).returning();
+        
+        res.json({ 
+          success: true, 
+          id: result[0].id,
+          message: "Mentor application successfully submitted" 
+        });
+        
+    } catch (dbError) {
+        console.error("Database error details:", dbError);
+        res.status(500).json({ 
+          message: "Application submission failed", 
+          error: String((dbError as any).message || "Unknown error")
+        });
       }
-      
+    } catch (error) {
+      console.error("Error processing mentor application:", error);
       res.status(500).json({ 
         message: "Application submission failed", 
-        error: String((dbError as any).message || "Unknown error"),
-        detail: (dbError as any).detail,
-        hint: (dbError as any).hint,
-        column: (dbError as any).column
+        error: String((error as any).message || "Unknown error")
       });
     }
   });
@@ -1354,7 +1242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const skillsFormatted = formatPgArray(skills);
       
       // Сначала проверим структуру таблицы
-      const tableColumnsQuery = `
+      const tableColumnsQuery = sql`
         SELECT column_name, data_type, is_nullable
         FROM information_schema.columns 
         WHERE table_name = 'mentor_applications'
@@ -1364,32 +1252,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Table columns for JSON API:", tableColumns.rows);
       
-      // Создаем SQL запрос с явным указанием поля motivation
-      const query = `
+      // Replace dynamic query construction with parameterized queries
+      const insertQuery = sql`
         INSERT INTO mentor_applications 
         (first_name, last_name, email, phone, title, experience, languages, skills, bio, 
          company, specialization, motivation, availability) 
         VALUES (
-          '${escapeSql(firstName)}', 
-          '${escapeSql(lastName)}', 
-          '${emailEscaped}', 
-          '${phoneEscaped}', 
-          '${educationEscaped}', 
-          '${experienceEscaped}', 
-          ${languagesFormatted}, 
-          ${skillsFormatted}, 
-          '${bioEscaped}',
-          '${companyEscaped}',
-          '${specializationEscaped}',
-          '${motivationEscaped}',
-          '${escapeSql(req.body.availability || '1-2')}'
+          ${escapeSql(firstName)}, 
+          ${escapeSql(lastName)}, 
+          ${emailEscaped}, 
+          ${phoneEscaped}, 
+          ${educationEscaped}, 
+          ${experienceEscaped}, 
+          ${sql.raw(languagesFormatted)}, 
+          ${sql.raw(skillsFormatted)}, 
+          ${bioEscaped},
+          ${companyEscaped},
+          ${specializationEscaped},
+          ${motivationEscaped},
+          ${escapeSql(req.body.availability || '1-2')}
         ) 
         RETURNING id
       `;
       
-      console.log("Executing JSON API query:", query);
+      console.log("Executing JSON API query:", insertQuery);
       
-      const result = await db.execute(query);
+      const result = await db.execute(insertQuery);
       
       res.json({ 
         success: true, 

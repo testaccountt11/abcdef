@@ -20,6 +20,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AnimatePresence } from "framer-motion";
+import { MentorResumeCard } from "@/components/MentorResumeCard";
 
 // Тип данных ментора
 interface Mentor {
@@ -44,6 +45,8 @@ interface Mentor {
   featured: boolean;
   available?: boolean;
   experience: string;
+  // Удаляем поле hhResumeId
+  // hhResumeId?: string;
 }
 
 // Демо-данные менторов
@@ -69,7 +72,7 @@ const dummyMentors = [
     reviewCount: 47,
     featured: true,
     available: true,
-    experience: "10+ years"
+    experience: "10+ years",
   },
   {
     id: 2,
@@ -92,7 +95,7 @@ const dummyMentors = [
     reviewCount: 32,
     featured: true,
     available: true,
-    experience: "7 years"
+    experience: "7 years",
   },
   {
     id: 3,
@@ -115,7 +118,8 @@ const dummyMentors = [
     reviewCount: 23,
     featured: false,
     available: true,
-    experience: "5 years"
+    experience: "5 years",
+    hhResumeId: "13579"
   },
   {
     id: 4,
@@ -138,7 +142,8 @@ const dummyMentors = [
     reviewCount: 18,
     featured: false,
     available: false,
-    experience: "8 years"
+    experience: "8 years",
+    hhResumeId: "24680"
   },
   {
     id: 5,
@@ -161,7 +166,8 @@ const dummyMentors = [
     reviewCount: 27,
     featured: true,
     available: true,
-    experience: "6 years"
+    experience: "6 years",
+    hhResumeId: "15975"
   },
   {
     id: 6,
@@ -184,7 +190,8 @@ const dummyMentors = [
     reviewCount: 21,
     featured: false,
     available: true,
-    experience: "9 years"
+    experience: "9 years",
+    hhResumeId: "26753"
   }
 ];
 
@@ -211,7 +218,8 @@ const additionalMentors = [
     reviewCount: 19,
     featured: false,
     available: true,
-    experience: "6 years"
+    experience: "6 years",
+    hhResumeId: "14785"
   },
   {
     id: 8,
@@ -234,7 +242,8 @@ const additionalMentors = [
     reviewCount: 28,
     featured: true,
     available: true,
-    experience: "4 years"
+    experience: "4 years",
+    hhResumeId: "25896"
   },
   {
     id: 9,
@@ -257,7 +266,8 @@ const additionalMentors = [
     reviewCount: 22,
     featured: false,
     available: false,
-    experience: "7 years"
+    experience: "7 years",
+    hhResumeId: "16907"
   },
   {
     id: 10,
@@ -280,7 +290,8 @@ const additionalMentors = [
     reviewCount: 15,
     featured: false,
     available: true,
-    experience: "5 years"
+    experience: "5 years",
+    hhResumeId: "27018"
   },
   {
     id: 11,
@@ -303,7 +314,8 @@ const additionalMentors = [
     reviewCount: 17,
     featured: false,
     available: true,
-    experience: "6 years"
+    experience: "6 years",
+    hhResumeId: "18129"
   },
   {
     id: 12,
@@ -326,7 +338,8 @@ const additionalMentors = [
     reviewCount: 24,
     featured: false,
     available: true,
-    experience: "7 years"
+    experience: "7 years",
+    hhResumeId: "29230"
   },
   {
     id: 13,
@@ -349,7 +362,8 @@ const additionalMentors = [
     reviewCount: 31,
     featured: true,
     available: true,
-    experience: "8 years"
+    experience: "8 years",
+    hhResumeId: "10341"
   },
   {
     id: 14,
@@ -372,7 +386,8 @@ const additionalMentors = [
     reviewCount: 19,
     featured: false,
     available: true,
-    experience: "9 years"
+    experience: "9 years",
+    hhResumeId: "21452"
   },
   {
     id: 15,
@@ -395,7 +410,8 @@ const additionalMentors = [
     reviewCount: 26,
     featured: true,
     available: false,
-    experience: "5 years"
+    experience: "5 years",
+    hhResumeId: "12563"
   },
   {
     id: 16,
@@ -418,7 +434,8 @@ const additionalMentors = [
     reviewCount: 22,
     featured: false,
     available: true,
-    experience: "7 years"
+    experience: "7 years",
+    hhResumeId: "23674"
   },
   {
     id: 17,
@@ -441,7 +458,8 @@ const additionalMentors = [
     reviewCount: 18,
     featured: false,
     available: true,
-    experience: "5 years"
+    experience: "5 years",
+    hhResumeId: "14785"
   },
   {
     id: 18,
@@ -464,7 +482,8 @@ const additionalMentors = [
     reviewCount: 20,
     featured: false,
     available: true,
-    experience: "4 years"
+    experience: "4 years",
+    hhResumeId: "25896"
   },
   {
     id: 19,
@@ -487,7 +506,8 @@ const additionalMentors = [
     reviewCount: 16,
     featured: false,
     available: true,
-    experience: "6 years"
+    experience: "6 years",
+    hhResumeId: "16907"
   },
   {
     id: 20,
@@ -510,7 +530,8 @@ const additionalMentors = [
     reviewCount: 29,
     featured: true,
     available: true,
-    experience: "10 years"
+    experience: "10 years",
+    hhResumeId: "27018"
   },
   {
     id: 21,
@@ -533,7 +554,8 @@ const additionalMentors = [
     reviewCount: 14,
     featured: false,
     available: false,
-    experience: "8 years"
+    experience: "8 years",
+    hhResumeId: "18129"
   }
 ];
 

@@ -8,12 +8,14 @@ import { useState } from 'react';
 import logoLight from '../img/light_version.svg';
 import logoDark from '../img/dark_version.svg';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export function Navbar() {
   const { t } = useTranslations();
   const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [, navigate] = useLocation();
+  const { user } = useAuthContext();
 
   const isDarkMode = theme === 'dark' || 
     (theme === 'system' && typeof window !== 'undefined' && 
@@ -25,12 +27,22 @@ export function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLoginClick = () => {
+    setIsMenuOpen(false); // Close mobile menu if open
+    navigate('/login');
+  };
+
+  const handleNavigation = (path: string) => {
+    setIsMenuOpen(false);
+    navigate(path);
+  };
+
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-lg bg-background/80 border-b">
       <div className="container mx-auto px-4 max-w-7xl py-4 flex justify-between items-center">
         <div 
           className="flex items-center cursor-pointer" 
-          onClick={() => navigate('/')}
+          onClick={() => handleNavigation('/')}
         >
           <img src={logoSrc} alt="Portfol.IO" className="h-8" />
         </div>
@@ -40,35 +52,35 @@ export function Navbar() {
           <div className="flex space-x-8">
             <div 
               className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
-              onClick={() => navigate('/publicaboutus')}
+              onClick={() => handleNavigation('/publicaboutus')}
             >
               {t('nav.about')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
             </div>
             <div 
               className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
-              onClick={() => navigate('/publiccourses')}
+              onClick={() => handleNavigation('/publiccourses')}
             >
               {t('nav.courses')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
             </div>
             <div 
               className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
-              onClick={() => navigate('/publicinternships')}
+              onClick={() => handleNavigation('/publicinternships')}
             >
               {t('nav.internships')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
             </div>
             <div 
               className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
-              onClick={() => navigate('/publicmentors')}
+              onClick={() => handleNavigation('/publicmentors')}
             >
               {t('nav.mentors')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
             </div>
             <div 
               className="text-foreground/80 hover:text-primary transition-colors cursor-pointer relative group"
-              onClick={() => navigate('/publicstudytips')}
+              onClick={() => handleNavigation('/publicstudytips')}
             >
               {t('nav.studyAdvice')}
               <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
@@ -78,15 +90,27 @@ export function Navbar() {
           <div className="flex items-center space-x-3">
             <ThemeSwitcher />
             <LanguageSwitcher />
+            {user ? (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="hover:bg-primary/5 transition-all duration-300"
+                onClick={() => handleNavigation('/dashboard')}
+                title={t('nav.dashboard')}
+              >
+                <User className="w-5 h-5 text-foreground/80 hover:text-primary transition-colors" />
+              </Button>
+            ) : (
             <Button 
               variant="ghost" 
               size="icon"
               className="hover:bg-primary/5 transition-all duration-300"
-              onClick={() => navigate('/login')}
+                onClick={handleLoginClick}
               title={t('nav.login')}
             >
               <User className="w-5 h-5 text-foreground/80 hover:text-primary transition-colors" />
             </Button>
+            )}
           </div>
         </div>
 
@@ -94,15 +118,27 @@ export function Navbar() {
         <div className="flex items-center space-x-2 md:hidden">
           <ThemeSwitcher />
           <LanguageSwitcher />
+          {user ? (
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => handleNavigation('/dashboard')}
+              title={t('nav.dashboard')}
+              className="mr-2"
+            >
+              <User className="w-5 h-5 text-foreground/80 hover:text-primary transition-colors" />
+            </Button>
+          ) : (
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={() => navigate('/login')}
+              onClick={handleLoginClick}
             title={t('nav.login')}
             className="mr-2"
           >
             <User className="w-5 h-5 text-foreground/80 hover:text-primary transition-colors" />
           </Button>
+          )}
           <Button variant="ghost" size="icon" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
@@ -115,46 +151,31 @@ export function Navbar() {
           <div className="flex flex-col space-y-4 container mx-auto max-w-7xl">
             <div 
               className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
-              onClick={() => {
-                navigate('/publicaboutus');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigation('/publicaboutus')}
             >
               {t('nav.about')}
             </div>
             <div 
               className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
-              onClick={() => {
-                navigate('/publiccourses');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigation('/publiccourses')}
             >
               {t('nav.courses')}
             </div>
             <div 
               className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
-              onClick={() => {
-                navigate('/publicinternships');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigation('/publicinternships')}
             >
               {t('nav.internships')}
             </div>
             <div 
               className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
-              onClick={() => {
-                navigate('/publicmentors');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigation('/publicmentors')}
             >
               {t('nav.mentors')}
             </div>
             <div 
               className="text-foreground/80 hover:text-primary py-2 transition-colors cursor-pointer border-b border-border/10 pb-2"
-              onClick={() => {
-                navigate('/publicstudytips');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigation('/publicstudytips')}
             >
               {t('nav.studyAdvice')}
             </div>

@@ -19,14 +19,10 @@ import { AnimatePresence } from "framer-motion";
 import { Dialog } from "@/components/ui/dialog"; // Если доступен компонент диалога
 
 // Сначала определим тип для курса в начале файла
-type Course = {
+interface Course {
   id: number;
   title: string;
-  titleRu?: string;
-  titleKz?: string;
   description: string;
-  descriptionRu?: string;
-  descriptionKz?: string;
   category: string;
   imageUrl: string;
   duration: string;
@@ -39,7 +35,14 @@ type Course = {
   skills: string[];
   lessons: number;
   projects: number;
-};
+}
+
+interface CourseWithTranslations extends Course {
+  titleRu?: string;
+  titleKz?: string;
+  descriptionRu?: string;
+  descriptionKz?: string;
+}
 
 // Улучшенные данные о курсах с дополнительными полями для красивого отображения
 const dummyCourses = [
@@ -832,7 +835,7 @@ const extraCoursesTranslations = {
 };
 
 // В начале компонента PublicCourses, добавьте код для объединения массивов:
-const allCourses = [...dummyCourses, ...additionalCourses, ...extraCourses];
+const allCourses: Course[] = [...dummyCourses, ...additionalCourses, ...extraCourses];
 
 // Добавляем переводы для всех популярных курсов
 // Перед вызовом .filter(course => course.featured) добавьте эти переводы:
@@ -999,7 +1002,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, descriptio
 
 // Улучшенная карточка курса с анимацией
 interface CourseCardProps {
-  course: Course;
+  course: CourseWithTranslations;
   onRegisterClick: (e: React.MouseEvent) => void;
   onClick?: () => void; // Убедитесь, что этот параметр есть
   index: number;
@@ -1327,15 +1330,15 @@ export default function PublicCourses() {
   
   // Добавляем состояние для модального окна
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<CourseWithTranslations | null>(null);
   
   // 1. Добавьте эти состояния в компонент PublicCourses
   const [debugMessage, setDebugMessage] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
+  const [currentCourse, setCurrentCourse] = useState<CourseWithTranslations | null>(null);
   
   // 2. Функция для открытия модального окна с отладкой
-  const handleCourseClick = (course: Course) => {
+  const handleCourseClick = (course: CourseWithTranslations) => {
     setDebugMessage(`Clicked on course: ${course.id}`);
     setCurrentCourse(course);
     setShowModal(true);
@@ -1349,20 +1352,64 @@ export default function PublicCourses() {
   };
   
   // Filter courses based on search query, category, and level
-  const filteredCourses = allCourses.filter(course => {
-    const matchesSearch = searchQuery === "" || 
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredCourses: CourseWithTranslations[] = allCourses.filter(course => {
+    // Convert search query to lowercase for case-insensitive comparison
+    const searchLower = searchQuery.toLowerCase().trim();
     
+    // If no search query, only apply other filters
+    if (searchLower === "") {
     const matchesCategory = categoryFilter === "all" || course.category === categoryFilter;
     const matchesLevel = levelFilter === "all" || course.level === levelFilter;
-    
-    // Additional filtering based on the active tab
+      const matchesTab = activeTab === "all" || 
+        (activeTab === "featured" && course.featured) ||
+        (activeTab === "partner" && course.isPartnerCourse);
+      
+      return matchesCategory && matchesLevel && matchesTab;
+    }
+
+    // Helper function to safely check if a string includes the search term
+    const safeIncludes = (text: string | undefined) => {
+      return text ? text.toLowerCase().includes(searchLower) : false;
+    };
+
+    // Search in title (including translations)
+    const matchesTitle = safeIncludes(course.title);
+
+    // Search in description (including translations)
+    const matchesDescription = safeIncludes(course.description);
+
+    // Search in category (including translations)
+    const matchesCategory = 
+      (categoryFilter === "all" || course.category === categoryFilter) &&
+      (safeIncludes(course.category) ||
+      safeIncludes(getCategoryRu(course.category)) ||
+      safeIncludes(getCategoryKz(course.category)));
+
+    // Search in provider (including translations)
+    const matchesProvider = 
+      safeIncludes(course.provider) ||
+      safeIncludes(getProviderRu(course.provider)) ||
+      safeIncludes(getProviderKz(course.provider));
+
+    // Search in skills (including translations)
+    const matchesSkills = course.skills.some(skill => 
+      safeIncludes(skill) ||
+      safeIncludes(getSkillRu(skill)) ||
+      safeIncludes(getSkillKz(skill))
+    );
+
+    // Search in level
+    const matchesLevel = 
+      (levelFilter === "all" || course.level === levelFilter) &&
+      safeIncludes(course.level);
+
+    // Check if course matches the active tab filter
     const matchesTab = activeTab === "all" || 
       (activeTab === "featured" && course.featured) ||
       (activeTab === "partner" && course.isPartnerCourse);
     
-    return matchesSearch && matchesCategory && matchesLevel && matchesTab;
+    // Return true if the course matches any of the search criteria and all active filters
+    return (matchesTitle || matchesDescription || matchesCategory || matchesProvider || matchesSkills || matchesLevel) && matchesTab;
   });
 
   // Extract unique categories and levels for the filters
@@ -1404,8 +1451,7 @@ export default function PublicCourses() {
   ];
   
   // Переводы для первой страницы курсов
-  const firstPageCoursesWithTranslations = 
-    // Определяем набор курсов, которые показываются на первой странице
+  const firstPageCoursesWithTranslations: CourseWithTranslations[] = 
     (activeTab === "all" ? 
       allCourses :
       activeTab === "featured" ? 
@@ -1420,7 +1466,7 @@ export default function PublicCourses() {
           titleKz: "Веб-әзірлеу негіздері",
           descriptionRu: "Изучите основы HTML, CSS и JavaScript для создания адаптивных веб-сайтов с нуля.",
           descriptionKz: "Икемді веб-сайттарды нөлден бастап құру үшін HTML, CSS және JavaScript негіздерін үйреніңіз."
-        };
+        } as CourseWithTranslations;
       }
       
       // Data Science & Machine Learning (id: 2)
@@ -1431,208 +1477,11 @@ export default function PublicCourses() {
           titleKz: "Деректер ғылымы және машиналық оқыту",
           descriptionRu: "Освойте анализ данных, визуализацию и алгоритмы машинного обучения для практических приложений.",
           descriptionKz: "Практикалық қолданбалар үшін деректерді талдауды, визуализацияны және машиналық оқыту алгоритмдерін меңгеріңіз."
-        };
+        } as CourseWithTranslations;
       }
       
-      // UX/UI Design Essentials (id: 3)
-      if (course.id === 3) {
-        return {
-          ...course,
-          titleRu: "Основы UX/UI дизайна",
-          titleKz: "UX/UI дизайн негіздері",
-          descriptionRu: "Изучите принципы пользовательского опыта и интерфейса для создания красивых, удобных продуктов.",
-          descriptionKz: "Әдемі, ыңғайлы өнімдерді жасау үшін пайдаланушы тәжірибесі мен интерфейс принциптерін үйреніңіз."
-        };
-      }
-      
-      // Mobile App Development with React Native (id: 4)
-      if (course.id === 4) {
-        return {
-          ...course,
-          titleRu: "Разработка мобильных приложений на React Native",
-          titleKz: "React Native арқылы мобильді қосымшаларды әзірлеу",
-          descriptionRu: "Создавайте кросс-платформенные мобильные приложения с использованием React Native и JavaScript.",
-          descriptionKz: "React Native және JavaScript көмегімен кросс-платформалық мобильді қосымшаларды құрыңыз."
-        };
-      }
-      
-      // Digital Marketing Fundamentals (id: 5)
-      if (course.id === 5) {
-        return {
-          ...course,
-          titleRu: "Основы цифрового маркетинга",
-          titleKz: "Цифрлық маркетинг негіздері",
-          descriptionRu: "Изучите SEO, маркетинг в социальных сетях, email-кампании и аналитику для роста вашего онлайн-присутствия.",
-          descriptionKz: "Онлайн қатысуыңызды арттыру үшін SEO, әлеуметтік желілердегі маркетинг, электрондық пошта науқандары мен аналитиканы үйреніңіз."
-        };
-      }
-      
-      // Cloud Computing with AWS (id: 6)
-      if (course.id === 6) {
-        return {
-          ...course,
-          titleRu: "Облачные вычисления с AWS",
-          titleKz: "AWS арқылы бұлтты есептеу",
-          descriptionRu: "Освойте Amazon Web Services и научитесь развертывать, масштабировать и поддерживать приложения в облаке.",
-          descriptionKz: "Amazon Web Services-ті меңгеріп, бұлтта қосымшаларды орналастыруды, масштабтауды және қолдауды үйреніңіз."
-        };
-      }
-      
-      // Blockchain Development (id: 7)
-      if (course.id === 7) {
-        return {
-          ...course,
-          titleRu: "Разработка блокчейн-приложений",
-          titleKz: "Блокчейн қосымшаларын әзірлеу",
-          descriptionRu: "Научитесь создавать безопасные и эффективные блокчейн-приложения с использованием Ethereum и Solidity.",
-          descriptionKz: "Ethereum және Solidity көмегімен қауіпсіз және тиімді блокчейн қосымшаларын құруды үйреніңіз."
-        };
-      }
-      
-      // Artificial Intelligence Principles (id: 8)
-      if (course.id === 8) {
-        return {
-          ...course,
-          titleRu: "Принципы искусственного интеллекта",
-          titleKz: "Жасанды интеллект принциптері",
-          descriptionRu: "Изучите основы ИИ, нейронные сети и глубокое обучение с практическими примерами применения.",
-          descriptionKz: "Практикалық қолдану мысалдарымен ЖИ негіздерін, нейрондық желілерді және терең оқытуды зерттеңіз."
-        };
-      }
-      
-      // Cyber Security Fundamentals (id: 9)
-      if (course.id === 9) {
-        return {
-          ...course,
-          titleRu: "Основы кибербезопасности",
-          titleKz: "Киберқауіпсіздік негіздері",
-          descriptionRu: "Научитесь защищать системы и сети от цифровых атак с комплексным обучением кибербезопасности.",
-          descriptionKz: "Жан-жақты киберқауіпсіздік оқытуымен жүйелер мен желілерді сандық шабуылдардан қорғауды үйреніңіз."
-        };
-      }
-      
-      // 3D Modeling & Animation (id: 10)
-      if (course.id === 10) {
-        return {
-          ...course,
-          titleRu: "3D-моделирование и анимация",
-          titleKz: "3D-модельдеу және анимация",
-          descriptionRu: "Создавайте потрясающие 3D-модели и анимации для игр, фильмов и виртуальных сред.",
-          descriptionKz: "Ойындар, фильмдер және виртуалды орталар үшін керемет 3D-модельдер мен анимацияларды жасаңыз."
-        };
-      }
-      
-      // DevOps & CI/CD Pipeline (id: 11)
-      if (course.id === 11) {
-        return {
-          ...course,
-          titleRu: "DevOps и CI/CD конвейеры",
-          titleKz: "DevOps және CI/CD конвейерлері",
-          descriptionRu: "Освойте методологии DevOps и создавайте эффективные CI/CD конвейеры для современной разработки ПО.",
-          descriptionKz: "DevOps әдістемелерін меңгеріп, заманауи бағдарламалық жасақтаманы әзірлеу үшін тиімді CI/CD конвейерлерін құрыңыз."
-        };
-      }
-      
-      // Product Management Essentials (id: 12)
-      if (course.id === 12) {
-        return {
-          ...course,
-          titleRu: "Основы управления продуктом",
-          titleKz: "Өнімді басқару негіздері",
-          descriptionRu: "Изучите стратегии и методы успешной разработки и управления продуктами.",
-          descriptionKz: "Өнімдерді табысты әзірлеу және басқару стратегиялары мен әдістерін үйреніңіз."
-        };
-      }
-      
-      // iOS App Development with Swift (id: 13)
-      if (course.id === 13) {
-        return {
-          ...course,
-          titleRu: "Разработка iOS-приложений на Swift",
-          titleKz: "Swift арқылы iOS қосымшаларын әзірлеу",
-          descriptionRu: "Создавайте мощные и красивые iOS-приложения с использованием Swift и современных фреймворков.",
-          descriptionKz: "Swift және заманауи фреймворктерді қолдана отырып, күшті және әдемі iOS қосымшаларын құрыңыз."
-        };
-      }
-      
-      // Front-End Development with React (id: 14)
-      if (course.id === 14) {
-        return {
-          ...course,
-          titleRu: "Фронтенд-разработка на React",
-          titleKz: "React негізіндегі фронтенд-әзірлеу",
-          descriptionRu: "Создавайте современные, отзывчивые веб-приложения с помощью библиотеки React и экосистемы JavaScript.",
-          descriptionKz: "React кітапханасы және JavaScript экожүйесін қолдана отырып, заманауи, интерактивті веб-қосымшаларды құрыңыз."
-        };
-      }
-      
-      // Back-End Development with Node.js (id: 15)
-      if (course.id === 15) {
-        return {
-          ...course,
-          titleRu: "Бэкенд-разработка на Node.js",
-          titleKz: "Node.js негізіндегі бэкенд-әзірлеу",
-          descriptionRu: "Изучите создание масштабируемых и производительных серверных приложений с помощью Node.js и Express.",
-          descriptionKz: "Node.js және Express көмегімен масштабталатын және өнімді серверлік қосымшаларды құруды үйреніңіз."
-        };
-      }
-      
-      // Python for Data Engineering (id: 16)
-      if (course.id === 16) {
-        return {
-          ...course,
-          titleRu: "Python для инженерии данных",
-          titleKz: "Деректер инженериясына арналған Python",
-          descriptionRu: "Осваивайте управление данными, ETL-процессы и создание конвейеров данных с помощью Python.",
-          descriptionKz: "Python көмегімен деректерді басқаруды, ETL процестерін және деректер конвейерлерін құруды меңгеріңіз."
-        };
-      }
-      
-      // Game Development with Unity (id: 17)
-      if (course.id === 17) {
-        return {
-          ...course,
-          titleRu: "Разработка игр на Unity",
-          titleKz: "Unity арқылы ойын әзірлеу",
-          descriptionRu: "Научитесь создавать увлекательные 2D и 3D игры с использованием популярного движка Unity.",
-          descriptionKz: "Танымал Unity қозғалтқышын қолдана отырып, қызықты 2D және 3D ойындарды жасауды үйреніңіз."
-        };
-      }
-      
-      // Advanced JavaScript Programming (id: 18)
-      if (course.id === 18) {
-        return {
-          ...course,
-          titleRu: "Продвинутое программирование на JavaScript",
-          titleKz: "JavaScript-те күрделі бағдарламалау",
-          descriptionRu: "Углубите знания в JavaScript, изучая асинхронное программирование, паттерны и продвинутые концепции.",
-          descriptionKz: "Асинхронды бағдарламалау, паттерндер және күрделі тұжырымдамаларды зерттеу арқылы JavaScript білімдеріңізді тереңдетіңіз."
-        };
-      }
-      
-      // Database Design and SQL (id: 19)
-      if (course.id === 19) {
-        return {
-          ...course,
-          titleRu: "Проектирование баз данных и SQL",
-          titleKz: "Деректер қорын жобалау және SQL",
-          descriptionRu: "Изучите проектирование эффективных баз данных и освойте продвинутые SQL-запросы для работы с данными.",
-          descriptionKz: "Тиімді деректер қорын жобалауды үйреніп, деректермен жұмыс істеу үшін күрделі SQL сұрауларын меңгеріңіз."
-        };
-      }
-      
-      // Digital Photography Mastery (id: 20)
-      if (course.id === 20) {
-        return {
-          ...course,
-          titleRu: "Мастерство цифровой фотографии",
-          titleKz: "Цифрлық фотография шеберлігі",
-          descriptionRu: "От базовых до продвинутых техник фотографии: композиция, освещение, обработка и создание портфолио.",
-          descriptionKz: "Фотографияның негізгі және күрделі техникалары: композиция, жарықтандыру, өңдеу және портфолио құру."
-        };
-      }
-      
-      return course;
+      // Return the original course if no translations
+      return course as CourseWithTranslations;
     });
   
   // В компоненте или перед ним добавляем определение для featuredCourses:
@@ -1641,7 +1490,7 @@ export default function PublicCourses() {
   // В начале компонента Public Courses убедимся, что у нас есть нужные состояния
   // Если они уже определены, не добавляйте их повторно
   const [showBasicModal, setShowBasicModal] = useState(false);
-  const [modalCourse, setModalCourse] = useState<Course | null>(null);
+  const [modalCourse, setModalCourse] = useState<CourseWithTranslations | null>(null);
   
   return (
     <PublicPageLayout>
@@ -1924,7 +1773,7 @@ export default function PublicCourses() {
             
             {/* Grid with consistent sizing */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {coursesWithTranslations.filter(course => course.featured).slice(0, 8).map((course: Course, index: number) => (
+              {coursesWithTranslations.filter(course => course.featured).slice(0, 8).map((course: CourseWithTranslations, index: number) => (
                   <CourseCard 
                     key={course.id} 
                     course={course} 
@@ -1982,7 +1831,7 @@ export default function PublicCourses() {
               transition={{ duration: 0.5 }}
               className="text-center mb-10"
             >
-              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-blue-600/90 pb-1">
+              <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-blue-600/90 leading-[1.3] py-2">
                 {language === 'ru' ? 'Исследуйте все курсы' : 
                 language === 'kz' ? 'Барлық курстарды зерттеңіз' : 
                 'Explore All Courses'}
@@ -2008,29 +1857,28 @@ export default function PublicCourses() {
                 return coursesWithTranslations.filter(course => {
                   // Улучшенный фильтр по поиску с учетом переводов
                   const matchesSearch = searchQuery === "" || 
-                    // Поиск в оригинальном заголовке
+                    // Поиск в заголовках (основной и переводы)
                     course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    // Поиск в переведенных заголовках, если они есть
-                    (course.title && course.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    (course.title && course.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    // Поиск в оригинальном описании
+                    (course.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+                    (course.title?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+                    // Поиск в описаниях (основной и переводы)
                     course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    // Поиск в переведенных описаниях, если они есть
-                    (course.description && course.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    (course.description && course.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    // Поиск в категории
-                    course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (course.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+                    (course.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
                     // Поиск в категории с учетом перевода
+                    course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     getCategoryRu(course.category).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     getCategoryKz(course.category).toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    // Поиск в провайдере
+                    // Поиск в провайдере с учетом перевода
                     course.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    // Поиск в навыках
-                    course.skills.some(skill => {
-                      return skill.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getProviderRu(course.provider).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    getProviderKz(course.provider).toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    // Поиск в навыках с учетом перевода
+                    course.skills.some(skill => 
+                      skill.toLowerCase().includes(searchQuery.toLowerCase()) ||
                         getSkillRu(skill).toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        getSkillKz(skill).toLowerCase().includes(searchQuery.toLowerCase());
-                    });
+                      getSkillKz(skill).toLowerCase().includes(searchQuery.toLowerCase())
+                    );
                   
                   // Остальные фильтры остаются без изменений
                   const matchesCategory = categoryFilter === "all" || course.category === categoryFilter;
@@ -2361,7 +2209,7 @@ export default function PublicCourses() {
                     {currentCourses.length > 0 ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         {/* Выводим карточки текущей страницы (они уже отфильтрованы до 6 штук) */}
-                        {currentCourses.map((course: Course, index: number) => (
+                        {currentCourses.map((course: CourseWithTranslations, index: number) => (
                           <CourseCard 
                             key={course.id} 
                             course={course} 
