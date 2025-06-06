@@ -4,6 +4,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import fs from "fs";
+import cors from 'cors';
+import chatRouter from './routes/chat';
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -17,6 +19,7 @@ if (!fs.existsSync(certificatesDir)) {
 }
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -70,9 +73,12 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
+  // API routes
+  app.use('/api', chatRouter);
+
   // ALWAYS serve the app on port 3000
   // this serves both the API and the client.
-  const port = 3000;
+  const port = process.env.PORT || 3000;
   server.listen({
     port,
     host: "0.0.0.0"

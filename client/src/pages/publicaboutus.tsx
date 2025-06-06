@@ -596,170 +596,92 @@ export default function PublicAboutUs() {
         {/* Our Mission Section - улучшенная версия */}
         <section 
           id="mission" 
-          className="min-h-screen py-24 flex items-center relative overflow-hidden"
+          className="min-h-screen py-24 flex items-center relative overflow-hidden bg-gradient-to-b from-background to-background/95"
           aria-labelledby="mission-title"
         >
-          {/* Улучшенные декоративные элементы фона */}
-          <div className="absolute top-1/3 left-1/6 w-72 h-72 bg-gradient-to-br from-primary/10 to-indigo-500/5 dark:from-primary/15 dark:to-indigo-500/10 blur-3xl opacity-60 rounded-full animate-pulse" style={{ animationDuration: '10s' }} aria-hidden="true" />
-          <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-tr from-blue-500/5 to-purple-500/10 dark:from-blue-500/15 dark:to-purple-500/15 blur-3xl opacity-60 rounded-full animate-pulse" style={{ animationDuration: '12s' }} aria-hidden="true" />
+          {/* Улучшенные декоративные элементы фона с более мягкими цветами */}
+          <div className="absolute top-1/3 left-1/6 w-72 h-72 bg-gradient-to-br from-primary/5 to-blue-300/5 dark:from-primary/10 dark:to-blue-400/10 blur-3xl opacity-50 rounded-full animate-pulse" style={{ animationDuration: '10s' }} aria-hidden="true" />
+          <div className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-tr from-indigo-300/5 to-primary/5 dark:from-indigo-400/10 dark:to-primary/10 blur-3xl opacity-50 rounded-full animate-pulse" style={{ animationDuration: '12s' }} aria-hidden="true" />
           
           <div className="container mx-auto px-4 max-w-7xl">
             {isVisible.mission && (
               <motion.div 
-                className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
+                className="max-w-4xl mx-auto"
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
               >
                 <motion.div variants={itemVariants}>
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     <h2 
                       id="mission-title"
-                      className="text-3xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 to-indigo-600/90 leading-tight"
+                      className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary/90 via-indigo-500/90 to-blue-500/90 leading-tight text-center"
                     >
                       {language === 'ru' ? 'Наша миссия' : language === 'kz' ? 'Біздің миссиямыз' : 'Our Mission'}
                     </h2>
                     
                     <motion.div 
-                      className="bg-card/60 dark:bg-gray-800/40 backdrop-blur-sm border border-border/10 dark:border-white/5 rounded-xl p-8 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                      className="bg-white/40 dark:bg-gray-800/30 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-xl p-10 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       <motion.p 
-                        className="text-lg mb-6 text-foreground/90 dark:text-foreground/95 leading-relaxed"
+                        className="text-xl mb-8 text-gray-700 dark:text-gray-200 leading-relaxed text-center font-medium"
                         variants={fadeInVariants}
                       >
                         {language === 'ru' 
-                          ? 'Мы создаем образовательную платформу, где каждый студент находит свой путь к профессиональному успеху в единой экосистеме образования и карьерных возможностей.' 
+                          ? 'Мы создаем инновационную образовательную экосистему, объединяющую студентов, преподавателей и работодателей для достижения профессионального успеха.' 
                           : language === 'kz'
-                          ? 'Біз әрбір студент білім беру мен мансаптық мүмкіндіктердің бірыңғай экожүйесінде кәсіби жетістікке жету жолын табатын білім беру платформасын құрамыз.'
-                          : 'We are creating an educational platform where every student finds their path to professional success in a unified ecosystem of education and career opportunities.'}
+                          ? 'Біз студенттер, оқытушылар мен жұмыс берушілерді кәсіби табысқа жету үшін біріктіретін инновациялық білім беру экожүйесін құрамыз.'
+                          : 'We are creating an innovative educational ecosystem that unites students, teachers, and employers to achieve professional success.'}
                       </motion.p>
                       
-                      <motion.p 
-                        className="text-base mb-8 text-foreground/80 dark:text-foreground/85"
-                        variants={fadeInVariants}
-                      >
-                        {language === 'ru' 
-                          ? 'Наша цель — сделать качественное образование доступным для всех, соединяя людей с лучшими преподавателями и открывая двери к возможностям трудоустройства в ведущих компаниях.' 
-                          : language === 'kz'
-                          ? 'Біздің мақсатымыз — адамдарды үздік оқытушылармен байланыстыру және жетекші компанияларда жұмысқа орналасу мүмкіндіктеріне жол ашу арқылы сапалы білімді бәріне қолжетімді ету.'
-                          : 'Our goal is to make quality education accessible to everyone by connecting people with the best teachers and opening doors to employment opportunities at leading companies.'}
-                      </motion.p>
-                      
-                      {/* Улучшенные иконки с более лаконичными описаниями */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                      <div className="grid md:grid-cols-3 gap-8">
                         <motion.div 
-                          className="flex flex-col items-center text-center p-5 bg-background/40 backdrop-blur-sm rounded-lg border border-border/5 hover:shadow-md transition-all duration-300"
-                          whileHover={{ y: -5, backgroundColor: "rgba(var(--background), 0.6)" }}
+                          className="flex flex-col items-center text-center p-6 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 hover:shadow-md transition-all duration-300"
+                          whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.4)" }}
                         >
-                          <div className="mb-4 p-3 bg-primary/10 rounded-full">
-                            <BookOpen className="w-8 h-8 text-primary" />
+                          <div className="mb-4 p-3 bg-gradient-to-br from-primary/10 to-blue-400/10 dark:from-primary/20 dark:to-blue-400/20 rounded-full">
+                            <GraduationCap className="w-8 h-8 text-primary/80 dark:text-primary/90" />
                           </div>
-                          <h3 className="font-semibold text-lg mb-2">
+                          <h3 className="font-semibold text-lg mb-2 text-gray-600 dark:text-gray-200">
                             {language === 'ru' ? 'Образование' : language === 'kz' ? 'Білім' : 'Education'}
                           </h3>
-                          <p className="text-sm text-foreground/70">
-                            {language === 'ru' ? 'Современные программы обучения от ведущих экспертов' : language === 'kz' ? 'Жетекші сарапшылардан заманауи оқыту бағдарламалары' : 'Modern learning programs from leading experts'}
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            {language === 'ru' ? 'Качественное обучение от ведущих специалистов' : language === 'kz' ? 'Жетекші мамандардан сапалы оқыту' : 'Quality education from leading specialists'}
                           </p>
                         </motion.div>
-                        
+
                         <motion.div 
-                          className="flex flex-col items-center text-center p-5 bg-background/40 backdrop-blur-sm rounded-lg border border-border/5 hover:shadow-md transition-all duration-300"
-                          whileHover={{ y: -5, backgroundColor: "rgba(var(--background), 0.6)" }}
+                          className="flex flex-col items-center text-center p-6 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 hover:shadow-md transition-all duration-300"
+                          whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.4)" }}
                         >
-                          <div className="mb-4 p-3 bg-primary/10 rounded-full">
-                            <UserPlus className="w-8 h-8 text-primary" />
+                          <div className="mb-4 p-3 bg-gradient-to-br from-indigo-400/10 to-primary/10 dark:from-indigo-400/20 dark:to-primary/20 rounded-full">
+                            <Code className="w-8 h-8 text-indigo-500/80 dark:text-indigo-400/90" />
                           </div>
-                          <h3 className="font-semibold text-lg mb-2">
-                            {language === 'ru' ? 'Менторство' : language === 'kz' ? 'Тәлімгерлік' : 'Mentorship'}
+                          <h3 className="font-semibold text-lg mb-2 text-gray-600 dark:text-gray-200">
+                            {language === 'ru' ? 'Практика' : language === 'kz' ? 'Тәжірибе' : 'Practice'}
                           </h3>
-                          <p className="text-sm text-foreground/70">
-                            {language === 'ru' ? 'Персональная поддержка и руководство от опытных специалистов' : language === 'kz' ? 'Тәжірибелі мамандардан жеке қолдау және басшылық' : 'Personal support and guidance from experienced professionals'}
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            {language === 'ru' ? 'Реальные проекты и практический опыт' : language === 'kz' ? 'Нақты жобалар және практикалық тәжірибе' : 'Real projects and practical experience'}
                           </p>
                         </motion.div>
-                        
+
                         <motion.div 
-                          className="flex flex-col items-center text-center p-5 bg-background/40 backdrop-blur-sm rounded-lg border border-border/5 hover:shadow-md transition-all duration-300"
-                          whileHover={{ y: -5, backgroundColor: "rgba(var(--background), 0.6)" }}
+                          className="flex flex-col items-center text-center p-6 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 hover:shadow-md transition-all duration-300"
+                          whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.4)" }}
                         >
-                          <div className="mb-4 p-3 bg-primary/10 rounded-full">
-                            <Users2 className="w-8 h-8 text-primary" />
+                          <div className="mb-4 p-3 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 dark:from-blue-400/20 dark:to-indigo-400/20 rounded-full">
+                            <Medal className="w-8 h-8 text-blue-500/80 dark:text-blue-400/90" />
                           </div>
-                          <h3 className="font-semibold text-lg mb-2">
-                            {language === 'ru' ? 'Сообщество' : language === 'kz' ? 'Қауымдастық' : 'Community'}
+                          <h3 className="font-semibold text-lg mb-2 text-gray-600 dark:text-gray-200">
+                            {language === 'ru' ? 'Карьера' : language === 'kz' ? 'Мансап' : 'Career'}
                           </h3>
-                          <p className="text-sm text-foreground/70">
-                            {language === 'ru' ? 'Активная среда для профессионального роста и обмена опытом' : language === 'kz' ? 'Кәсіби өсу және тәжірибе алмасу үшін белсенді орта' : 'Active environment for professional growth and experience sharing'}
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            {language === 'ru' ? 'Возможности трудоустройства в ведущих компаниях' : language === 'kz' ? 'Жетекші компанияларда жұмысқа орналасу мүмкіндіктері' : 'Employment opportunities in leading companies'}
                           </p>
                         </motion.div>
                       </div>
                     </motion.div>
                   </div>
-                </motion.div>
-                
-                {/* Правая часть с улучшенным изображением */}
-                <motion.div 
-                  className="relative"
-                  variants={itemVariants}
-                >
-                  {/* Основное изображение */}
-                  <motion.div 
-                    className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-border/10"
-                    whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <img 
-                      src="/assets/about/mission.jpg" 
-                      alt={language === 'ru' ? 'Студенты на платформе' : language === 'kz' ? 'Платформадағы студенттер' : 'Students on the platform'}
-                      className="w-full h-auto object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80";
-                      }}
-                    />
-                    
-                    {/* Улучшенный оверлей с градиентом */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end">
-                      
-                    </div>
-                  </motion.div>
-                  
-                  {/* Улучшенные плавающие иконки/элементы */}
-                  <motion.div 
-                    className="absolute -bottom-4 -left-4 p-4 bg-background rounded-xl shadow-xl z-20 border border-border/10"
-                    animate={{ y: [0, -15, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Lightbulb className="w-6 h-6 text-primary" />
-                      <div>
-                        <div className="text-sm font-medium">
-                          {language === 'ru' ? '150+' : language === 'kz' ? '150+' : '150+'}
-                        </div>
-                        <div className="text-xs text-foreground/60">
-                          {language === 'ru' ? 'Курсов' : language === 'kz' ? 'Курстар' : 'Courses'}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                  
-                  <motion.div 
-                    className="absolute top-10 -right-4 p-4 bg-background rounded-xl shadow-xl z-20 border border-border/10"
-                    animate={{ y: [0, 15, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Rocket className="w-6 h-6 text-indigo-500" />
-                      <div>
-                        <div className="text-sm font-medium">
-                          {language === 'ru' ? '98%' : language === 'kz' ? '98%' : '98%'}
-                        </div>
-                        <div className="text-xs text-foreground/60">
-                          {language === 'ru' ? 'Трудоустройство' : language === 'kz' ? 'Жұмысқа орналастыру' : 'Employment rate'}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
                 </motion.div>
               </motion.div>
             )}

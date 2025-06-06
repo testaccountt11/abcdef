@@ -8,27 +8,27 @@
 :root {
   --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   
-  /* Light theme */
+  /* Light theme - Updated colors for better eye comfort */
   --background: 210 40% 98%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 215 25% 27%;
   
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 215 25% 27%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
+  --popover-foreground: 215 25% 27%;
   
   --primary: 221.2 83.2% 53.3%;
   --primary-foreground: 210 40% 98%;
   
   --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --secondary-foreground: 215 25% 27%;
   
   --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted-foreground: 215 25% 47%;
   
   --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  --accent-foreground: 215 25% 27%;
   
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
@@ -89,13 +89,31 @@
     @apply bg-background text-foreground font-sans transition-colors duration-300;
     font-family: var(--font-sans);
   }
+
+  /* Improved typography for better readability */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-700 dark:text-gray-200 font-semibold tracking-tight;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-300 leading-relaxed;
+  }
 }
 
 /* Custom styles */
 .glass {
   @apply backdrop-blur-lg border rounded-2xl transition-all duration-300;
-  @apply dark:bg-black/25 dark:border-white/10;
-  @apply bg-white/40 border-white/30;
+  @apply dark:bg-gray-800/30 dark:border-white/10;
+  @apply bg-white/40 border-white/20;
+}
+
+.glass-card {
+  @apply bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 
+         hover:shadow-md transition-all duration-300 p-6;
+}
+
+.glass-hover {
+  @apply hover:bg-white/40 dark:hover:bg-gray-700/40 transition-all duration-300;
 }
 
 .glow {
@@ -110,11 +128,36 @@
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary/90 via-indigo-500/90 to-blue-500/90;
 }
 
 .bg-gradient {
-  @apply bg-gradient-to-r from-blue-50/10 to-cyan-50/10 dark:from-blue-900/10 dark:to-cyan-900/10;
+  @apply bg-gradient-to-b from-background to-background/95;
+}
+
+.icon-container {
+  @apply p-3 rounded-full bg-gradient-to-br transition-all duration-300;
+}
+
+.icon-primary {
+  @apply from-primary/10 to-blue-400/10 dark:from-primary/20 dark:to-blue-400/20;
+}
+
+.icon-secondary {
+  @apply from-indigo-400/10 to-primary/10 dark:from-indigo-400/20 dark:to-primary/20;
+}
+
+.icon-tertiary {
+  @apply from-blue-400/10 to-indigo-400/10 dark:from-blue-400/20 dark:to-indigo-400/20;
+}
+
+.title-gradient {
+  @apply text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r 
+         from-primary/90 via-indigo-500/90 to-blue-500/90 leading-tight text-center;
+}
+
+.subtitle-text {
+  @apply text-lg text-gray-600 dark:text-gray-300 leading-relaxed text-center font-medium;
 }
 
 .hero-grid {

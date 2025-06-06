@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 import { Footer } from "@/components/Footer";
+import { FloatingChatButton } from "@/components/AIChat/FloatingChatButton";
 
 interface PublicPageLayoutProps {
   children: ReactNode;
@@ -16,6 +17,7 @@ export function PublicPageLayout({ children }: PublicPageLayoutProps) {
       </main>
       <Footer />
       <Toaster />
+      <FloatingChatButton />
     </div>
   );
 } 
