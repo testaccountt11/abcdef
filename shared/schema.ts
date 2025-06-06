@@ -12,6 +12,18 @@ export const users = pgTable("users", {
   lastName: text("last_name"),
   email: text("email").notNull().unique(),
   profileImage: text("profile_image"),
+  phone: text("phone"),
+  location: text("location"),
+  website: text("website"),
+  linkedin: text("linkedin"),
+  github: text("github"),
+  telegram: text("telegram"),
+  whatsapp: text("whatsapp"),
+  bio: text("bio"),
+  company: text("company"),
+  position: text("position"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users);
@@ -121,11 +133,85 @@ export const stats = pgTable("stats", {
 export const insertStatsSchema = createInsertSchema(stats);
 export const selectStatsSchema = createSelectSchema(stats);
 
+// User skills schema
+export const userSkills = pgTable("user_skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  level: integer("level").notNull(), // 1-5
+  yearsOfExperience: integer("years_of_experience"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User education schema
+export const userEducation = pgTable("user_education", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  institution: text("institution").notNull(),
+  degree: text("degree").notNull(),
+  fieldOfStudy: text("field_of_study").notNull(),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  isPresent: boolean("is_present").default(false),
+  gpa: text("gpa"),
+  activities: text("activities"),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User languages schema
+export const userLanguages = pgTable("user_languages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  level: text("level").notNull(), // basic, intermediate, advanced, native
+  certificate: text("certificate"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User projects schema
+export const userProjects = pgTable("user_projects", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url"),
+  projectUrl: text("project_url"),
+  githubUrl: text("github_url"),
+  technologies: text("technologies").array(),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  isPresent: boolean("is_present").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Create schemas for the new tables
+export const insertUserSkillSchema = createInsertSchema(userSkills);
+export const selectUserSkillSchema = createSelectSchema(userSkills);
+
+export const insertUserEducationSchema = createInsertSchema(userEducation);
+export const selectUserEducationSchema = createSelectSchema(userEducation);
+
+export const insertUserLanguageSchema = createInsertSchema(userLanguages);
+export const selectUserLanguageSchema = createSelectSchema(userLanguages);
+
+export const insertUserProjectSchema = createInsertSchema(userProjects);
+export const selectUserProjectSchema = createSelectSchema(userProjects);
+
 // Define relations between tables
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
   certificates: many(certificates),
   stats: one(stats),
+  skills: many(userSkills),
+  education: many(userEducation),
+  languages: many(userLanguages),
+  projects: many(userProjects),
 }));
 
 export const coursesRelations = relations(courses, ({ many }) => ({
@@ -275,6 +361,10 @@ export const usersRelationsWithAchievements = relations(users, ({ many, one }) =
   stats: one(stats),
   achievements: many(userAchievements),
   badges: many(userBadges),
+  skills: many(userSkills),
+  education: many(userEducation),
+  languages: many(userLanguages),
+  projects: many(userProjects),
 }));
 
 // Contact request schema
@@ -597,3 +687,52 @@ export interface IStorage {
   getAllMentorApplications(): Promise<MentorApplication[]>;
   updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication | null>;
 }
+
+// User skills relations
+export const userSkillsRelations = relations(userSkills, ({ one }) => ({
+  user: one(users, {
+    fields: [userSkills.userId],
+    references: [users.id],
+  }),
+}));
+
+// User education relations
+export const userEducationRelations = relations(userEducation, ({ one }) => ({
+  user: one(users, {
+    fields: [userEducation.userId],
+    references: [users.id],
+  }),
+}));
+
+// User languages relations
+export const userLanguagesRelations = relations(userLanguages, ({ one }) => ({
+  user: one(users, {
+    fields: [userLanguages.userId],
+    references: [users.id],
+  }),
+}));
+
+// User projects relations
+export const userProjectsRelations = relations(userProjects, ({ one }) => ({
+  user: one(users, {
+    fields: [userProjects.userId],
+    references: [users.id],
+  }),
+}));
+
+// Export types for the new tables
+export type UserSkill = typeof userSkills.$inferSelect;
+export type InsertUserSkill = z.infer<typeof insertUserSkillSchema>;
+export type SelectUserSkill = z.infer<typeof selectUserSkillSchema>;
+
+export type UserEducation = typeof userEducation.$inferSelect;
+export type InsertUserEducation = z.infer<typeof insertUserEducationSchema>;
+export type SelectUserEducation = z.infer<typeof selectUserEducationSchema>;
+
+export type UserLanguage = typeof userLanguages.$inferSelect;
+export type InsertUserLanguage = z.infer<typeof insertUserLanguageSchema>;
+export type SelectUserLanguage = z.infer<typeof selectUserLanguageSchema>;
+
+export type UserProject = typeof userProjects.$inferSelect;
+export type InsertUserProject = z.infer<typeof insertUserProjectSchema>;
+export type SelectUserProject = z.infer<typeof selectUserProjectSchema>;

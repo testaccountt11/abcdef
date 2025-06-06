@@ -11,6 +11,10 @@ import {
   UserAchievement, InsertUserAchievement,
   Badge, InsertBadge,
   UserBadge, InsertUserBadge,
+  UserSkill, InsertUserSkill,
+  UserEducation, InsertUserEducation,
+  UserLanguage, InsertUserLanguage,
+  UserProject, InsertUserProject,
   users,
   courses,
   enrollments,
@@ -23,6 +27,10 @@ import {
   userAchievements,
   badges,
   userBadges,
+  userSkills,
+  userEducation,
+  userLanguages,
+  userProjects,
   contactRequests,
   insertContactRequestSchema,
   ContactRequest,
@@ -267,6 +275,60 @@ const mentorApplicationsTable = pgTable("mentor_applications", {
   created_at: timestamp("created_at").defaultNow().notNull()
 });
 
+// Add new table definitions
+const userSkillsTable = addIsDrizzleTable(pgTable("user_skills", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  level: integer("level").notNull(),
+  yearsOfExperience: integer("years_of_experience"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}));
+
+const userEducationTable = addIsDrizzleTable(pgTable("user_education", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  institution: text("institution").notNull(),
+  degree: text("degree").notNull(),
+  fieldOfStudy: text("field_of_study").notNull(),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  isPresent: boolean("is_present").default(false),
+  gpa: text("gpa"),
+  activities: text("activities"),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}));
+
+const userLanguagesTable = addIsDrizzleTable(pgTable("user_languages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  level: text("level").notNull(),
+  certificate: text("certificate"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}));
+
+const userProjectsTable = addIsDrizzleTable(pgTable("user_projects", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url"),
+  projectUrl: text("project_url"),
+  githubUrl: text("github_url"),
+  technologies: text("technologies").array(),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  isPresent: boolean("is_present").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}));
+
 // Helper function to convert comma-separated string to array
 function stringToArray(value: string | null): string[] {
   if (!value) return [];
@@ -311,13 +373,28 @@ export class PgStorage implements IStorage {
   }
 
   // Users
-  async getUser(id: number): Promise<User | undefined> {
-    const result = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, id))
-      .limit(1);
-    return result[0] as User;
+  async getUser(id: number): Promise<(User & {
+    skills?: UserSkill[];
+    education?: UserEducation[];
+    languages?: UserLanguage[];
+    projects?: UserProject[];
+  }) | undefined> {
+    const user = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
+    if (!user.length) return undefined;
+
+    const [userResult] = user;
+    const skills = await this.getUserSkills(id);
+    const education = await this.getUserEducation(id);
+    const languages = await this.getUserLanguages(id);
+    const projects = await this.getUserProjects(id);
+
+    return {
+      ...userResult,
+      skills,
+      education,
+      languages,
+      projects,
+    };
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -1231,6 +1308,82 @@ export class PgStorage implements IStorage {
     };
 
     return userAchievement as UserAchievement & { achievement: Achievement };
+  }
+
+  // User Skills methods
+  async getUserSkills(userId: number): Promise<UserSkill[]> {
+    return await db.select().from(userSkillsTable).where(eq(userSkillsTable.userId, userId));
+  }
+
+  async createUserSkill(skill: InsertUserSkill): Promise<UserSkill> {
+    const [result] = await db.insert(userSkillsTable).values(skill).returning();
+    return result;
+  }
+
+  async updateUserSkill(id: number, skill: Partial<InsertUserSkill>): Promise<UserSkill | undefined> {
+    const [result] = await db.update(userSkillsTable).set(skill).where(eq(userSkillsTable.id, id)).returning();
+    return result;
+  }
+
+  async deleteUserSkill(id: number): Promise<void> {
+    await db.delete(userSkillsTable).where(eq(userSkillsTable.id, id));
+  }
+
+  // User Education methods
+  async getUserEducation(userId: number): Promise<UserEducation[]> {
+    return await db.select().from(userEducationTable).where(eq(userEducationTable.userId, userId));
+  }
+
+  async createUserEducation(education: InsertUserEducation): Promise<UserEducation> {
+    const [result] = await db.insert(userEducationTable).values(education).returning();
+    return result;
+  }
+
+  async updateUserEducation(id: number, education: Partial<InsertUserEducation>): Promise<UserEducation | undefined> {
+    const [result] = await db.update(userEducationTable).set(education).where(eq(userEducationTable.id, id)).returning();
+    return result;
+  }
+
+  async deleteUserEducation(id: number): Promise<void> {
+    await db.delete(userEducationTable).where(eq(userEducationTable.id, id));
+  }
+
+  // User Languages methods
+  async getUserLanguages(userId: number): Promise<UserLanguage[]> {
+    return await db.select().from(userLanguagesTable).where(eq(userLanguagesTable.userId, userId));
+  }
+
+  async createUserLanguage(language: InsertUserLanguage): Promise<UserLanguage> {
+    const [result] = await db.insert(userLanguagesTable).values(language).returning();
+    return result;
+  }
+
+  async updateUserLanguage(id: number, language: Partial<InsertUserLanguage>): Promise<UserLanguage | undefined> {
+    const [result] = await db.update(userLanguagesTable).set(language).where(eq(userLanguagesTable.id, id)).returning();
+    return result;
+  }
+
+  async deleteUserLanguage(id: number): Promise<void> {
+    await db.delete(userLanguagesTable).where(eq(userLanguagesTable.id, id));
+  }
+
+  // User Projects methods
+  async getUserProjects(userId: number): Promise<UserProject[]> {
+    return await db.select().from(userProjectsTable).where(eq(userProjectsTable.userId, userId));
+  }
+
+  async createUserProject(project: InsertUserProject): Promise<UserProject> {
+    const [result] = await db.insert(userProjectsTable).values(project).returning();
+    return result;
+  }
+
+  async updateUserProject(id: number, project: Partial<InsertUserProject>): Promise<UserProject | undefined> {
+    const [result] = await db.update(userProjectsTable).set(project).where(eq(userProjectsTable.id, id)).returning();
+    return result;
+  }
+
+  async deleteUserProject(id: number): Promise<void> {
+    await db.delete(userProjectsTable).where(eq(userProjectsTable.id, id));
   }
 }
 

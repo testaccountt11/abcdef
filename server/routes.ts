@@ -1293,6 +1293,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Profile routes
+  app.get("/api/profile/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Skills routes
+  app.get("/api/profile/:userId/skills", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const skills = await storage.getUserSkills(userId);
+      res.json(skills);
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/profile/:userId/skills", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const skill = { ...req.body, userId };
+      const result = await storage.createUserSkill(skill);
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating skill:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.put("/api/profile/skills/:skillId", isAuthenticated, async (req, res) => {
+    try {
+      const skillId = parseInt(req.params.skillId);
+      const result = await storage.updateUserSkill(skillId, req.body);
+      if (!result) {
+        return res.status(404).json({ error: "Skill not found" });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error updating skill:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/profile/skills/:skillId", isAuthenticated, async (req, res) => {
+    try {
+      const skillId = parseInt(req.params.skillId);
+      await storage.deleteUserSkill(skillId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting skill:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Education routes
+  app.get("/api/profile/:userId/education", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const education = await storage.getUserEducation(userId);
+      res.json(education);
+    } catch (error) {
+      console.error("Error fetching education:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/profile/:userId/education", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const education = { ...req.body, userId };
+      const result = await storage.createUserEducation(education);
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating education:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.put("/api/profile/education/:educationId", isAuthenticated, async (req, res) => {
+    try {
+      const educationId = parseInt(req.params.educationId);
+      const result = await storage.updateUserEducation(educationId, req.body);
+      if (!result) {
+        return res.status(404).json({ error: "Education not found" });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error updating education:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/profile/education/:educationId", isAuthenticated, async (req, res) => {
+    try {
+      const educationId = parseInt(req.params.educationId);
+      await storage.deleteUserEducation(educationId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting education:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Languages routes
+  app.get("/api/profile/:userId/languages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const languages = await storage.getUserLanguages(userId);
+      res.json(languages);
+    } catch (error) {
+      console.error("Error fetching languages:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/profile/:userId/languages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const language = { ...req.body, userId };
+      const result = await storage.createUserLanguage(language);
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating language:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.put("/api/profile/languages/:languageId", isAuthenticated, async (req, res) => {
+    try {
+      const languageId = parseInt(req.params.languageId);
+      const result = await storage.updateUserLanguage(languageId, req.body);
+      if (!result) {
+        return res.status(404).json({ error: "Language not found" });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error updating language:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/profile/languages/:languageId", isAuthenticated, async (req, res) => {
+    try {
+      const languageId = parseInt(req.params.languageId);
+      await storage.deleteUserLanguage(languageId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting language:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Projects routes
+  app.get("/api/profile/:userId/projects", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const projects = await storage.getUserProjects(userId);
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/profile/:userId/projects", isAuthenticated, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const project = { ...req.body, userId };
+      const result = await storage.createUserProject(project);
+      res.json(result);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.put("/api/profile/projects/:projectId", isAuthenticated, async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      const result = await storage.updateUserProject(projectId, req.body);
+      if (!result) {
+        return res.status(404).json({ error: "Project not found" });
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/profile/projects/:projectId", isAuthenticated, async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.projectId);
+      await storage.deleteUserProject(projectId);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
   // Create HTTP server
   const httpServer = createServer(app);
   

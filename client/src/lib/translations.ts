@@ -220,6 +220,51 @@ export type TranslationKey =
   | 'profile.achievementsDesc'
   | 'profile.allBadges'
   | 'profile.badgesDesc'
+  | 'profile.skills'
+  | 'profile.skillsDesc'
+  | 'profile.portfolio'
+  | 'profile.portfolioDesc'
+  | 'profile.contact'
+  | 'profile.contactDesc'
+  | 'profile.editProfile'
+  | 'profile.level'
+  | 'profile.experience'
+  | 'profile.projects'
+  | 'profile.addSkill'
+  | 'profile.addProject'
+  | 'profile.projectTitle'
+  | 'profile.projectDesc'
+  | 'profile.projectUrl'
+  | 'profile.projectTech'
+  | 'profile.projectImage'
+  | 'profile.phone'
+  | 'profile.location'
+  | 'profile.website'
+  | 'profile.linkedin'
+  | 'profile.github'
+  | 'profile.telegram'
+  | 'profile.whatsapp'
+  | 'profile.socialLinks'
+  | 'profile.education'
+  | 'profile.educationDesc'
+  | 'profile.addEducation'
+  | 'profile.institution'
+  | 'profile.degree'
+  | 'profile.fieldOfStudy'
+  | 'profile.startDate'
+  | 'profile.endDate'
+  | 'profile.present'
+  | 'profile.gpa'
+  | 'profile.activities'
+  | 'profile.languages'
+  | 'profile.languagesDesc'
+  | 'profile.addLanguage'
+  | 'profile.languageName'
+  | 'profile.languageLevel'
+  | 'profile.basic'
+  | 'profile.intermediate'
+  | 'profile.advanced'
+  | 'profile.native'
   | 'errors.userNotFound'
   | 'achievement.completed'
   | 'achievement.progress'
@@ -279,7 +324,19 @@ export type TranslationKey =
   | 'auth.password.requirements.length'
   | 'auth.password.requirements.uppercase'
   | 'auth.password.requirements.special'
-  | 'auth.password.requirements.match';
+  | 'auth.password.requirements.match'
+  | 'profile.editSkill'
+  | 'profile.skillName'
+  | 'profile.skillCategory'
+  | 'profile.skillLevel'
+  | 'profile.selectLevel'
+  | 'profile.yearsOfExperience'
+  | 'profile.editEducation'
+  | 'profile.description'
+  | 'common.add'
+  | 'profile.certificate'
+  | 'profile.editProject'
+  | 'profile.editLanguage';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -561,7 +618,64 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.password.requirements.length': 'Password must be at least 8 characters',
     'auth.password.requirements.uppercase': 'Password must contain at least one uppercase letter',
     'auth.password.requirements.special': 'Password must contain at least one special character',
-    'auth.password.requirements.match': 'Passwords don\'t match'
+    'auth.password.requirements.match': 'Passwords don\'t match',
+    'profile.skills': 'Skills',
+    'profile.skillsDesc': 'Technical and soft skills',
+    'profile.portfolio': 'Portfolio',
+    'profile.portfolioDesc': 'Projects and work samples',
+    'profile.contact': 'Contact Information',
+    'profile.contactDesc': 'How to reach me',
+    'profile.editProfile': 'Edit Profile',
+    'profile.level': 'Level',
+    'profile.experience': 'Experience',
+    'profile.projects': 'Projects',
+    'profile.addSkill': 'Add Skill',
+    'profile.addProject': 'Add Project',
+    'profile.projectTitle': 'Project Title',
+    'profile.projectDesc': 'Project Description',
+    'profile.projectUrl': 'Project URL',
+    'profile.projectTech': 'Technologies Used',
+    'profile.projectImage': 'Project Image',
+    'profile.phone': 'Phone',
+    'profile.location': 'Location',
+    'profile.website': 'Website',
+    'profile.linkedin': 'LinkedIn',
+    'profile.github': 'GitHub',
+    'profile.telegram': 'Telegram',
+    'profile.whatsapp': 'WhatsApp',
+    'profile.socialLinks': 'Social Links',
+    'profile.education': 'Education',
+    'profile.educationDesc': 'Academic background',
+    'profile.addEducation': 'Add Education',
+    'profile.institution': 'Institution',
+    'profile.degree': 'Degree',
+    'profile.fieldOfStudy': 'Field of Study',
+    'profile.startDate': 'Start Date',
+    'profile.endDate': 'End Date',
+    'profile.present': 'Present',
+    'profile.gpa': 'GPA',
+    'profile.activities': 'Activities',
+    'profile.languages': 'Languages',
+    'profile.languagesDesc': 'Language proficiency',
+    'profile.addLanguage': 'Add Language',
+    'profile.languageName': 'Language',
+    'profile.languageLevel': 'Proficiency Level',
+    'profile.basic': 'Basic',
+    'profile.intermediate': 'Intermediate',
+    'profile.advanced': 'Advanced',
+    'profile.native': 'Native',
+    'profile.editSkill': 'Edit Skill',
+    'profile.skillName': 'Skill Name',
+    'profile.skillCategory': 'Category',
+    'profile.skillLevel': 'Skill Level',
+    'profile.selectLevel': 'Select Level',
+    'profile.yearsOfExperience': 'Years of Experience',
+    'profile.editEducation': 'Edit Education',
+    'profile.description': 'Description',
+    'common.add': 'Add',
+    'profile.certificate': 'Certificate',
+    'profile.editProject': 'Edit Project',
+    'profile.editLanguage': 'Edit Language'
   },
   ru: {
     'auth.haveAccount': 'Уже есть аккаунт?',
@@ -831,18 +945,75 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'footer.links.aboutUs': 'Біз туралы',
     'aboutUs.mission.imageCaption': 'Строим лучшее будущее через образование',
     'aboutUs.team.connectButton': 'Связаться',
-    'aboutUs.cta.primaryButton': 'Присоединиться',
-    'aboutUs.cta.secondaryButton': 'Изучить курсы',
-    'aboutUs.cta.stat1': 'Активных пользователей',
-    'aboutUs.cta.stat2': 'Образовательных партнеров',
-    'aboutUs.cta.stat3': 'Уровень удовлетворенности',
-    'aboutUs.values.description': 'Эти основные ценности определяют всё, что мы делаем - от разработки продукта до взаимодействия с сообществом.',
+    'aboutUs.cta.primaryButton': 'Қазір қосылу',
+    'aboutUs.cta.secondaryButton': 'Курстарды зерттеу',
+    'aboutUs.cta.stat1': 'Белсенді қолданушылар',
+    'aboutUs.cta.stat2': 'Білім беру серіктестері',
+    'aboutUs.cta.stat3': 'Қанағаттану деңгейі',
+    'aboutUs.values.description': 'Бұл негізгі құндылықтар біздің барлық іс-әрекеттерімізді анықтайды - өнімді дамытудан бастап қоғаммен қарым-қатынасқа дейін.',
     'faq.title': "Часто задаваемые вопросы",
     'faq.subtitle': "Найдите ответы на распространенные вопросы о нашей платформе и услугах.",
     'auth.password.requirements.length': 'Пароль должен содержать не менее 8 символов',
     'auth.password.requirements.uppercase': 'Пароль должен содержать как минимум одну заглавную букву',
     'auth.password.requirements.special': 'Пароль должен содержать как минимум один специальный символ',
-    'auth.password.requirements.match': 'Пароли не совпадают'
+    'auth.password.requirements.match': 'Пароли не совпадают',
+    'profile.skills': 'Навыки',
+    'profile.skillsDesc': 'Технические и личные навыки',
+    'profile.portfolio': 'Портфолио',
+    'profile.portfolioDesc': 'Проекты и примеры работ',
+    'profile.contact': 'Контактная информация',
+    'profile.contactDesc': 'Как со мной связаться',
+    'profile.editProfile': 'Редактировать профиль',
+    'profile.level': 'Уровень',
+    'profile.experience': 'Опыт',
+    'profile.projects': 'Проекты',
+    'profile.addSkill': 'Добавить навык',
+    'profile.addProject': 'Добавить проект',
+    'profile.projectTitle': 'Название проекта',
+    'profile.projectDesc': 'Описание проекта',
+    'profile.projectUrl': 'URL проекта',
+    'profile.projectTech': 'Использованные технологии',
+    'profile.projectImage': 'Изображение проекта',
+    'profile.phone': 'Телефон',
+    'profile.location': 'Местоположение',
+    'profile.website': 'Веб-сайт',
+    'profile.linkedin': 'LinkedIn',
+    'profile.github': 'GitHub',
+    'profile.telegram': 'Telegram',
+    'profile.whatsapp': 'WhatsApp',
+    'profile.socialLinks': 'Социальные сети',
+    'profile.education': 'Образование',
+    'profile.educationDesc': 'Академическая подготовка',
+    'profile.addEducation': 'Добавить образование',
+    'profile.institution': 'Учебное заведение',
+    'profile.degree': 'Степень',
+    'profile.fieldOfStudy': 'Направление обучения',
+    'profile.startDate': 'Дата начала',
+    'profile.endDate': 'Дата окончания',
+    'profile.present': 'По настоящее время',
+    'profile.gpa': 'Средний балл',
+    'profile.activities': 'Деятельность',
+    'profile.languages': 'Языки',
+    'profile.languagesDesc': 'Владение языками',
+    'profile.addLanguage': 'Добавить язык',
+    'profile.languageName': 'Язык',
+    'profile.languageLevel': 'Уровень владения',
+    'profile.basic': 'Базовый',
+    'profile.intermediate': 'Средний',
+    'profile.advanced': 'Продвинутый',
+    'profile.native': 'Родной',
+    'profile.editSkill': 'Редактировать навык',
+    'profile.skillName': 'Название навыка',
+    'profile.skillCategory': 'Категория',
+    'profile.skillLevel': 'Уровень навыка',
+    'profile.selectLevel': 'Выберите уровень',
+    'profile.yearsOfExperience': 'Опыт работы (лет)',
+    'profile.editEducation': 'Редактировать образование',
+    'profile.description': 'Описание',
+    'common.add': 'Добавить',
+    'profile.certificate': 'Сертификат',
+    'profile.editProject': 'Редактировать проект',
+    'profile.editLanguage': 'Редактировать язык'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -1123,7 +1294,64 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.password.requirements.length': 'Құпия сөз кемінде 8 таңбадан тұруы керек',
     'auth.password.requirements.uppercase': 'Құпия сөзде кемінде бір бас әріп болуы керек',
     'auth.password.requirements.special': 'Құпия сөзде кемінде бір арнайы таңба болуы керек',
-    'auth.password.requirements.match': 'Құпия сөздер сәйкес келмейді'
+    'auth.password.requirements.match': 'Құпия сөздер сәйкес келмейді',
+    'profile.skills': 'Дағдылар',
+    'profile.skillsDesc': 'Техникалық және жеке дағдылар',
+    'profile.portfolio': 'Портфолио',
+    'profile.portfolioDesc': 'Жобалар мен жұмыс үлгілері',
+    'profile.contact': 'Байланыс ақпараты',
+    'profile.contactDesc': 'Менімен байланысу',
+    'profile.editProfile': 'Профильді өңдеу',
+    'profile.level': 'Деңгей',
+    'profile.experience': 'Тәжірибе',
+    'profile.projects': 'Жобалар',
+    'profile.addSkill': 'Дағды қосу',
+    'profile.addProject': 'Жоба қосу',
+    'profile.projectTitle': 'Жоба атауы',
+    'profile.projectDesc': 'Жоба сипаттамасы',
+    'profile.projectUrl': 'Жоба URL',
+    'profile.projectTech': 'Қолданылған технологиялар',
+    'profile.projectImage': 'Жоба суреті',
+    'profile.phone': 'Телефон',
+    'profile.location': 'Орналасқан жері',
+    'profile.website': 'Веб-сайт',
+    'profile.linkedin': 'LinkedIn',
+    'profile.github': 'GitHub',
+    'profile.telegram': 'Telegram',
+    'profile.whatsapp': 'WhatsApp',
+    'profile.socialLinks': 'Әлеуметтік желілер',
+    'profile.education': 'Білім',
+    'profile.educationDesc': 'Академиялық дайындық',
+    'profile.addEducation': 'Білім қосу',
+    'profile.institution': 'Оқу орны',
+    'profile.degree': 'Дәреже',
+    'profile.fieldOfStudy': 'Оқу бағыты',
+    'profile.startDate': 'Басталу күні',
+    'profile.endDate': 'Аяқталу күні',
+    'profile.present': 'Қазіргі уақытта',
+    'profile.gpa': 'Орташа балл',
+    'profile.activities': 'Қызмет',
+    'profile.languages': 'Тілдер',
+    'profile.languagesDesc': 'Тіл білу деңгейі',
+    'profile.addLanguage': 'Тіл қосу',
+    'profile.languageName': 'Тіл',
+    'profile.languageLevel': 'Білу деңгейі',
+    'profile.basic': 'Бастапқы',
+    'profile.intermediate': 'Орта',
+    'profile.advanced': 'Жоғары',
+    'profile.native': 'Ана тілі',
+    'profile.editSkill': 'Дағдыны өңдеу',
+    'profile.skillName': 'Дағды атауы',
+    'profile.skillCategory': 'Санат',
+    'profile.skillLevel': 'Дағды деңгейі',
+    'profile.selectLevel': 'Деңгейді таңдаңыз',
+    'profile.yearsOfExperience': 'Жұмыс тәжірибесі (жыл)',
+    'profile.editEducation': 'Білімді өңдеу',
+    'profile.description': 'Сипаттама',
+    'common.add': 'Қосу',
+    'profile.certificate': 'Сертификат',
+    'profile.editProject': 'Жобаны өңдеу',
+    'profile.editLanguage': 'Тілді өңдеу'
   }
 };
 

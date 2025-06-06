@@ -442,7 +442,19 @@ export class MemStorage implements IStorage {
       ...insertUser, 
       id,
       lastName: insertUser.lastName || null,
-      profileImage: insertUser.profileImage || null
+      profileImage: insertUser.profileImage || null,
+      phone: insertUser.phone || null,
+      location: insertUser.location || null,
+      website: insertUser.website || null,
+      linkedin: insertUser.linkedin || null,
+      github: insertUser.github || null,
+      telegram: insertUser.telegram || null,
+      whatsapp: insertUser.whatsapp || null,
+      bio: insertUser.bio || null,
+      company: insertUser.company || null,
+      position: insertUser.position || null,
+      createdAt: insertUser.createdAt || new Date(),
+      updatedAt: insertUser.updatedAt || new Date()
     };
     this.users.set(id, user);
     return user;

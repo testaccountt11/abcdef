@@ -66,4 +66,51 @@ export interface ApiResponse<T> {
 } 
 
 export * from './internship';
-export * from './message'; 
+export * from './message';
+
+export interface Skill {
+  id: number;
+  name: string;
+  category: string;
+  level: number;
+  yearsOfExperience?: number;
+}
+
+export interface Education {
+  id: number;
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate?: string;
+  isPresent: boolean;
+  gpa?: string;
+  activities?: string;
+  description?: string;
+}
+
+export interface Language {
+  id: number;
+  name: string;
+  level: 'basic' | 'intermediate' | 'advanced' | 'native';
+  certificate?: string;
+}
+
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  url?: string;
+  projectUrl?: string;
+  githubUrl?: string;
+  technologies: string[];
+  imageUrl?: string;
+  startDate: string;
+  endDate?: string;
+  isPresent: boolean;
+}
+
+export interface NewSkill extends Omit<Skill, 'id'> {}
+export interface NewEducation extends Omit<Education, 'id'> {}
+export interface NewLanguage extends Omit<Language, 'id'> {}
+export interface NewProject extends Omit<Project, 'id'> {} 
