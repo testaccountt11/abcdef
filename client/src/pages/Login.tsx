@@ -14,6 +14,8 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslations } from "@/hooks/use-translations";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useFirebaseAuth } from "@/hooks/use-firebase-auth";
+import { Loader2 } from "lucide-react";
 
 const loginFormSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -27,6 +29,7 @@ const Login: React.FC = () => {
   const [, setLocation] = useLocation();
   const { t } = useTranslations();
   const { login } = useAuthContext();
+  const { signIn, signInWithGoogle } = useFirebaseAuth();
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<LoginFormValues>({
@@ -38,39 +41,65 @@ const Login: React.FC = () => {
   });
 
   const handleGoogleSignIn = async () => {
-    toast({
-      title: "Google Sign-In Unavailable",
-      description: "Please use email/password login for now. Google Sign-In will be available soon.",
-      variant: "destructive",
-    });
+    try {
+      setIsLoading(true);
+      const user = await signInWithGoogle();
+      
+      // Convert Firebase user to your app's user format
+      const appUser = {
+        id: user.uid,
+        email: user.email!,
+        firstName: user.displayName?.split(' ')[0] || '',
+        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+        profileImage: user.photoURL,
+      };
+      
+      login(appUser);
+      setLocation('/dashboard');
+      
+      toast({
+        title: t('auth.success'),
+        description: t('auth.welcomeBack'),
+      });
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      toast({
+        title: t('auth.error'),
+        description: error instanceof Error ? error.message : t('auth.googleSignInError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/login/direct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      login(data.user);
+      const user = await signIn(values.email, values.password);
+      
+      // Convert Firebase user to your app's user format
+      const appUser = {
+        id: user.uid,
+        email: user.email!,
+        firstName: user.displayName?.split(' ')[0] || '',
+        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+        profileImage: user.photoURL,
+      };
+      
+      login(appUser);
       setLocation('/dashboard');
       
+      toast({
+        title: t('auth.success'),
+        description: t('auth.welcomeBack'),
+      });
     } catch (error) {
       console.error('Login error:', error);
       toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "Invalid email or password",
-        variant: "destructive",
+        title: t('auth.error'),
+        description: error instanceof Error ? error.message : t('auth.invalidCredentials'),
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -137,6 +166,7 @@ const Login: React.FC = () => {
                     className="p-0 h-auto text-sm" 
                     onClick={() => setLocation('/forgot-password')}
                     type="button"
+                    disabled={isLoading}
                   >
                     {t('auth.forgotPassword')}
                   </Button>
@@ -146,7 +176,14 @@ const Login: React.FC = () => {
                   className="w-full" 
                   disabled={isLoading}
                 >
-                  {isLoading ? t('auth.signingIn') : t('auth.signin.button')}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('auth.signingIn')}
+                    </>
+                  ) : (
+                    t('auth.signin.button')
+                  )}
                 </Button>
                 
                 <div className="relative my-4">
@@ -167,7 +204,11 @@ const Login: React.FC = () => {
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
                 >
-                  <FcGoogle className="mr-2 h-4 w-4" />
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <FcGoogle className="mr-2 h-4 w-4" />
+                  )}
                   {t('auth.signin.google')}
                 </Button>
               </form>
@@ -180,6 +221,7 @@ const Login: React.FC = () => {
                 variant="link"
                 className="p-0 h-auto font-medium" 
                 onClick={() => setLocation('/register')}
+                disabled={isLoading}
               >
                 {t('auth.register')}
               </Button>
@@ -193,6 +235,7 @@ const Login: React.FC = () => {
           className="w-11 h-11 flex items-center justify-center rounded-full bg-background shadow-md border border-border text-foreground hover:bg-primary hover:text-primary-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
           onClick={() => setLocation('/')}
           aria-label="Back to home"
+          disabled={isLoading}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />

@@ -1,6 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User } from "@shared/schema";
-import { apiRequest, ApiError } from "@/lib/queryClient";
+import { User as FirebaseUser } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -28,25 +36,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Check if user is authenticated on page load
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await fetch('/api/user');
-        
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Session auth check failed:", error);
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        // Convert Firebase user to app user format
+        const appUser: User = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email!,
+          firstName: firebaseUser.displayName?.split(' ')[0] || '',
+          lastName: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
+          profileImage: firebaseUser.photoURL,
+        };
+        setUser(appUser);
+      } else {
         setUser(null);
-      } finally {
-        setLoading(false);
       }
-    };
+      setLoading(false);
+    });
 
-    checkAuthStatus();
+    return () => unsubscribe();
   }, []);
 
   const login = (user: User) => {
@@ -55,14 +62,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await apiRequest('POST', '/api/logout', {});
+      await auth.signOut();
       setUser(null);
     } catch (error) {
-      if (error instanceof ApiError) {
-        console.error("Logout error:", error.message);
-      } else {
-        console.error("Unexpected logout error:", error);
-      }
+      console.error('Logout error:', error);
       throw error;
     }
   };

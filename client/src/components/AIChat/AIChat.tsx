@@ -28,7 +28,7 @@ export function AIChat() {
   const [, setLocation] = useLocation();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -38,7 +38,6 @@ export function AIChat() {
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
 
-    // Check if user has reached the message limit and is not authenticated
     if (!user && messageCount >= MAX_UNAUTHORIZED_MESSAGES) {
       setShowLoginPrompt(true);
       return;
@@ -54,7 +53,6 @@ export function AIChat() {
     setInput('');
     setIsTyping(true);
 
-    // Only increment message count for unauthorized users
     if (!user) {
       const newCount = messageCount + 1;
       setMessageCount(newCount);
@@ -128,10 +126,10 @@ export function AIChat() {
           >
             <div className={`flex items-start space-x-3 max-w-[85%] ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className={cn(
-                "shrink-0 select-none",
+                'shrink-0 select-none',
                 message.type === 'user' 
-                  ? "w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 flex items-center justify-center" 
-                  : "w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-blue-500/5 flex items-center justify-center"
+                  ? 'w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 flex items-center justify-center' 
+                  : 'w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500/20 via-blue-500/10 to-blue-500/5 flex items-center justify-center'
               )}>
                 {message.type === 'user' ? (
                   <User className="w-4 h-4 text-primary" />
@@ -140,10 +138,10 @@ export function AIChat() {
                 )}
               </div>
               <div className={cn(
-                "px-4 py-2.5 rounded-2xl shadow-sm",
+                'px-4 py-2.5 rounded-2xl shadow-sm',
                 message.type === 'user'
-                  ? "bg-primary/10 dark:bg-primary/20 text-primary-foreground rounded-tr-sm"
-                  : "bg-blue-500/10 dark:bg-blue-500/20 text-foreground rounded-tl-sm"
+                  ? 'bg-primary/10 dark:bg-primary/20 text-primary-foreground rounded-tr-sm'
+                  : 'bg-blue-500/10 dark:bg-blue-500/20 text-foreground rounded-tl-sm'
               )}>
                 <p className="text-[15px] leading-relaxed">{message.content}</p>
               </div>
@@ -218,11 +216,11 @@ export function AIChat() {
                 : 'Type a message...'
             }
             className={cn(
-              "w-full resize-none rounded-xl pr-12 min-h-[44px] max-h-36",
-              "bg-white/5 dark:bg-white/2 border border-white/10",
-              "placeholder:text-muted-foreground/50",
-              "text-[15px] leading-relaxed px-4 py-3",
-              "focus:outline-none focus:ring-2 focus:ring-primary/20"
+              'w-full resize-none rounded-xl pr-12 min-h-[44px] max-h-36',
+              'bg-white/5 dark:bg-white/2 border border-white/10',
+              'placeholder:text-muted-foreground/50',
+              'text-[15px] leading-relaxed px-4 py-3',
+              'focus:outline-none focus:ring-2 focus:ring-primary/20'
             )}
             rows={1}
           />
@@ -230,12 +228,12 @@ export function AIChat() {
             onClick={handleSend}
             disabled={!input.trim() || isTyping || (!user && messageCount >= MAX_UNAUTHORIZED_MESSAGES)}
             className={cn(
-              "absolute right-1 p-2 rounded-lg transition-all duration-200",
-              "hover:bg-white/5 active:bg-white/10",
-              "focus:outline-none focus:ring-2 focus:ring-primary/20",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              input.trim() && !isTyping && "text-primary",
-              !input.trim() || isTyping ? "text-muted-foreground/50" : "text-primary"
+              'absolute right-1 p-2 rounded-lg transition-all duration-200',
+              'hover:bg-white/5 active:bg-white/10',
+              'focus:outline-none focus:ring-2 focus:ring-primary/20',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              input.trim() && !isTyping && 'text-primary',
+              !input.trim() || isTyping ? 'text-muted-foreground/50' : 'text-primary'
             )}
           >
             <Send className="w-5 h-5" />
