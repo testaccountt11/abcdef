@@ -1,0 +1,258 @@
+/* tailwindcss */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  
+  /* Light theme - Updated colors for better eye comfort */
+  --background: 210 40% 98%;
+  --foreground: 215 25% 27%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+  
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 215 25% 27%;
+  
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215 25% 47%;
+  
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 215 25% 27%;
+  
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  
+  --radius: 0.75rem;
+
+  --success: 142.1 76.2% 36.3%;
+  --success-foreground: 355.7 100% 97.3%;
+  
+  --warning: 38 92% 50%;
+  --warning-foreground: 48 96% 89%;
+
+  --primary-20: hsla(var(--primary), 0.2);
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 213 31% 91%;
+  
+  --card: 222 47% 9%;
+  --card-foreground: 213 31% 91%;
+  
+  --popover: 222 47% 9%;
+  --popover-foreground: 213 31% 91%;
+  
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  
+  --accent: 217.2 34% 19%;
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --border: 217.2 32.6% 20%;
+  --input: 217.2 32.6% 20%;
+  --ring: 224.3 76.3% 55%;
+
+  --primary-20: hsla(var(--primary), 0.3);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
+    font-family: var(--font-sans);
+  }
+
+  /* Improved typography for better readability */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-700 dark:text-gray-200 font-semibold tracking-tight;
+  }
+
+  p {
+    @apply text-gray-600 dark:text-gray-300 leading-relaxed;
+  }
+}
+
+/* Custom styles */
+.glass {
+  @apply backdrop-blur-lg border rounded-2xl transition-all duration-300;
+  @apply dark:bg-gray-800/30 dark:border-white/10;
+  @apply bg-white/40 border-white/20;
+}
+
+.glass-card {
+  @apply bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 
+         hover:shadow-md transition-all duration-300 p-6;
+}
+
+.glass-hover {
+  @apply hover:bg-white/40 dark:hover:bg-gray-700/40 transition-all duration-300;
+}
+
+.glow {
+  @apply transition-all duration-300;
+  @apply dark:shadow-[0_0_20px_rgba(74,144,226,0.3)];
+  @apply shadow-[0_0_20px_rgba(74,144,226,0.15)];
+}
+
+.glow:hover {
+  @apply dark:shadow-[0_0_30px_rgba(74,144,226,0.5)];
+  @apply shadow-[0_0_30px_rgba(74,144,226,0.3)];
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary/90 via-indigo-500/90 to-blue-500/90;
+}
+
+.bg-gradient {
+  @apply bg-gradient-to-b from-background to-background/95;
+}
+
+.icon-container {
+  @apply p-3 rounded-full bg-gradient-to-br transition-all duration-300;
+}
+
+.icon-primary {
+  @apply from-primary/10 to-blue-400/10 dark:from-primary/20 dark:to-blue-400/20;
+}
+
+.icon-secondary {
+  @apply from-indigo-400/10 to-primary/10 dark:from-indigo-400/20 dark:to-primary/20;
+}
+
+.icon-tertiary {
+  @apply from-blue-400/10 to-indigo-400/10 dark:from-blue-400/20 dark:to-indigo-400/20;
+}
+
+.title-gradient {
+  @apply text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r 
+         from-primary/90 via-indigo-500/90 to-blue-500/90 leading-tight text-center;
+}
+
+.subtitle-text {
+  @apply text-lg text-gray-600 dark:text-gray-300 leading-relaxed text-center font-medium;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Infinite scroll animations for partner logos */
+@keyframes scrollLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollRight {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 30s linear infinite;
+}
+
+.animate-scroll-right {
+  animation: scrollRight 25s linear infinite;
+}
+
+/* Partner logo hover effect */
+.partner-logo {
+  transition: all 0.3s ease;
+}
+
+.partner-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.gradient-bg-dark {
+  background: radial-gradient(circle at 50% 10%, rgba(38, 38, 76, 1) 0%, rgba(17, 24, 39, 1) 100%);
+}
+
+.gradient-bg-light {
+  background: radial-gradient(circle at 50% 50%, rgba(240, 249, 255, 1) 0%, rgba(214, 240, 253, 1) 100%);
+}
+
+/* Custom scrollbar styles - без директив @apply */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  transition: all 0.3s;
+  background: hsl(221.2, 83.2%, 53.3%, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(221.2, 83.2%, 58.3%, 0.9);
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(221.2, 83.2%, 53.3%, 0.7) transparent;
+}
+
+/* Для темного режима */
+/* Вместо этого напишем обычное CSS-правило без @apply */
+.dark .bg-gradient-background {
+  background: hsl(222, 47%, 11%) !important;
+  background-image: none !important;
+}
+
+/* Добавьте это в ваш CSS файл */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
