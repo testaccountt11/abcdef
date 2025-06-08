@@ -73,33 +73,47 @@ export default function Dashboard() {
   const { language } = useTranslations();
   const [activeTab, setActiveTab] = useState("courses");
 
-  const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["stats"],
-    queryFn: () => fetch(api.stats.get()).then((res) => res.json()),
+    queryFn: async () => {
+      try {
+        const response = await fetch(api.stats.get(), {
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        return {
+          certificatesEarned: 0,
+          mentorSessions: 0,
+          opportunitiesSaved: 0
+        };
+      }
+    },
   });
 
-  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
+  const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ["courses"],
     queryFn: async () => {
-      console.log('Fetching courses and enrollments...');
       try {
         const [coursesResponse, enrollmentsResponse] = await Promise.all([
-          fetch(api.courses.list()).then(async (res) => {
-            if (!res.ok) {
-              throw new Error(`Failed to fetch courses: ${res.statusText}`);
-            }
+          fetch(api.courses.list(), {
+            credentials: 'include'
+          }).then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             return res.json();
           }),
-          fetch(api.courses.getEnrollments()).then(async (res) => {
-            if (!res.ok) {
-              throw new Error(`Failed to fetch enrollments: ${res.statusText}`);
-            }
+          fetch(api.courses.getEnrollments(), {
+            credentials: 'include'
+          }).then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
             return res.json();
           })
         ]);
-        
-        console.log('Courses response:', coursesResponse);
-        console.log('Enrollments response:', enrollmentsResponse);
         
         // Merge courses with enrollment data
         const mergedCourses = coursesResponse.map((course: any) => {
@@ -111,33 +125,60 @@ export default function Dashboard() {
           };
         });
 
-        // Filter only enrolled courses for the dashboard
-        const enrolledCourses = mergedCourses.filter((course: any) => course.isEnrolled);
-        
-        console.log('Merged courses:', mergedCourses);
-        console.log('Enrolled courses:', enrolledCourses);
-        
-        return enrolledCourses;
+        return mergedCourses.filter((course: any) => course.isEnrolled);
       } catch (error) {
         console.error('Error fetching courses data:', error);
-        throw error;
+        return [];
       }
     },
   });
 
   const { data: opportunities, isLoading: opportunitiesLoading } = useQuery({
     queryKey: ["opportunities"],
-    queryFn: () => fetch(api.opportunities.list()).then((res) => res.json()),
+    queryFn: async () => {
+      try {
+        const response = await fetch(api.opportunities.list(), {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching opportunities:', error);
+        return [];
+      }
+    },
   });
 
   const { data: mentors, isLoading: mentorsLoading } = useQuery({
     queryKey: ["mentors"],
-    queryFn: () => fetch(api.mentors.list()).then((res) => res.json()),
+    queryFn: async () => {
+      try {
+        const response = await fetch(api.mentors.list(), {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching mentors:', error);
+        return [];
+      }
+    },
   });
 
   const { data: articles, isLoading: articlesLoading } = useQuery({
     queryKey: ["articles"],
-    queryFn: () => fetch(api.articles.list()).then((res) => res.json()),
+    queryFn: async () => {
+      try {
+        const response = await fetch(api.articles.list(), {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        return [];
+      }
+    },
   });
 
   return (

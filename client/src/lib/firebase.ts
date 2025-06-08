@@ -1,23 +1,48 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, browserPopupRedirectResolver, initializeAuth } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
-// TODO: Replace with your Firebase config from Firebase Console
-// Go to Project Settings (gear icon) > General > Your apps > SDK setup and configuration
+// Validate required environment variables
+const requiredEnvVars = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+};
+
+// Check for missing environment variables
+const missingVars = Object.entries(requiredEnvVars)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key);
+
+if (missingVars.length > 0) {
+  console.error('Missing required Firebase configuration variables:', missingVars.join(', '));
+  console.error('Please check your .env file and ensure all Firebase variables are set.');
+}
+
+// Initialize Firebase with available config
 const firebaseConfig = {
-  apiKey: "AIzaSyDSQV_dmz7kjvKlNkpKmabLM8NdvE7Fn5M",
-  authDomain: "portfolio-edu-app.firebaseapp.com",
-  projectId: "portfolio-edu-app",
-  storageBucket: "portfolio-edu-app.firebasestorage.app",
-  messagingSenderId: "931843077358",
-  appId: "1:931843077358:web:d5fc13ee173b37fcb06fff",
-  measurementId: "G-7H997GKYGB"
+  apiKey: requiredEnvVars.apiKey || 'dummy-api-key',
+  authDomain: requiredEnvVars.authDomain || 'dummy-auth-domain',
+  projectId: requiredEnvVars.projectId || 'dummy-project-id',
+  storageBucket: requiredEnvVars.storageBucket || 'dummy-storage-bucket',
+  messagingSenderId: requiredEnvVars.messagingSenderId || 'dummy-sender-id',
+  appId: requiredEnvVars.appId || 'dummy-app-id',
+  measurementId: requiredEnvVars.measurementId || 'dummy-measurement-id'
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
+export const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication
-export const auth = getAuth(app);
+// Initialize Analytics only if measurementId is available
+export const analytics = requiredEnvVars.measurementId ? getAnalytics(app) : null;
+
+// Initialize Firebase Authentication with custom config
+export const auth = initializeAuth(app, {
+  popupRedirectResolver: browserPopupRedirectResolver
+});
+
 export default app; 

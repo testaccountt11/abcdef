@@ -9,37 +9,12 @@ export type TranslationKey =
   | 'hero.subtitle'
   | 'hero.start'
   | 'hero.learnMore'
-  | 'features.personalPath.title'
-  | 'features.personalPath.desc'
-  | 'features.topCourses.title'
-  | 'features.topCourses.desc'
-  | 'features.competitions.title'
-  | 'features.competitions.desc'
-  | 'features.mentorship.title'
-  | 'features.mentorship.desc'
-  | 'about.title'
-  | 'about.subtitle'
-  | 'about.mission'
-  | 'about.vision'
-  | 'partners.title'
-  | 'partners.subtitle'
-  | 'testimonials.title'
-  | 'testimonials.subtitle'
-  | 'contact.title'
-  | 'contact.subtitle'
-  | 'contact.email'
-  | 'contact.message'
-  | 'contact.send'
-  | 'newsletter.title'
-  | 'newsletter.subtitle'
-  | 'newsletter.placeholder'
-  | 'newsletter.subscribe'
-  | 'footer.rights'
   | 'auth.signin'
   | 'auth.signin.desc'
   | 'auth.signin.button'
   | 'auth.signin.alternative'
   | 'auth.signin.google'
+  | 'auth.signingIn'
   | 'auth.register'
   | 'auth.register.desc'
   | 'auth.register.button'
@@ -382,6 +357,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.button': 'Sign In with Email',
     'auth.signin.alternative': 'Or continue with',
     'auth.signin.google': 'Sign In with Google',
+    'auth.signingIn': 'Signing In',
     'auth.register': 'Create an Account',
     'auth.register.desc': 'Sign up to start building your educational portfolio',
     'auth.register.button': 'Create Account with Email',
@@ -720,6 +696,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.button': 'Войти с Email',
     'auth.signin.alternative': 'Или продолжить с',
     'auth.signin.google': 'Войти через Google',
+    'auth.signingIn': 'Вход',
     'auth.register': 'Создать аккаунт',
     'auth.register.desc': 'Зарегистрируйтесь, чтобы начать создавать ваше образовательное портфолио',
     'auth.register.button': 'Создать аккаунт с Email',
@@ -906,6 +883,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.subtitle': 'Узнайте, что делает нас уникальными',
     'auth.noAccount': 'Аккаунтыңыз жоқ па?',
     'auth.accountNotFound': 'Аккаунт табылмады',
+    'auth.haveAccount': 'Аккаунтыңыз бар ма?',
     'aboutUs.title': 'Біз туралы',
     'aboutUs.subtitle': 'Portfol.IO артындағы біздің компания, миссиямыз және командамыз туралы көбірек біліңіз',
     'aboutUs.mission.title': 'Біздің миссиямыз',
@@ -944,7 +922,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'aboutUs.cta.button': 'Тіркелу',
     'footer.links.aboutUs': 'Біз туралы',
     'aboutUs.mission.imageCaption': 'Строим лучшее будущее через образование',
-    'aboutUs.team.connectButton': 'Связаться',
+    'aboutUs.team.connectButton': 'Байланысу',
     'aboutUs.cta.primaryButton': 'Қазір қосылу',
     'aboutUs.cta.secondaryButton': 'Курстарды зерттеу',
     'aboutUs.cta.stat1': 'Белсенді қолданушылар',
@@ -1057,6 +1035,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.button': 'Email арқылы кіру',
     'auth.signin.alternative': 'Немесе жалғастыру',
     'auth.signin.google': 'Google арқылы кіру',
+    'auth.signingIn': 'Кіру',
     'auth.register': 'Аккаунт құру',
     'auth.register.desc': 'Білім портфолиоңызды жасауды бастау үшін тіркеліңіз',
     'auth.register.button': 'Email арқылы аккаунт жасау',
