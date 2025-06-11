@@ -23,6 +23,36 @@ interface Internship {
 export default function InternshipsSection() {
   const [, setLocation] = useLocation();
   const [viewMode, setViewMode] = useState<'portfolioio' | 'headhunter'>('portfolioio');
+  const [language, setLanguage] = useState<'ru' | 'kz' | 'en'>('ru');
+
+  const formatShortDate = (date: string, lang: string) => {
+    const dateObj = new Date(date);
+    
+    const monthsShortKz = [
+      'қаң.', 'ақп.', 'нау.', 'сәу.', 'мам.', 'мау.',
+      'шіл.', 'там.', 'қыр.', 'қаз.', 'қар.', 'жел.'
+    ];
+    
+    const monthsShortRu = [
+      'янв.', 'фев.', 'мар.', 'апр.', 'мая', 'июн.',
+      'июл.', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'
+    ];
+
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth();
+
+    switch (lang) {
+      case 'kz':
+        return `${day} ${monthsShortKz[month]}`;
+      case 'ru':
+        return `${day} ${monthsShortRu[month]}`;
+      default:
+        return dateObj.toLocaleDateString('en-US', { 
+          day: 'numeric',
+          month: 'short'
+        });
+    }
+  };
 
   // Mock data for demonstration
   const internships: Internship[] = [
@@ -184,8 +214,13 @@ export default function InternshipsSection() {
                   <span>{internship.location}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center">
-                  <Calendar className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
-                  <span>{internship.deadline}</span>
+                  <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {language === 'ru' ? 'Срок подачи до: ' :
+                     language === 'kz' ? 'Өтінім мерзімі: ' :
+                     'Application deadline: '}
+                    {formatShortDate(internship.deadline, language)}
+                  </span>
                 </div>
               </div>
               <div className="mt-auto">
@@ -207,7 +242,9 @@ export default function InternshipsSection() {
                     setLocation(`/opportunities/${internship.id}/apply`);
                   }}
                 >
-                  Өтінім беру
+                  {language === 'ru' ? 'Подать заявку' :
+                   language === 'kz' ? 'Өтінім беру' :
+                   'Apply Now'}
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>

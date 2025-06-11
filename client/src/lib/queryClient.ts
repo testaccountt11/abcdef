@@ -1,14 +1,9 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 export class ApiError extends Error {
-  status: number;
-  statusText: string;
-
-  constructor(message: string, status: number, statusText: string) {
+  constructor(public status: number, message: string) {
     super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.statusText = statusText;
+    this.name = 'ApiError';
   }
 }
 
@@ -25,24 +20,32 @@ async function throwIfResNotOk(res: Response) {
     }
     
     // Create error with more context
-    throw new ApiError(errorText, res.status, res.statusText);
+    throw new ApiError(res.status, errorText);
   }
 }
 
-export async function apiRequest(
+export async function apiRequest<T = any>(
   method: string,
-  url: string,
-  data?: unknown | undefined,
-): Promise<Response> {
-  const res = await fetch(url, {
+  endpoint: string,
+  data?: any,
+  options: RequestInit = {}
+): Promise<T> {
+  const baseUrl = import.meta.env.VITE_API_URL || '';
+  const url = `${baseUrl}${endpoint}`;
+
+  const response = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    credentials: 'include', // Important for cookies
+    ...options,
   });
 
-  await throwIfResNotOk(res);
-  return res;
+  await throwIfResNotOk(response);
+  return response.json();
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -69,7 +72,7 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      staleTime: 1000 * 60 * 5, // 5 minutes
       retry: false,
     },
     mutations: {

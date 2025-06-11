@@ -16,6 +16,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
+    "types": ["@testing-library/jest-dom"],
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
@@ -24,12 +25,8 @@
       "@ui/*": ["src/components/ui/*"],
       "@shared/*": ["../shared/*"],
       "@assets/*": ["src/assets/*"]
-    },
-    "types": ["node"]
+    }
   },
   "include": ["src", "src/declarations.d.ts", "src/vite-env.d.ts"],
-  "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.test.json" }
-  ]
+  "references": [{ "path": "./tsconfig.node.json" }]
 } 

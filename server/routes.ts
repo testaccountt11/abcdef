@@ -7,13 +7,13 @@ import {
   insertEnrollmentSchema,
   insertOpportunitySchema,
   insertMentorSchema,
-  insertArticleSchema,
+  articles,
   insertCertificateSchema,
   insertStatsSchema,
   contactRequests,
   newsletterSubscriptions
-} from "@shared/schema";
-import { ZodError } from "zod";
+} from "@shared/index.js";
+import { ZodError, z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
 import passport from "passport";
@@ -27,6 +27,7 @@ import express from "express";
 import { db } from './db.js';
 import { sql, eq } from 'drizzle-orm';
 import { mentor_applications } from './src/db/schema';
+import bcrypt from 'bcrypt';
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -187,19 +188,102 @@ function getDefaultValueForColumn(columnName: string, dataType: string): string 
 export async function registerRoutes(app: Express): Promise<Server> {
   const SessionStore = MemoryStore(session);
   
+  // Define validation schemas
+  const insertUserSchema = z.object({
+    username: z.string().min(1),
+    password: z.string().min(6),
+    firstName: z.string().min(1),
+    lastName: z.string().nullable().optional(),
+    email: z.string().email(),
+    profileImage: z.string().nullable().optional(),
+    phone: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    website: z.string().nullable().optional(),
+    linkedin: z.string().nullable().optional(),
+    github: z.string().nullable().optional(),
+    telegram: z.string().nullable().optional(),
+    whatsapp: z.string().nullable().optional(),
+    bio: z.string().nullable().optional(),
+    company: z.string().nullable().optional(),
+    position: z.string().nullable().optional(),
+  });
+
+  const insertArticleSchema = z.object({
+    title: z.string().min(1),
+    content: z.string().min(1),
+    summary: z.string().min(1),
+    category: z.string().min(1),
+    imageUrl: z.string().nullable().optional(),
+    authorName: z.string().min(1),
+    authorImage: z.string().nullable().optional(),
+    readTime: z.string().nullable().optional(),
+    publishDate: z.string().nullable().optional(),
+  });
+
+  const insertCertificateSchema = z.object({
+    userId: z.number(),
+    title: z.string().min(1),
+    issuer: z.string().min(1),
+    issueDate: z.string().min(1),
+    certificateUrl: z.string().nullable().optional(),
+    certificateFile: z.string().nullable().optional(),
+  });
+
+  const insertCourseSchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    imageUrl: z.string().nullable().optional(),
+    category: z.string().min(1),
+    provider: z.string().min(1),
+    isPartnerCourse: z.boolean().optional(),
+    contactInfo: z.string().nullable().optional(),
+    progress: z.number().min(0).max(100).optional(),
+  });
+
+  const insertEnrollmentSchema = z.object({
+    userId: z.number(),
+    courseId: z.number(),
+    progress: z.number().min(0).max(100).optional(),
+    completed: z.boolean().optional(),
+  });
+
+  const insertMentorSchema = z.object({
+    name: z.string().min(1),
+    title: z.string().min(1),
+    company: z.string().min(1),
+    profileImage: z.string().nullable().optional(),
+    skills: z.array(z.string()).optional(),
+    contactInfo: z.string().nullable().optional(),
+  });
+
+  const insertOpportunitySchema = z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    company: z.string().min(1),
+    logoUrl: z.string().nullable().optional(),
+    type: z.string().min(1),
+    location: z.string().min(1),
+    duration: z.string().nullable().optional(),
+    deadline: z.string().nullable().optional(),
+  });
+  
   // Configure session middleware
   app.use(
     session({
-      secret: process.env.SESSION_SECRET || "portfol-io-secret",
+      secret: process.env.SESSION_SECRET || "your-secret-key",
       resave: false,
       saveUninitialized: false,
       cookie: {
         secure: false,
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/'
       },
       store: new SessionStore({
         checkPeriod: 86400000, // prune expired entries every 24h
       }),
+      name: 'sessionId'
     })
   );
   
@@ -209,23 +293,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Configure passport local strategy
   passport.use(
-    new LocalStrategy(async (username, password, done) => {
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+        passwordField: 'password'
+      },
+      async (email, password, done) => {
       try {
-        const user = await storage.getUserByUsername(username);
+          const user = await storage.getUserByEmail(email);
         
         if (!user) {
-          return done(null, false, { message: "Incorrect username" });
+            return done(null, false, { message: "Invalid email or password" });
         }
         
-        if (user.password !== password) { // In production, use bcrypt or similar for password hashing
-          return done(null, false, { message: "Incorrect password" });
+          const isValidPassword = await bcrypt.compare(password, user.password);
+          
+          if (!isValidPassword) {
+            return done(null, false, { message: "Invalid email or password" });
         }
         
         return done(null, user);
       } catch (err) {
         return done(err);
       }
-    })
+      }
+    )
   );
   
   // Serialize user to the session
@@ -325,13 +417,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username already taken" });
       }
       
+      // Hash password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      
       // Create a new user
       const userData = {
         username,
         email,
         firstName: firstName || username,
         lastName: lastName || null,
-        password, // In production, hash this password
+        password: hashedPassword,
         profileImage: null
       };
       
@@ -351,9 +447,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (err) {
           return res.status(500).json({ message: "Error logging in after registration" });
         }
-        return res.status(201).json({ user: { ...user, password: undefined } });
+        return res.status(201).json({ 
+          user: { ...user, password: undefined },
+          message: "Registration successful"
+        });
       });
     } catch (error: any) {
+      console.error("Registration error:", error);
       res.status(400).json({ message: error.message });
     }
   });
@@ -374,8 +474,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid email or password" });
       }
       
-      // Check password (in production, use proper password comparison)
-      if (user.password !== password) {
+      // Check password using bcrypt
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      
+      if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
       
@@ -392,7 +494,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           password: undefined
         };
         
-        return res.json({ user: safeUser });
+        return res.json({ 
+          user: safeUser,
+          message: "Login successful"
+        });
       });
     } catch (error: any) {
       console.error("Login error:", error);

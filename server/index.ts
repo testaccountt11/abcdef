@@ -6,6 +6,9 @@ import path from "path";
 import fs from "fs";
 import cors from 'cors';
 import chatRouter from './routes/chat';
+import session from 'express-session';
+import SessionStore from 'connect-pg-simple';
+import { db } from './db';
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -19,10 +22,45 @@ if (!fs.existsSync(certificatesDir)) {
 }
 
 const app = express();
-app.use(cors());
+
+// Basic middleware
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Session middleware
+const pgSession = SessionStore(session);
+
+app.use(
+  session({
+    store: new pgSession({
+      pool: db.$client,
+      tableName: 'sessions',
+      createTableIfMissing: true,
+      pruneSessionInterval: 60 * 15 // Prune expired sessions every 15 minutes
+    }),
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    name: 'sessionId', // Change session cookie name from default 'connect.sid'
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      path: '/',
+      domain: process.env.COOKIE_DOMAIN || undefined
+    },
+    rolling: true // Reset maxAge on every response
+  })
+);
+
+// Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -53,50 +91,38 @@ app.use((req, res, next) => {
   next();
 });
 
+// Error handling middleware
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('Global error handler:', err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ response: message, error: true });
+});
+
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    // API routes - Register BEFORE Vite middleware
+    app.use('/api/chat', chatRouter);
 
-    res.status(status).json({ message });
-    throw err;
-  });
+    // Development setup with Vite
+    if (process.env.NODE_ENV === 'development') {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+    // Start server
+    const port = process.env.PORT || 3000;
+    server.listen({
+      port,
+      host: "0.0.0.0"
+    }, () => {
+      log(`Server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
+    });
+  } catch (error) {
+    console.error('Server startup error:', error);
+    process.exit(1);
   }
-
-  // API routes
-  app.use('/api', chatRouter);
-
-  // ALWAYS serve the app on port 3000
-  // this serves both the API and the client.
-  const port = process.env.PORT || 3000;
-  server.listen({
-    port,
-    host: "0.0.0.0"
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-
-  app.get('/', (_req, res) => {
-    res.send(`
-      <html>
-        <head>
-          <title>App is running</title>
-        </head>
-        <body>
-          <h1>Server is running!</h1>
-          <p>This is a temporary page while we fix the build process.</p>
-        </body>
-      </html>
-    `);
-  });
 })();

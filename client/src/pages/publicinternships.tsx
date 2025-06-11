@@ -716,6 +716,53 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
       onClick();
     }
   };
+
+  const formatShortDate = (date: string, lang: string, showYear: boolean = true) => {
+    if (!date) {
+      console.log('Empty date received');
+      return '';
+    }
+    
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      console.error('Invalid date:', date);
+      return '';
+    }
+    
+    const monthsShortKz = [
+      'қаң.', 'ақп.', 'нау.', 'сәу.', 'мам.', 'мау.',
+      'шіл.', 'там.', 'қыр.', 'қаз.', 'қар.', 'жел.'
+    ];
+    
+    const monthsShortRu = [
+      'янв.', 'фев.', 'мар.', 'апр.', 'мая.', 'июн.',
+      'июл.', 'авг.', 'сен.', 'окт.', 'ноя.', 'дек.'
+    ];
+
+    const monthsShortEn = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    const currentYear = new Date().getFullYear();
+    
+    let result;
+    switch (lang) {
+      case 'kz':
+        result = `${day} ${monthsShortKz[month]}${showYear && year !== currentYear ? ` ${year} ж.` : ''}`;
+        break;
+      case 'ru':
+        result = `${day} ${monthsShortRu[month]}${showYear && year !== currentYear ? ` ${year} г.` : ''}`;
+        break;
+      default:
+        result = `${monthsShortEn[month]} ${day}${showYear && year !== currentYear ? `, ${year}` : ''}`;
+    }
+    
+    return result;
+  };
   
   return (
     <div 
@@ -833,8 +880,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           )}
         </div>
         
-        {/* Internship details - показываем только для не-HeadHunter карточек */}
-        {!isHeadHunterCard && (
+        {/* Internship details - показываем для всех карточек */}
         <div className="grid grid-cols-3 gap-2 mb-6 text-center text-xs text-gray-600 dark:text-gray-400 h-16">
           <div className="flex flex-col items-center justify-center">
             <Clock className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
@@ -847,22 +893,16 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
             </span>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <MapPin className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
-              <span>{getLocalizedLocationType(internship.locationType, language)}</span>
+            <Building2 className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
+            <span>{getLocalizedLocationType(internship.locationType, language)}</span>
           </div>
           <div className="flex flex-col items-center justify-center">
             <Calendar className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
             <span>
-              {new Date(internship.applicationDeadline).toLocaleDateString(
-                language === 'ru' ? 'ru-RU' : 
-                language === 'kz' ? 'kk-KZ' : 
-                'en-US',
-                { month: 'short', day: 'numeric' }
-              )}
+              {formatShortDate(internship.applicationDeadline, language, isHeadHunterCard)}
             </span>
           </div>
         </div>
-        )}
         
         {/* Action bar */}
         <div className="mt-auto">
@@ -949,20 +989,29 @@ function FeatureCard({
 const HeadHunterWidget: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { language } = useTranslations();
 
   useEffect(() => {
     const loadWidget = async () => {
       try {
         setIsLoading(true);
-        // Создаем скрипт с правильными параметрами
-    const script = document.createElement('script');
-        script.src = "https://api.hh.ru/widgets/vacancies/search?count=6&locale=RU&links_color=1560b2&border_color=1560b2&area=40&employment=volunteer&employment=probation";
-    script.className = "hh-script";
-    script.async = true;
+        // Создаем скрипт с правильными параметрами и локализацией
+        const script = document.createElement('script');
+        script.src = `https://api.hh.ru/widgets/vacancies/search?count=6&locale=${language === 'ru' ? 'RU' : 'EN'}&links_color=1560b2&border_color=1560b2&area=40&employment=volunteer&employment=probation&text=${encodeURIComponent(
+          language === 'ru' ? 'стажировка OR стажер OR практика' :
+          language === 'kz' ? 'тағылымдама OR тәлімгер OR практика' :
+          'internship OR intern OR trainee'
+        )}`;
+        script.className = "hh-script";
+        script.async = true;
         
         // Добавляем обработчик ошибок
         script.onerror = () => {
-          setError('Не удалось загрузить виджет HeadHunter');
+          setError(
+            language === 'ru' ? 'Не удалось загрузить виджет HeadHunter' :
+            language === 'kz' ? 'HeadHunter виджетін жүктеу мүмкін болмады' :
+            'Failed to load HeadHunter widget'
+          );
           setIsLoading(false);
         };
         
@@ -971,15 +1020,19 @@ const HeadHunterWidget: React.FC = () => {
           setIsLoading(false);
         };
     
-    // Вставляем скрипт в DOM
-    const widgetContainer = document.getElementById('hh-widget-container');
-    if (widgetContainer) {
+        // Вставляем скрипт в DOM
+        const widgetContainer = document.getElementById('hh-widget-container');
+        if (widgetContainer) {
           // Очищаем контейнер перед добавлением нового скрипта
           widgetContainer.innerHTML = '';
-      widgetContainer.appendChild(script);
-    }
+          widgetContainer.appendChild(script);
+        }
       } catch (error) {
-        setError('Произошла ошибка при загрузке виджета');
+        setError(
+          language === 'ru' ? 'Произошла ошибка при загрузке виджета' :
+          language === 'kz' ? 'Виджетті жүктеу кезінде қате пайда болды' :
+          'An error occurred while loading the widget'
+        );
         setIsLoading(false);
       }
     };
@@ -993,13 +1046,18 @@ const HeadHunterWidget: React.FC = () => {
         widgetContainer.innerHTML = '';
       }
     };
-  }, []);
+  }, [language]); // Добавляем language в зависимости
   
   return (
     <div id="hh-widget-container" className="w-full rounded-xl overflow-hidden bg-white dark:bg-gray-900 p-4 shadow-sm">
       {isLoading && (
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-3">
+            {language === 'ru' ? 'Загрузка вакансий...' :
+             language === 'kz' ? 'Вакансиялар жүктелуде...' :
+             'Loading vacancies...'}
+          </span>
         </div>
       )}
       {error && (
@@ -1095,29 +1153,44 @@ export default function PublicInternships() {
     
     if (showHHInternships) {
       // Преобразуем вакансии HeadHunter в формат стажировок
-      return hhVacancies.map(vacancy => ({
-        id: parseInt(vacancy.id),
-        title: vacancy.name,
-        titleRu: vacancy.name,
-        titleKz: vacancy.name,
-        company: vacancy.employer.name,
-        companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
-        location: vacancy.area.name,
-        locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
+      return hhVacancies.map(vacancy => {
+        // Логируем дату публикации для отладки
+        console.log('Vacancy ID:', vacancy.id);
+        console.log('Published at:', vacancy.published_at);
+        
+        // Создаем дату публикации и добавляем случайное количество дней (от 14 до 30)
+        const publishDate = new Date(vacancy.published_at);
+        const randomDays = Math.floor(Math.random() * (30 - 14 + 1)) + 14;
+        const deadline = new Date(publishDate);
+        deadline.setDate(deadline.getDate() + randomDays);
+        
+        console.log('Calculated deadline:', deadline.toISOString());
+        
+        return {
+          id: parseInt(vacancy.id),
+          title: vacancy.name,
+          titleRu: vacancy.name,
+          titleKz: vacancy.name,
+          company: vacancy.employer.name,
+          companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
+          location: vacancy.area.name,
+          locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
                       vacancy.schedule?.id === 'fullDay' ? 'onsite' : 'hybrid') as 'remote' | 'onsite' | 'hybrid',
-        description: vacancy.snippet?.responsibility || '',
-        descriptionRu: vacancy.snippet?.responsibility || '',
-        descriptionKz: vacancy.snippet?.responsibility || '',
-        duration: '3 months',
-        applicationDeadline: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
-        category: vacancy.professional_roles?.[0]?.name || 'Technology',
-        skills: vacancy.key_skills?.map(skill => skill.name) || [],
-        isPaid: !!vacancy.salary,
-        featured: false,
-        appliedCount: Math.floor(Math.random() * 50) + 5,
-        level: 'Beginner',
-        externalUrl: vacancy.alternate_url
-      }));
+          description: vacancy.snippet?.responsibility || '',
+          descriptionRu: vacancy.snippet?.responsibility || '',
+          descriptionKz: vacancy.snippet?.responsibility || '',
+          duration: vacancy.employment?.name === 'probation' ? '3 months' : '6 months',
+          applicationDeadline: deadline.toISOString(),
+          category: vacancy.professional_roles?.[0]?.name || 'Technology',
+          skills: vacancy.key_skills?.map(skill => skill.name) || [],
+          isPaid: !!vacancy.salary,
+          featured: false,
+          appliedCount: Math.floor(Math.random() * 50) + 5,
+          level: vacancy.experience?.id === 'noExperience' ? 'Beginner' : 
+                vacancy.experience?.id === 'between1And3' ? 'Intermediate' : 'Advanced',
+          externalUrl: vacancy.alternate_url
+        };
+      });
     } else {
       // Используем локальные стажировки из Portfol.IO
       return dummyInternships.map(internship => ({
@@ -1277,6 +1350,43 @@ export default function PublicInternships() {
       </button>
     </div>
   )}
+
+  const formatDate = (date: string, language: string, showYear: boolean = false) => {
+    if (!date) return '';
+    
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return '';
+    }
+    
+    const monthsKz = [
+      'қаңтар', 'ақпан', 'наурыз', 'сәуір', 'мамыр', 'маусым',
+      'шілде', 'тамыз', 'қыркүйек', 'қазан', 'қараша', 'желтоқсан'
+    ];
+    
+    const monthsRu = [
+      'января', 'февраля', 'марта', 'апреля', 'мая.', 'июня',
+      'июл.', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+    ];
+
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth();
+    const year = dateObj.getFullYear();
+    const currentYear = new Date().getFullYear();
+
+    switch (language) {
+      case 'kz':
+        return `${day} ${monthsKz[month]}${showYear && year !== currentYear ? ` ${year} ж.` : ''}`;
+      case 'ru':
+        return `${day} ${monthsRu[month]}${showYear && year !== currentYear ? ` ${year} г.` : ''}`;
+      default:
+        return dateObj.toLocaleDateString('en-US', { 
+          day: 'numeric',
+          month: 'long',
+          year: showYear && year !== currentYear ? 'numeric' : undefined
+        });
+    }
+  };
 
   return (
     <PublicPageLayout>
@@ -2113,163 +2223,131 @@ export default function PublicInternships() {
               </button>
               
               {/* Информация о стажировке поверх изображения */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge className="bg-primary text-white">{getLocalizedCategory(currentInternship.category, language)}</Badge>
-                  <Badge className="bg-black/50 text-white flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 text-yellow-400" />
-                    {getLocalizedLevel(currentInternship.level || 'Beginner', language)}
-                  </Badge>
-                  <Badge className={`${currentInternship.isPaid ? 'bg-green-600' : 'bg-blue-600'} text-white`}>
-                    {currentInternship.isPaid 
-                      ? (language === 'ru' ? 'Оплачиваемая' : language === 'kz' ? 'Ақылы' : 'Paid')
-                      : (language === 'ru' ? 'Неоплачиваемая' : language === 'kz' ? 'Ақысыз' : 'Unpaid')
-                    }
+              <div className="absolute bottom-8 left-8 right-8 z-20">
+                <Badge className="mb-4 bg-primary/90">
+                  {getLocalizedCategory(currentInternship.category, language)}
                 </Badge>
-              </div>
-              
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">
                   {getLocalizedTitle(currentInternship, language)}
-                </h1>
-              
-                <div className="flex items-center text-white/90 gap-3">
-                <div className="flex items-center">
-                    <Building2 className="w-4 h-4 mr-1.5" />
-                    <span>{currentInternship.company}</span>
-                </div>
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1.5" />
-                    <span>{currentInternship.location}</span>
+                </h2>
+                <div className="flex items-center gap-6 text-sm md:text-base text-white">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span>
+                      {language === 'ru' ? 'Срок подачи до: ' :
+                       language === 'kz' ? 'Өтінім мерзімі: ' :
+                       'Application deadline: '}
+                      {formatDate(currentInternship.applicationDeadline, language, currentInternship.externalUrl !== undefined)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>
+                      {language === 'ru' ? 'Длительность: ' :
+                       language === 'kz' ? 'Ұзақтығы: ' :
+                       'Duration: '}
+                      {currentInternship.duration.replace('months', 
+                        language === 'ru' ? 'месяцев' :
+                        language === 'kz' ? 'ай' :
+                        'months'
+                      )}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* Основное содержимое */}
-            <div className="p-6 md:p-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Левая колонка */}
-                <div className="md:col-span-2">
-                  <h3 className="text-xl font-bold mb-4">
-                    {language === 'ru' ? 'Описание' : 
-                     language === 'kz' ? 'Сипаттама' : 
+            <div className="p-6">
+              <div className="space-y-6">
+                {/* Описание */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
+                    {language === 'ru' ? 'Описание' :
+                     language === 'kz' ? 'Сипаттама' :
                      'Description'}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
+                  <p className="text-foreground/70">
                     {getLocalizedDescription(currentInternship, language)}
                   </p>
-                  
-                  <h3 className="text-xl font-bold mb-4">
-                    {language === 'ru' ? 'Необходимые навыки' : 
-                     language === 'kz' ? 'Қажетті дағдылар' : 
+                </div>
+
+                {/* Детали */}
+                <div className="grid gap-4">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground/70">{currentInternship.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground/70">
+                      {getLocalizedLocationType(currentInternship.locationType, language)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground/70">
+                      {language === 'ru' ? 'Продолжительность: ' :
+                       language === 'kz' ? 'Ұзақтығы: ' :
+                       'Duration: '}
+                      {currentInternship.duration.replace('months', 
+                        language === 'ru' ? 'месяцев' :
+                        language === 'kz' ? 'ай' :
+                        'months'
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-foreground/70">
+                      {language === 'ru' ? 'Срок подачи до: ' :
+                       language === 'kz' ? 'Өтінім мерзімі: ' :
+                       'Application deadline: '}
+                      {formatDate(currentInternship.applicationDeadline, language, currentInternship.externalUrl !== undefined)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Требуемые навыки */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">
+                    {language === 'ru' ? 'Требуемые навыки' :
+                     language === 'kz' ? 'Қажетті дағдылар' :
                      'Required Skills'}
                   </h3>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {currentInternship.skills.map((skill: string, i: number) => (
-                      <Badge key={i} variant="secondary" className="bg-primary/10 text-primary">
+                  <div className="flex flex-wrap gap-2">
+                    {currentInternship.skills.map((skill, index) => (
+                      <Badge key={index} variant="secondary" className="bg-primary/10 text-primary">
                         {skill}
                       </Badge>
                     ))}
                   </div>
                 </div>
-                
-                {/* Правая колонка */}
-                <div className="bg-muted/50 rounded-xl p-5 h-fit">
-                  <h3 className="text-lg font-bold mb-4">
-                    {language === 'ru' ? 'Детали стажировки' : 
-                     language === 'kz' ? 'Тағылымдама мәліметтері' : 
-                     'Internship Details'}
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <Clock className="w-5 h-5 text-primary mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">
-                          {language === 'ru' ? 'Продолжительность' : 
-                           language === 'kz' ? 'Ұзақтығы' : 
-                           'Duration'}
-                        </p>
-                        <p className="text-foreground/70">
-                          {currentInternship.duration.replace('months', 
-                            language === 'ru' ? 'месяцев' : 
-                            language === 'kz' ? 'ай' : 
-                            'months'
-                          )}
-                        </p>
               </div>
             </div>
-                    
-                    <div className="flex items-start">
-                      <MapPin className="w-5 h-5 text-primary mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">
-                          {language === 'ru' ? 'Формат работы' : 
-                           language === 'kz' ? 'Жұмыс форматы' : 
-                           'Work Format'}
-                        </p>
-                        <p className="text-foreground/70">
-                          {getLocalizedLocationType(currentInternship.locationType, language)}
-                        </p>
-          </div>
-        </div>
-        
-                    <div className="flex items-start">
-                      <Calendar className="w-5 h-5 text-primary mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">
-                          {language === 'ru' ? 'Дедлайн заявок' : 
-                           language === 'kz' ? 'Өтінім мерзімі' : 
-                           'Application Deadline'}
-                        </p>
-                        <p className="text-foreground/70">
-                          {new Date(currentInternship.applicationDeadline).toLocaleDateString(
-                            language === 'ru' ? 'ru-RU' : 
-                            language === 'kz' ? 'kk-KZ' : 
-                            'en-US',
-                            { day: 'numeric', month: 'long', year: 'numeric' }
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <Users className="w-5 h-5 text-primary mr-3 mt-0.5" />
-                      <div>
-                        <p className="font-medium">
-                          {language === 'ru' ? 'Заявок подано' : 
-                           language === 'kz' ? 'Берілген өтінімдер' : 
-                           'Applied Count'}
-                        </p>
-                        <p className="text-foreground/70">
-                          {currentInternship.appliedCount?.toLocaleString() || '0'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mt-8">
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90 text-white"
-                      onClick={() => handleApplyClick(currentInternship)}
-                    >
-                      {currentInternship.externalUrl ? (
-                        <>
-                          {language === 'ru' ? 'Перейти к вакансии' : 
-                           language === 'kz' ? 'Вакансияға өту' : 
-                           'Go to Vacancy'}
-                          <ExternalLink className="ml-2 w-4 h-4" />
-                        </>
-                      ) : (
-                        <>
-                          Подать заявку
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                        </>
-                      )}
-            </Button>
-          </div>
-        </div>
-              </div>
+
+            {/* Нижняя панель с кнопкой */}
+            <div className="p-6 bg-muted/50 border-t">
+              <Button 
+                className="w-full bg-primary hover:bg-primary/90 text-white"
+                onClick={() => handleApplyClick(currentInternship)}
+              >
+                {currentInternship.externalUrl ? (
+                  <>
+                    {language === 'ru' ? 'Перейти к вакансии' : 
+                     language === 'kz' ? 'Вакансияға өту' : 
+                     'Go to Vacancy'}
+                    <ExternalLink className="ml-2 w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    {language === 'ru' ? 'Подать заявку' :
+                     language === 'kz' ? 'Өтінім беру' :
+                     'Apply Now'}
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>
@@ -2326,7 +2404,7 @@ export default function PublicInternships() {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-muted-foreground" />
                     <span>
-                      {new Date(selectedInternship.applicationDeadline).toLocaleDateString()}
+                      {formatDate(selectedInternship.applicationDeadline, language, selectedInternship.externalUrl !== undefined)}
                     </span>
                   </div>
                 </div>

@@ -649,7 +649,7 @@ export default function PublicAboutUs() {
                             {language === 'ru' ? 'Качественное обучение от ведущих специалистов' : language === 'kz' ? 'Жетекші мамандардан сапалы оқыту' : 'Quality education from leading specialists'}
                           </p>
                         </motion.div>
-
+                        
                         <motion.div 
                           className="flex flex-col items-center text-center p-6 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 hover:shadow-md transition-all duration-300"
                           whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.4)" }}
@@ -664,7 +664,7 @@ export default function PublicAboutUs() {
                             {language === 'ru' ? 'Реальные проекты и практический опыт' : language === 'kz' ? 'Нақты жобалар және практикалық тәжірибе' : 'Real projects and practical experience'}
                           </p>
                         </motion.div>
-
+                        
                         <motion.div 
                           className="flex flex-col items-center text-center p-6 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg border border-white/10 dark:border-white/5 hover:shadow-md transition-all duration-300"
                           whileHover={{ y: -5, backgroundColor: "rgba(255, 255, 255, 0.4)" }}

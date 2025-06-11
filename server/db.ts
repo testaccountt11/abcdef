@@ -6,9 +6,12 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Create a PostgreSQL connection pool
+// Create a PostgreSQL connection pool with proper SSL configuration
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Test the connection
@@ -22,7 +25,5 @@ pool.connect((err, client, release) => {
 });
 
 // Create a Drizzle ORM instance with the schema
-const db = drizzle(pool, { schema });
-
-// Export both the db instance and pool
-export { db, pool };
+export const db = drizzle(pool, { schema });
+export { pool }; // Export pool if needed elsewhere
