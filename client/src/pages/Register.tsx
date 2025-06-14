@@ -14,7 +14,6 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useTranslations } from '@/hooks/use-translations';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
 
 const registerFormSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -60,35 +59,40 @@ const Register: React.FC = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/auth/register', {
-        email: values.email,
-        password: values.password,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        username: values.username,
+      const response = await fetch('/api/register/direct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          username: values.username,
+        }),
       });
       
-      const { user, message } = response.data;
+      const data = await response.json();
       
-      login(user);
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      login(data.user);
       setLocation('/dashboard');
       
       toast({
         title: t('auth.success'),
-        description: message || t('auth.accountCreated'),
+        description: data.message || t('auth.accountCreated'),
         variant: 'default',
       });
     } catch (error) {
       console.error('Registration error:', error);
-      let errorMessage = t('auth.registrationError');
-      
-      if (axios.isAxiosError(error) && error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      }
       
       toast({
         title: t('auth.error'),
-        description: errorMessage,
+        description: error instanceof Error ? error.message : t('auth.registrationError'),
         variant: 'destructive',
       });
       

@@ -3,21 +3,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Progress } from "@/components/ui/progress";
 
 interface Language {
   id: number;
   name: string;
   level: 'basic' | 'intermediate' | 'advanced' | 'native';
   certificate?: string;
+  proficiency: number;
 }
 
 interface LanguageCardProps {
   language: Language;
   onEdit: () => void;
   onDelete: () => void;
+  isOwner: boolean;
 }
 
-export default function LanguageCard({ language, onEdit, onDelete }: LanguageCardProps) {
+export default function LanguageCard({ language, onEdit, onDelete, isOwner }: LanguageCardProps) {
   const t = useTranslation();
 
   const getLevelColor = (level: Language['level']) => {
@@ -39,26 +42,28 @@ export default function LanguageCard({ language, onEdit, onDelete }: LanguageCar
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="font-semibold">{language.name}</div>
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            className="h-8 w-8"
-            title={t('common.edit')}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onDelete}
-            className="h-8 w-8 text-destructive"
-            title={t('common.delete')}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+        {isOwner && (
+          <div className="flex space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8"
+              title={t('common.edit')}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className="h-8 w-8 text-destructive"
+              title={t('common.delete')}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
@@ -72,6 +77,7 @@ export default function LanguageCard({ language, onEdit, onDelete }: LanguageCar
             </div>
           )}
         </div>
+        <Progress value={language.proficiency} className="h-2" />
       </CardContent>
     </Card>
   );

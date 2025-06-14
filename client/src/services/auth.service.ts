@@ -1,36 +1,44 @@
-import { 
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  User
-} from 'firebase/auth';
-import { auth, googleProvider } from '@/config/firebase';
+import { apiRequest } from '@/lib/queryClient';
 
-export class AuthService {
-  static async signInWithGoogle(): Promise<User> {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
-      throw error;
-    }
-  }
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+}
 
-  static async signOut(): Promise<void> {
-    try {
-      await firebaseSignOut(auth);
-    } catch (error) {
-      console.error('Error signing out:', error);
-      throw error;
-    }
-  }
+export const loginWithEmail = async (email: string, password: string) => {
+  const response = await apiRequest('/auth/login', {
+    method: 'POST',
+    body: { email, password }
+  });
+  return response.user;
+};
 
-  static onAuthStateChanged(callback: (user: User | null) => void): () => void {
-    return onAuthStateChanged(auth, callback);
-  }
+export const registerWithEmail = async (email: string, password: string, name: string) => {
+  const response = await apiRequest('/auth/register', {
+    method: 'POST',
+    body: { email, password, name }
+  });
+  return response.user;
+};
 
-  static getCurrentUser(): User | null {
-    return auth.currentUser;
+export const logout = async () => {
+  await apiRequest('/auth/logout', { method: 'POST' });
+};
+
+export const resetPassword = async (email: string) => {
+  await apiRequest('/auth/reset-password', {
+    method: 'POST',
+    body: { email }
+  });
+};
+
+export const checkAuth = async () => {
+  try {
+    const response = await apiRequest('/auth/me', { method: 'GET' });
+    return response.user;
+  } catch (error) {
+    return null;
   }
-} 
+}; 

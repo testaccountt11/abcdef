@@ -1,82 +1,49 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash2, ExternalLink, Github } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Project } from '@/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash, ExternalLink } from "lucide-react";
+import { Project } from "@/types";
+import { Badge } from "@/components/ui/badge";
 
-interface ProjectCardProps {
+export interface ProjectCardProps {
   project: Project;
   onEdit: () => void;
   onDelete: () => void;
+  isOwner: boolean;
 }
 
-export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
-  const t = useTranslation();
-
+export default function ProjectCard({ project, onEdit, onDelete, isOwner }: ProjectCardProps) {
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="font-semibold">{project.title}</div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <div>
+          <CardTitle className="text-base">{project.title}</CardTitle>
+          <CardDescription>{project.description}</CardDescription>
+        </div>
         <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            className="h-8 w-8"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onDelete}
-            className="h-8 w-8 text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          {project.url && (
+            <Button variant="ghost" size="sm" asChild>
+              <a href={project.url} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+          )}
+          {isOwner && (
+            <>
+              <Button variant="ghost" size="sm" onClick={onEdit}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={onDelete}>
+                <Trash className="h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">{project.description}</p>
-        
+      <CardContent>
         <div className="flex flex-wrap gap-2">
           {project.technologies.map((tech, index) => (
-            <Badge key={index} variant="secondary">
-              {tech}
-            </Badge>
+            <Badge key={index} variant="secondary">{tech}</Badge>
           ))}
-        </div>
-
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <span>{project.startDate}</span>
-          <span>-</span>
-          <span>{project.isPresent ? t('profile.present') : project.endDate}</span>
-        </div>
-
-        <div className="flex space-x-4">
-          {project.projectUrl && (
-            <a
-              href={project.projectUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center text-sm text-muted-foreground hover:text-primary"
-            >
-              <ExternalLink className="h-4 w-4 mr-1" />
-              {t('profile.projectUrl')}
-            </a>
-          )}
-          {project.githubUrl && (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center text-sm text-muted-foreground hover:text-primary"
-            >
-              <Github className="h-4 w-4 mr-1" />
-              GitHub
-            </a>
-          )}
         </div>
       </CardContent>
     </Card>

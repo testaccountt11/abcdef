@@ -1,15 +1,12 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import { Language } from '@/lib/translations';
+import type { Language } from '@/lib/translations';
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
 }
 
-export const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
-  setLanguage: () => {},
-});
+export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 interface LanguageProviderProps {
   children: ReactNode;
@@ -17,8 +14,12 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguage] = useState<Language>(() => {
-    const savedLanguage = localStorage.getItem('language');
-    return (savedLanguage as Language) || 'en';
+    // Try to get the language from localStorage, fallback to browser language or 'en'
+    const savedLanguage = localStorage.getItem('language') as Language;
+    if (savedLanguage) return savedLanguage;
+
+    const browserLang = navigator.language.split('-')[0];
+    return (browserLang === 'ru' || browserLang === 'kz') ? browserLang as Language : 'en';
   });
 
   useEffect(() => {

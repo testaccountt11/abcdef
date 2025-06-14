@@ -25,6 +25,35 @@
     },
     "types": ["node", "jest", "@testing-library/jest-dom"]
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.test.ts", "**/*.test.tsx", "jest.setup.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "server/**/*.ts",
+    "shared/**/*.ts",
+    "client/src/components/**/*.ts",
+    "client/src/components/**/*.tsx",
+    "client/src/contexts/**/*.ts",
+    "client/src/contexts/**/*.tsx",
+    "client/src/hooks/**/*.ts",
+    "client/src/hooks/**/*.tsx",
+    "client/src/lib/**/*.ts",
+    "client/src/lib/**/*.tsx",
+    "client/src/pages/**/*.ts",
+    "client/src/pages/**/*.tsx",
+    "client/src/services/**/*.ts",
+    "client/src/services/**/*.tsx",
+    "client/src/types/**/*.ts",
+    "client/src/types/**/*.tsx",
+    "client/src/utils/**/*.ts",
+    "client/src/utils/**/*.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "jest.setup.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "client/src/lib/firebase.ts",
+    "**/firebase.ts",
+    "dist",
+    "build",
+    "coverage"
+  ]
 }

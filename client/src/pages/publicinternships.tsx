@@ -716,7 +716,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
       onClick();
     }
   };
-
+  
   const formatShortDate = (date: string, lang: string, showYear: boolean = true) => {
     if (!date) {
       console.log('Empty date received');
@@ -894,7 +894,7 @@ const InternshipCard: React.FC<InternshipCardProps> = ({
           </div>
           <div className="flex flex-col items-center justify-center">
             <Building2 className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
-            <span>{getLocalizedLocationType(internship.locationType, language)}</span>
+              <span>{getLocalizedLocationType(internship.locationType, language)}</span>
           </div>
           <div className="flex flex-col items-center justify-center">
             <Calendar className="w-4 h-4 mb-1 text-blue-600 dark:text-blue-400" />
@@ -996,14 +996,14 @@ const HeadHunterWidget: React.FC = () => {
       try {
         setIsLoading(true);
         // Создаем скрипт с правильными параметрами и локализацией
-        const script = document.createElement('script');
+    const script = document.createElement('script');
         script.src = `https://api.hh.ru/widgets/vacancies/search?count=6&locale=${language === 'ru' ? 'RU' : 'EN'}&links_color=1560b2&border_color=1560b2&area=40&employment=volunteer&employment=probation&text=${encodeURIComponent(
           language === 'ru' ? 'стажировка OR стажер OR практика' :
           language === 'kz' ? 'тағылымдама OR тәлімгер OR практика' :
           'internship OR intern OR trainee'
         )}`;
-        script.className = "hh-script";
-        script.async = true;
+    script.className = "hh-script";
+    script.async = true;
         
         // Добавляем обработчик ошибок
         script.onerror = () => {
@@ -1020,13 +1020,13 @@ const HeadHunterWidget: React.FC = () => {
           setIsLoading(false);
         };
     
-        // Вставляем скрипт в DOM
-        const widgetContainer = document.getElementById('hh-widget-container');
-        if (widgetContainer) {
+    // Вставляем скрипт в DOM
+    const widgetContainer = document.getElementById('hh-widget-container');
+    if (widgetContainer) {
           // Очищаем контейнер перед добавлением нового скрипта
           widgetContainer.innerHTML = '';
-          widgetContainer.appendChild(script);
-        }
+      widgetContainer.appendChild(script);
+    }
       } catch (error) {
         setError(
           language === 'ru' ? 'Произошла ошибка при загрузке виджета' :
@@ -1167,28 +1167,28 @@ export default function PublicInternships() {
         console.log('Calculated deadline:', deadline.toISOString());
         
         return {
-          id: parseInt(vacancy.id),
-          title: vacancy.name,
-          titleRu: vacancy.name,
-          titleKz: vacancy.name,
-          company: vacancy.employer.name,
-          companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
-          location: vacancy.area.name,
-          locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
+        id: parseInt(vacancy.id),
+        title: vacancy.name,
+        titleRu: vacancy.name,
+        titleKz: vacancy.name,
+        company: vacancy.employer.name,
+        companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
+        location: vacancy.area.name,
+        locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
                       vacancy.schedule?.id === 'fullDay' ? 'onsite' : 'hybrid') as 'remote' | 'onsite' | 'hybrid',
-          description: vacancy.snippet?.responsibility || '',
-          descriptionRu: vacancy.snippet?.responsibility || '',
-          descriptionKz: vacancy.snippet?.responsibility || '',
+        description: vacancy.snippet?.responsibility || '',
+        descriptionRu: vacancy.snippet?.responsibility || '',
+        descriptionKz: vacancy.snippet?.responsibility || '',
           duration: vacancy.employment?.name === 'probation' ? '3 months' : '6 months',
           applicationDeadline: deadline.toISOString(),
-          category: vacancy.professional_roles?.[0]?.name || 'Technology',
-          skills: vacancy.key_skills?.map(skill => skill.name) || [],
-          isPaid: !!vacancy.salary,
-          featured: false,
-          appliedCount: Math.floor(Math.random() * 50) + 5,
+        category: vacancy.professional_roles?.[0]?.name || 'Technology',
+        skills: vacancy.key_skills?.map(skill => skill.name) || [],
+        isPaid: !!vacancy.salary,
+        featured: false,
+        appliedCount: Math.floor(Math.random() * 50) + 5,
           level: vacancy.experience?.id === 'noExperience' ? 'Beginner' : 
                 vacancy.experience?.id === 'between1And3' ? 'Intermediate' : 'Advanced',
-          externalUrl: vacancy.alternate_url
+        externalUrl: vacancy.alternate_url
         };
       });
     } else {
@@ -2226,7 +2226,7 @@ export default function PublicInternships() {
               <div className="absolute bottom-8 left-8 right-8 z-20">
                 <Badge className="mb-4 bg-primary/90">
                   {getLocalizedCategory(currentInternship.category, language)}
-                </Badge>
+                  </Badge>
                 <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">
                   {getLocalizedTitle(currentInternship, language)}
                 </h2>
@@ -2239,7 +2239,7 @@ export default function PublicInternships() {
                        'Application deadline: '}
                       {formatDate(currentInternship.applicationDeadline, language, currentInternship.externalUrl !== undefined)}
                     </span>
-                  </div>
+                </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>
@@ -2256,15 +2256,15 @@ export default function PublicInternships() {
                 </div>
               </div>
             </div>
-
+            
             {/* Основное содержимое */}
             <div className="p-6">
               <div className="space-y-6">
                 {/* Описание */}
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-foreground">
-                    {language === 'ru' ? 'Описание' :
-                     language === 'kz' ? 'Сипаттама' :
+                    {language === 'ru' ? 'Описание' : 
+                     language === 'kz' ? 'Сипаттама' : 
                      'Description'}
                   </h3>
                   <p className="text-foreground/70">
@@ -2283,20 +2283,20 @@ export default function PublicInternships() {
                     <span className="text-foreground/70">
                       {getLocalizedLocationType(currentInternship.locationType, language)}
                     </span>
-                  </div>
+                </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span className="text-foreground/70">
                       {language === 'ru' ? 'Продолжительность: ' :
                        language === 'kz' ? 'Ұзақтығы: ' :
                        'Duration: '}
-                      {currentInternship.duration.replace('months', 
-                        language === 'ru' ? 'месяцев' :
-                        language === 'kz' ? 'ай' :
-                        'months'
-                      )}
+                          {currentInternship.duration.replace('months', 
+                            language === 'ru' ? 'месяцев' : 
+                            language === 'kz' ? 'ай' : 
+                            'months'
+                          )}
                     </span>
-                  </div>
+              </div>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     <span className="text-foreground/70">
@@ -2305,11 +2305,11 @@ export default function PublicInternships() {
                        'Application deadline: '}
                       {formatDate(currentInternship.applicationDeadline, language, currentInternship.externalUrl !== undefined)}
                     </span>
-                  </div>
-                </div>
-
+          </div>
+        </div>
+        
                 {/* Требуемые навыки */}
-                <div>
+                      <div>
                   <h3 className="text-lg font-semibold mb-2 text-foreground">
                     {language === 'ru' ? 'Требуемые навыки' :
                      language === 'kz' ? 'Қажетті дағдылар' :
@@ -2321,33 +2321,33 @@ export default function PublicInternships() {
                         {skill}
                       </Badge>
                     ))}
+                      </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
+                  
             {/* Нижняя панель с кнопкой */}
             <div className="p-6 bg-muted/50 border-t">
-              <Button 
-                className="w-full bg-primary hover:bg-primary/90 text-white"
-                onClick={() => handleApplyClick(currentInternship)}
-              >
-                {currentInternship.externalUrl ? (
-                  <>
-                    {language === 'ru' ? 'Перейти к вакансии' : 
-                     language === 'kz' ? 'Вакансияға өту' : 
-                     'Go to Vacancy'}
-                    <ExternalLink className="ml-2 w-4 h-4" />
-                  </>
-                ) : (
-                  <>
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90 text-white"
+                      onClick={() => handleApplyClick(currentInternship)}
+                    >
+                      {currentInternship.externalUrl ? (
+                        <>
+                          {language === 'ru' ? 'Перейти к вакансии' : 
+                           language === 'kz' ? 'Вакансияға өту' : 
+                           'Go to Vacancy'}
+                          <ExternalLink className="ml-2 w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
                     {language === 'ru' ? 'Подать заявку' :
                      language === 'kz' ? 'Өтінім беру' :
                      'Apply Now'}
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </>
-                )}
-              </Button>
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                        </>
+                      )}
+            </Button>
             </div>
           </div>
         </div>

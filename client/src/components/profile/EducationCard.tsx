@@ -1,87 +1,48 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
-import { useTranslation } from '@/hooks/useTranslation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Edit, Trash } from "lucide-react";
+import { Education } from "@/types";
+import { format } from "date-fns";
 
-interface Education {
-  id: number;
-  institution: string;
-  degree: string;
-  fieldOfStudy: string;
-  startDate: string;
-  endDate?: string;
-  isPresent: boolean;
-  gpa?: string;
-  activities?: string;
-  description?: string;
-}
-
-interface EducationCardProps {
+export interface EducationCardProps {
   education: Education;
   onEdit: () => void;
   onDelete: () => void;
+  isOwner: boolean;
 }
 
-export default function EducationCard({ education, onEdit, onDelete }: EducationCardProps) {
-  const t = useTranslation();
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-    });
-  };
-
+export default function EducationCard({ education, onEdit, onDelete, isOwner }: EducationCardProps) {
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="font-semibold">{education.institution}</div>
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            className="h-8 w-8"
-            title={t('common.edit')}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onDelete}
-            className="h-8 w-8 text-destructive"
-            title={t('common.delete')}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <div>
+          <CardTitle className="text-base">{education.institution}</CardTitle>
+          <CardDescription>{education.degree} in {education.fieldOfStudy}</CardDescription>
         </div>
+        {isOwner && (
+          <div className="flex space-x-2">
+            <Button variant="ghost" size="sm" onClick={onEdit}>
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onDelete}>
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div>
-            <div className="font-medium">{education.degree}</div>
-            <div className="text-sm text-muted-foreground">{education.fieldOfStudy}</div>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {formatDate(education.startDate)} -{' '}
-            {education.isPresent ? t('profile.present') : education.endDate && formatDate(education.endDate)}
-          </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            {format(new Date(education.startDate), 'MMM yyyy')} - 
+            {education.endDate ? format(new Date(education.endDate), 'MMM yyyy') : 'Present'}
+          </span>
           {education.gpa && (
-            <div className="text-sm">
-              <span className="font-medium">{t('profile.gpa')}:</span> {education.gpa}
-            </div>
-          )}
-          {education.activities && (
-            <div className="text-sm">
-              <span className="font-medium">{t('profile.activities')}:</span>{' '}
-              {education.activities}
-            </div>
-          )}
-          {education.description && (
-            <div className="text-sm mt-2">{education.description}</div>
+            <span className="text-sm text-muted-foreground">GPA: {education.gpa}</span>
           )}
         </div>
+        {education.activities && (
+          <p className="mt-2 text-sm text-muted-foreground">{education.activities}</p>
+        )}
       </CardContent>
     </Card>
   );

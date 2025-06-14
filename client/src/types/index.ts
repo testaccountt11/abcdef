@@ -93,7 +93,10 @@ export interface Language {
   id: number;
   name: string;
   level: 'basic' | 'intermediate' | 'advanced' | 'native';
-  certificate?: string;
+  proficiency: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Project {

@@ -1,5 +1,5 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgTable, text, serial, integer, boolean, timestamp, json, varchar } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -236,157 +236,59 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
   }),
 }));
 
-// Achievements schema
-export const achievements = pgTable("achievements", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  description: text("description").notNull(),
-  iconUrl: text("icon_url").notNull(),
-  category: text("category").notNull(), // "course", "certificate", "mentor", "profile", etc.
-  requirement: text("requirement").notNull(), // Description of how to earn
-  requiredValue: integer("required_value").default(1), // Threshold to earn achievement
-  points: integer("points").default(10),
-  isHidden: boolean("is_hidden").default(false), // Some achievements can be hidden/secret
-  createdAt: timestamp("created_at").defaultNow(),
+// Add new schema definitions
+export const userStats = pgTable('user_stats', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  coursesInProgress: integer('courses_in_progress').default(0),
+  certificatesEarned: integer('certificates_earned').default(0),
+  mentorSessions: integer('mentor_sessions').default(0),
+  opportunitiesSaved: integer('opportunities_saved').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const insertAchievementSchema = createInsertSchema(achievements).pick({
-  name: true,
-  description: true,
-  iconUrl: true,
-  category: true,
-  requirement: true,
-  requiredValue: true,
-  points: true,
-  isHidden: true,
+export const achievements = pgTable('achievements', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  name: text('name').notNull(),
+  description: text('description'),
+  progress: integer('progress').default(0),
+  maxProgress: integer('max_progress').notNull(),
+  icon: text('icon').notNull(),
+  unlockedAt: timestamp('unlocked_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// User achievements junction table
-export const userAchievements = pgTable("user_achievements", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  achievementId: integer("achievement_id").notNull(),
-  earnedAt: timestamp("earned_at").defaultNow(),
-  progress: integer("progress").default(0), // For tracking partial progress
-  isComplete: boolean("is_complete").default(false),
-  completedValue: integer("completed_value").default(0), // The actual value when completed
-});
-
-export const insertUserAchievementSchema = createInsertSchema(userAchievements).pick({
-  userId: true,
-  achievementId: true,
-  progress: true,
-  isComplete: true,
-  completedValue: true,
-});
-
-// Badges schema (special achievements or level indicators)
-export const badges = pgTable("badges", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull().unique(),
-  description: text("description").notNull(),
-  iconUrl: text("icon_url").notNull(),
-  category: text("category").notNull(), // "beginner", "intermediate", "expert", "special"
-  level: integer("level").default(1),
-  requiredPoints: integer("required_points").default(100), // Points needed to earn
-  isRare: boolean("is_rare").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertBadgeSchema = createInsertSchema(badges).pick({
-  name: true,
-  description: true,
-  iconUrl: true,
-  category: true,
-  level: true,
-  requiredPoints: true,
-  isRare: true,
-});
-
-// User badges junction table
-export const userBadges = pgTable("user_badges", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  badgeId: integer("badge_id").notNull(),
-  earnedAt: timestamp("earned_at").defaultNow(),
-  displayOnProfile: boolean("display_on_profile").default(true),
-});
-
-export const insertUserBadgeSchema = createInsertSchema(userBadges).pick({
-  userId: true,
-  badgeId: true,
-  displayOnProfile: true,
-});
-
-export const statsRelations = relations(stats, ({ one }) => ({
+// Relations
+export const userStatsRelations = relations(userStats, ({ one }) => ({
   user: one(users, {
-    fields: [stats.userId],
+    fields: [userStats.userId],
     references: [users.id],
   }),
 }));
 
-export const achievementsRelations = relations(achievements, ({ many }) => ({
-  userAchievements: many(userAchievements),
-}));
-
-export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+export const achievementsRelations = relations(achievements, ({ one }) => ({
   user: one(users, {
-    fields: [userAchievements.userId],
+    fields: [achievements.userId],
     references: [users.id],
   }),
-  achievement: one(achievements, {
-    fields: [userAchievements.achievementId],
-    references: [achievements.id],
-  }),
 }));
 
-export const badgesRelations = relations(badges, ({ many }) => ({
-  userBadges: many(userBadges),
-}));
+// Schemas
+export const insertUserStatsSchema = createInsertSchema(userStats);
+export const selectUserStatsSchema = createSelectSchema(userStats);
 
-export const userBadgesRelations = relations(userBadges, ({ one }) => ({
-  user: one(users, {
-    fields: [userBadges.userId],
-    references: [users.id],
-  }),
-  badge: one(badges, {
-    fields: [userBadges.badgeId],
-    references: [badges.id],
-  }),
-}));
+export const insertAchievementSchema = createInsertSchema(achievements);
+export const selectAchievementSchema = createSelectSchema(achievements);
 
-export const usersRelationsWithAchievements = relations(users, ({ many, one }) => ({
-  enrollments: many(enrollments),
-  certificates: many(certificates),
-  stats: one(stats),
-  achievements: many(userAchievements),
-  badges: many(userBadges),
-  skills: many(userSkills),
-  education: many(userEducation),
-  languages: many(userLanguages),
-  projects: many(userProjects),
-}));
+// Types
+export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
+export type SelectUserStats = z.infer<typeof selectUserStatsSchema>;
 
-// Contact request schema
-export const contactRequests = pgTable("contact_requests", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  subject: text("subject").notNull(),
-  message: text("message").notNull(),
-  status: text("status").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertContactRequestSchema = createInsertSchema(contactRequests).pick({
-  name: true,
-  email: true,
-  phone: true,
-  subject: true,
-  message: true,
-  status: true,
-});
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type SelectAchievement = z.infer<typeof selectAchievementSchema>;
 
 // Export all types
 export type User = typeof users.$inferSelect;
@@ -420,21 +322,6 @@ export type SelectCertificate = z.infer<typeof selectCertificateSchema>;
 export type Stats = typeof stats.$inferSelect;
 export type InsertStats = z.infer<typeof insertStatsSchema>;
 export type SelectStats = z.infer<typeof selectStatsSchema>;
-
-export type Achievement = typeof achievements.$inferSelect;
-export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
-
-export type UserAchievement = typeof userAchievements.$inferSelect;
-export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
-
-export type Badge = typeof badges.$inferSelect;
-export type InsertBadge = z.infer<typeof insertBadgeSchema>;
-
-export type UserBadge = typeof userBadges.$inferSelect;
-export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
-
-export type ContactRequest = typeof contactRequests.$inferSelect;
-export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
 
 // Общие схемы
 export const userSchema = z.object({

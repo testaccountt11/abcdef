@@ -2,30 +2,24 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { User } from "@shared/schema";
 import { apiRequest, ApiError } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { checkAuth, type AuthUser } from '@/services/auth.service';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (user: User) => void;
   logout: () => Promise<void>;
-  checkAuth: () => Promise<void>;
 }
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  login: () => {},
-  logout: async () => {},
-  checkAuth: async () => {},
-});
-
-export const useAuthContext = () => useContext(AuthContext);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuthContext = () => useContext(AuthContext);
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -54,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         await checkAuth();
       } catch (error) {
-        console.error("Initial auth check failed:", error);
+        console.error('Failed to check auth status:', error);
       } finally {
         setLoading(false);
       }
@@ -106,14 +100,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      login, 
-      logout,
-      checkAuth
-    }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}

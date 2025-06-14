@@ -39,7 +39,6 @@ export type TranslationKey =
   | 'auth.signin.desc'
   | 'auth.signin.button'
   | 'auth.signin.alternative'
-  | 'auth.signin.google'
   | 'auth.register'
   | 'auth.register.desc'
   | 'auth.register.button'
@@ -336,7 +335,28 @@ export type TranslationKey =
   | 'common.add'
   | 'profile.certificate'
   | 'profile.editProject'
-  | 'profile.editLanguage';
+  | 'profile.editLanguage'
+  | 'profile.stats.title'
+  | 'profile.stats.courses'
+  | 'profile.stats.coursesDesc'
+  | 'profile.stats.certificates'
+  | 'profile.stats.certificatesDesc'
+  | 'profile.stats.mentoring'
+  | 'profile.stats.mentoringDesc'
+  | 'profile.stats.opportunities'
+  | 'profile.stats.opportunitiesDesc'
+  | 'profile.achievements.title'
+  | 'profile.achievements.unlockedAt'
+  | 'profile.achievements.progress'
+  | 'profile.achievements.pioneer'
+  | 'profile.achievements.pioneerDesc'
+  | 'profile.achievements.skillMaster'
+  | 'profile.achievements.skillMasterDesc'
+  | 'profile.achievements.polyglot'
+  | 'profile.achievements.polyglotDesc'
+  | 'profile.viewMore'
+  | 'profile.share'
+  | 'profile.edit';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -381,7 +401,6 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.desc': 'Enter your credentials to access your portfolio',
     'auth.signin.button': 'Sign In with Email',
     'auth.signin.alternative': 'Or continue with',
-    'auth.signin.google': 'Sign In with Google',
     'auth.register': 'Create an Account',
     'auth.register.desc': 'Sign up to start building your educational portfolio',
     'auth.register.button': 'Create Account with Email',
@@ -675,7 +694,28 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'common.add': 'Add',
     'profile.certificate': 'Certificate',
     'profile.editProject': 'Edit Project',
-    'profile.editLanguage': 'Edit Language'
+    'profile.editLanguage': 'Edit Language',
+    'profile.stats.title': 'Statistics',
+    'profile.stats.courses': 'Active Courses',
+    'profile.stats.coursesDesc': 'courses in progress',
+    'profile.stats.certificates': 'Certificates',
+    'profile.stats.certificatesDesc': 'certificates earned',
+    'profile.stats.mentoring': 'Mentoring',
+    'profile.stats.mentoringDesc': 'sessions completed',
+    'profile.stats.opportunities': 'Opportunities',
+    'profile.stats.opportunitiesDesc': 'opportunities saved',
+    'profile.achievements.title': 'Achievements',
+    'profile.achievements.unlockedAt': 'Unlocked',
+    'profile.achievements.progress': 'Progress',
+    'profile.achievements.pioneer': 'Profile Pioneer',
+    'profile.achievements.pioneerDesc': 'Complete your profile information',
+    'profile.achievements.skillMaster': 'Skill Master',
+    'profile.achievements.skillMasterDesc': 'Add your professional skills',
+    'profile.achievements.polyglot': 'Language Enthusiast',
+    'profile.achievements.polyglotDesc': 'Add your language proficiencies',
+    'profile.viewMore': 'View More',
+    'profile.share': 'Share Profile',
+    'profile.edit': 'Edit Profile'
   },
   ru: {
     'auth.haveAccount': 'Уже есть аккаунт?',
@@ -719,7 +759,6 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.desc': 'Введите данные для доступа к вашему портфолио',
     'auth.signin.button': 'Войти с Email',
     'auth.signin.alternative': 'Или продолжить с',
-    'auth.signin.google': 'Войти через Google',
     'auth.register': 'Создать аккаунт',
     'auth.register.desc': 'Зарегистрируйтесь, чтобы начать создавать ваше образовательное портфолио',
     'auth.register.button': 'Создать аккаунт с Email',
@@ -1013,7 +1052,28 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'common.add': 'Добавить',
     'profile.certificate': 'Сертификат',
     'profile.editProject': 'Редактировать проект',
-    'profile.editLanguage': 'Редактировать язык'
+    'profile.editLanguage': 'Редактировать язык',
+    'profile.stats.title': 'Статистика',
+    'profile.stats.courses': 'Активные курсы',
+    'profile.stats.coursesDesc': 'курсов в процессе',
+    'profile.stats.certificates': 'Сертификаты',
+    'profile.stats.certificatesDesc': 'получено сертификатов',
+    'profile.stats.mentoring': 'Менторство',
+    'profile.stats.mentoringDesc': 'сессий завершено',
+    'profile.stats.opportunities': 'Возможности',
+    'profile.stats.opportunitiesDesc': 'сохранено возможностей',
+    'profile.achievements.title': 'Достижения',
+    'profile.achievements.unlockedAt': 'Получено',
+    'profile.achievements.progress': 'Прогресс',
+    'profile.achievements.pioneer': 'Пионер профиля',
+    'profile.achievements.pioneerDesc': 'Complete your profile information',
+    'profile.achievements.skillMaster': 'Skill Master',
+    'profile.achievements.skillMasterDesc': 'Add your professional skills',
+    'profile.achievements.polyglot': 'Language Enthusiast',
+    'profile.achievements.polyglotDesc': 'Add your language proficiencies',
+    'profile.viewMore': 'View More',
+    'profile.share': 'Share Profile',
+    'profile.edit': 'Edit Profile'
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -1056,7 +1116,6 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'auth.signin.desc': 'Портфолиоңызға кіру үшін деректеріңізді енгізіңіз',
     'auth.signin.button': 'Email арқылы кіру',
     'auth.signin.alternative': 'Немесе жалғастыру',
-    'auth.signin.google': 'Google арқылы кіру',
     'auth.register': 'Аккаунт құру',
     'auth.register.desc': 'Білім портфолиоңызды жасауды бастау үшін тіркеліңіз',
     'auth.register.button': 'Email арқылы аккаунт жасау',
@@ -1351,7 +1410,28 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'common.add': 'Қосу',
     'profile.certificate': 'Сертификат',
     'profile.editProject': 'Жобаны өңдеу',
-    'profile.editLanguage': 'Тілді өңдеу'
+    'profile.editLanguage': 'Тілді өңдеу',
+    'profile.stats.title': 'Статистика',
+    'profile.stats.courses': 'Активные курсы',
+    'profile.stats.coursesDesc': 'курсов в процессе',
+    'profile.stats.certificates': 'Сертификаты',
+    'profile.stats.certificatesDesc': 'получено сертификатов',
+    'profile.stats.mentoring': 'Менторство',
+    'profile.stats.mentoringDesc': 'сессий завершено',
+    'profile.stats.opportunities': 'Возможности',
+    'profile.stats.opportunitiesDesc': 'сохранено возможностей',
+    'profile.achievements.title': 'Достижения',
+    'profile.achievements.unlockedAt': 'Получено',
+    'profile.achievements.progress': 'Прогресс',
+    'profile.achievements.pioneer': 'Пионер профиля',
+    'profile.achievements.pioneerDesc': 'Complete your profile information',
+    'profile.achievements.skillMaster': 'Skill Master',
+    'profile.achievements.skillMasterDesc': 'Add your professional skills',
+    'profile.achievements.polyglot': 'Language Enthusiast',
+    'profile.achievements.polyglotDesc': 'Add your language proficiencies',
+    'profile.viewMore': 'Показать больше',
+    'profile.share': 'Поделиться профилем',
+    'profile.edit': 'Редактировать профиль'
   }
 };
 

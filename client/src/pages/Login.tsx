@@ -127,11 +127,11 @@ const Login: React.FC = () => {
                       <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Input 
+                        <Input 
                             type={showPassword ? "text" : "password"}
-                            placeholder="••••••••" 
-                            {...field} 
-                            disabled={isLoading}
+                          placeholder="••••••••" 
+                          {...field} 
+                          disabled={isLoading}
                             autoComplete="current-password"
                             className="bg-background pr-10"
                           />

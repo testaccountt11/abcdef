@@ -1192,61 +1192,61 @@ export default function PublicStudyTips() {
                         onClick={() => openTipModal(featuredTips[0])}
                       >
                         <div className="relative aspect-[16/9] overflow-hidden rounded-xl">
-                          <img 
-                            src={featuredTips[0].imageUrl} 
+                            <img 
+                              src={featuredTips[0].imageUrl} 
                             alt={featuredTips[0].title}
                             className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-500"
-                          />
+                            />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
                           <div className="absolute bottom-4 left-4 right-4">
                             <Badge className="mb-2 bg-primary/90">
                               {featuredTips[0].category}
-                            </Badge>
+                              </Badge>
                             <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
-                              {language === 'ru' && featuredTips[0].titleRu ? featuredTips[0].titleRu : 
-                               language === 'kz' && featuredTips[0].titleKz ? featuredTips[0].titleKz : 
-                               featuredTips[0].title}
-                            </h3>
+                                {language === 'ru' && featuredTips[0].titleRu ? featuredTips[0].titleRu : 
+                                 language === 'kz' && featuredTips[0].titleKz ? featuredTips[0].titleKz : 
+                                 featuredTips[0].title}
+                              </h3>
                             <div className="flex items-center text-sm text-white/80">
                               <Clock className="w-4 h-4 mr-1" />
-                              {featuredTips[0].readTime}
+                                {featuredTips[0].readTime}
                               <span className="mx-2">•</span>
                               <Eye className="w-4 h-4 mr-1" />
                               {Math.floor(Math.random() * 1000) + 500}
+                              </div>
                             </div>
-                          </div>
                         </div>
                       </div>
                       
                       {/* Side list */}
                       <div className="lg:col-span-1">
                         <div className="space-y-1">
-                          {featuredTips.slice(1, 4).map((tip, index) => (
-                            <div 
-                              key={tip.id}
+                            {featuredTips.slice(1, 4).map((tip, index) => (
+                              <div 
+                                key={tip.id}
                               className="p-3 hover:bg-muted/30 transition-colors cursor-pointer flex gap-3 items-center rounded-lg"
-                              onClick={() => openTipModal(tip)}
-                            >
-                              <div className="font-bold text-xl text-primary/20 w-6 flex-shrink-0">
+                                onClick={() => openTipModal(tip)}
+                              >
+                                <div className="font-bold text-xl text-primary/20 w-6 flex-shrink-0">
                                 {index + 2}
-                              </div>
-                              <div className="flex-1">
-                                <div className="text-sm font-medium line-clamp-2">
-                                  {language === 'ru' && tip.titleRu ? tip.titleRu : 
-                                   language === 'kz' && tip.titleKz ? tip.titleKz : 
-                                   tip.title}
                                 </div>
-                                <div className="flex items-center mt-1 text-xs text-foreground/60">
-                                  <Badge className="text-xs mr-2 px-1.5 py-0 h-4">
-                                    {tip.category}
-                                  </Badge>
-                                  <Clock className="w-3 h-3 mr-1" />
-                                  {tip.readTime}
+                                <div className="flex-1">
+                                  <div className="text-sm font-medium line-clamp-2">
+                                    {language === 'ru' && tip.titleRu ? tip.titleRu : 
+                                     language === 'kz' && tip.titleKz ? tip.titleKz : 
+                                     tip.title}
+                                  </div>
+                                  <div className="flex items-center mt-1 text-xs text-foreground/60">
+                                    <Badge className="text-xs mr-2 px-1.5 py-0 h-4">
+                                      {tip.category}
+                                    </Badge>
+                                    <Clock className="w-3 h-3 mr-1" />
+                                    {tip.readTime}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
                       </div>
                     </div>
                   </div>
