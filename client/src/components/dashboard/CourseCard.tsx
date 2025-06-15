@@ -32,15 +32,12 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
 
   const { mutate: enrollCourse, isPending: isEnrolling } = useMutation({
     mutationFn: async () => {
-      console.log('Attempting to enroll in course:', course.id);
-      
-      // Get the token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(api.courses.enroll(), {
+      const response = await fetch('/api/enrollments', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,27 +47,12 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
       });
       
       if (!response.ok) {
-        let errorMessage = "Failed to enroll in course";
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.message || errorMessage;
-        } catch (e) {
-          // If response is not JSON, try to get text
-          const text = await response.text();
-          console.error('Server response:', text);
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
+        throw new Error('Failed to enroll in course');
       }
       
-      const data = await response.json();
-      console.log('Enrollment successful:', data);
-      return data;
+      return response.json();
     },
-    onSuccess: (data) => {
-      console.log('Enrollment mutation succeeded:', data);
-      
-      // Show success toast
+    onSuccess: () => {
       toast({
         title: language === 'ru' ? 'Успешно!' : 'Success!',
         description: language === 'ru' 
@@ -78,28 +60,11 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
           : 'You have successfully enrolled in the course',
       });
       
-      // Invalidate all relevant queries
+      // Обновляем кэш
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
       queryClient.invalidateQueries({ queryKey: ["courses"] });
-      queryClient.invalidateQueries({ queryKey: ["stats"] });
-      
-      // Update the courses cache
-      queryClient.setQueryData(["courses"], (oldData: any) => {
-        if (!oldData) return oldData;
-        return oldData.map((c: any) => 
-          c.id === course.id 
-            ? { ...c, isEnrolled: true, progress: 0 }
-            : c
-        );
-      });
-
-      // Force refetch the courses data
-      queryClient.refetchQueries({ queryKey: ["courses"] });
     },
     onError: (error: Error) => {
-      console.error("Enrollment mutation failed:", error);
-      
-      // Show error toast
       toast({
         variant: "destructive",
         title: language === 'ru' ? 'Ошибка' : 'Error',
@@ -109,7 +74,7 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
       });
     }
   });
-  
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -180,44 +145,24 @@ export default function CourseCard({ course, progress }: CourseCardProps) {
               variant="default"
               asChild
             >
-            <Link href={`/courses/${course.id}`}>
+              <Link href={`/courses/${course.id}`}>
                 {language === 'ru' ? 'Продолжить обучение' : 'Continue Learning'}
                 <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
+              </Link>
             </Button>
           ) : (
             <Button 
-              className="w-full cursor-pointer" 
+              className="w-full" 
               variant="default"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Button clicked');
-                console.log('Course:', course);
-                
-                const token = localStorage.getItem('token');
-                if (!token) {
-                  toast({
-                    variant: "destructive",
-                    title: language === 'ru' ? 'Требуется авторизация' : 'Authentication required',
-                    description: language === 'ru' 
-                      ? 'Пожалуйста, войдите в систему для записи на курсы' 
-                      : 'Please log in to enroll in courses',
-                  });
-                  return;
-                }
-                
-                console.log('Token:', token);
-                enrollCourse();
-              }}
+              onClick={() => enrollCourse()}
               disabled={isEnrolling}
-              type="button"
             >
               {isEnrolling 
                 ? (language === 'ru' ? 'Запись...' : 'Enrolling...')
                 : (language === 'ru' ? 'Начать обучение' : 'Start Learning')
               }
-              </Button>
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           )}
         </CardFooter>
       </Card>

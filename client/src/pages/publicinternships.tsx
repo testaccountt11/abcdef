@@ -1080,9 +1080,18 @@ import { headHunterAPI } from '../lib/headhunter';
 import type { HHVacancy } from '../types/headhunter';
 
 export default function PublicInternships() {
+  // Все хуки должны быть здесь, на верхнем уровне
   const { t, language } = useTranslations();
+  const [activeTab, setActiveTab] = useState<'portfolioIO' | 'headhunter' | 'competitions'>('portfolioIO');
+  const [showHHInternships, setShowHHInternships] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<string>("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [durationFilter, setDurationFilter] = useState<string>("all");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [levelFilter, setLevelFilter] = useState<string>("all");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   
   // Modal states
@@ -1092,11 +1101,9 @@ export default function PublicInternships() {
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
   
   // HeadHunter states
-  const [showHHInternships, setShowHHInternships] = useState(false);
   const [hhVacancies, setHHVacancies] = useState<HHVacancy[]>([]);
   const [isLoadingHH, setIsLoadingHH] = useState(false);
   const [hhError, setHHError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   
   useTheme();
@@ -1172,7 +1179,7 @@ export default function PublicInternships() {
         titleRu: vacancy.name,
         titleKz: vacancy.name,
         company: vacancy.employer.name,
-        companyLogo: vacancy.employer.logo_urls?.original || 'https://via.placeholder.com/200',
+        companyLogo: vacancy.employer.logo_urls?.original || 'https://placehold.co/200',
         location: vacancy.area.name,
         locationType: (vacancy.schedule?.id === 'remote' ? 'remote' : 
                       vacancy.schedule?.id === 'fullDay' ? 'onsite' : 'hybrid') as 'remote' | 'onsite' | 'hybrid',
@@ -1388,6 +1395,59 @@ export default function PublicInternships() {
     }
   };
 
+  // Выносим логику фильтрации в отдельную функцию
+  const renderInternshipsContent = () => {
+    // Remove the competitions case check
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {allInternships.length > 0 ? (
+          allInternships.map((internship, index) => (
+            <InternshipCard 
+              key={internship.id} 
+              internship={internship}
+              index={index}
+              onClick={() => handleInternshipClick(internship)}
+              language={language}
+            />
+          ))
+        ) : (
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col items-center justify-center py-16 text-center">
+            <FolderX className="w-16 h-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-bold mb-2">
+              {language === 'ru' ? (showHHInternships ? 'Вакансии не найдены' : 'Стажировки не найдены') : 
+               language === 'kz' ? (showHHInternships ? 'Вакансиялар табылмады' : 'Тағылымдамалар табылмады') : 
+               (showHHInternships ? 'No Vacancies Found' : 'No Internships Found')}
+            </h3>
+            <p className="text-foreground/70 max-w-md">
+              {language === 'ru' ? (showHHInternships ? 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.' : 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.') : 
+               language === 'kz' ? (showHHInternships ? 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.' : 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.') : 
+               (showHHInternships ? 'Try changing your search criteria or filters for better results.' : 'Try changing your search criteria or filters for better results.')}
+            </p>
+            <Button 
+              className="mt-6"
+              variant="outline"
+              onClick={() => {
+                setSearchTerm("");
+                setCategoryFilter("all");
+                setLocationFilter("all");
+                setDurationFilter("all");
+                setPaymentFilter("all");
+                setLevelFilter("all");
+                setSortBy("newest");
+                setCurrentPage(1);
+              }}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {language === 'ru' ? (showHHInternships ? 'Сбросить фильтры' : 'Сбросить фильтры') : 
+               language === 'kz' ? (showHHInternships ? 'Сүзгілерді қалпына келтіру' : 'Сүзгілерді қалпына келтіру') : 
+               (showHHInternships ? 'Reset Filters' : 'Reset Filters')}
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <PublicPageLayout>
       {/* Hero Section */}
@@ -1401,9 +1461,9 @@ export default function PublicInternships() {
               transition={{ duration: 0.7 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 pt-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600 leading-tight"
             >
-              {language === 'ru' ? 'Стажировки и соревнования' : 
-              language === 'kz' ? 'Тағылымдамалар мен жарыстар' : 
-              'Internships & Competitions'}
+              {language === 'ru' ? 'Стажировки' : 
+              language === 'kz' ? 'Тағылымдамалар' : 
+              'Internships'}
             </motion.h1>
             
             <motion.p 
@@ -1412,9 +1472,9 @@ export default function PublicInternships() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-xl text-foreground/80 mb-10"
             >
-              {language === 'ru' ? 'Начните свою карьеру с лучших стажировок и конкурсов, созданных для вашего профессионального роста' : 
-              language === 'kz' ? 'Кәсіби дамуыңыз үшін жасалған үздік тағылымдамалар мен байқаулардан мансабыңызды бастаңыз' : 
-              'Start your career with the best internships and competitions designed for your professional growth'}
+              {language === 'ru' ? 'Начните свою карьеру с лучших стажировок, созданных для вашего профессионального роста' : 
+              language === 'kz' ? 'Кәсіби дамуыңыз үшін жасалған үздік тағылымдамалардан мансабыңызды бастаңыз' : 
+              'Start your career with the best internships designed for your professional growth'}
             </motion.p>
             
             <motion.div
@@ -1570,9 +1630,12 @@ export default function PublicInternships() {
           <div className="flex justify-center mb-8">
             <div className="inline-flex rounded-md shadow-sm bg-muted p-1">
               <button
-                onClick={() => setShowHHInternships(false)}
+                onClick={() => {
+                  setActiveTab('portfolioIO');
+                  setShowHHInternships(false);
+                }}
                 className={`px-4 py-2 text-sm font-medium rounded-md flex items-center gap-2 ${
-                  !showHHInternships 
+                  activeTab === 'portfolioIO'
                     ? 'bg-background text-primary shadow-sm' 
                     : 'text-foreground/70 hover:text-foreground'
                 }`}
@@ -1584,11 +1647,12 @@ export default function PublicInternships() {
               </button>
               <button
                 onClick={() => {
+                  setActiveTab('headhunter');
                   setShowHHInternships(true);
                   fetchHeadHunterData(1);
                 }}
                 className={`px-4 py-2 text-sm font-medium rounded-md flex items-center gap-2 ${
-                  showHHInternships 
+                  activeTab === 'headhunter'
                     ? 'bg-background text-primary shadow-sm' 
                     : 'text-foreground/70 hover:text-foreground'
                 }`}
@@ -1601,593 +1665,11 @@ export default function PublicInternships() {
                   <div className="ml-2 animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                 )}
               </button>
-              </div>
-            </div>
-          
-          {/* Показываем состояние загрузки */}
-          {isLoadingHH && showHHInternships && (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span className="ml-3 text-foreground/70">
-                {language === 'ru' ? 'Загрузка вакансий...' : 
-                 language === 'kz' ? 'Вакансиялар жүктелуде...' : 
-                 'Loading vacancies...'}
-              </span>
-            </div>
-          )}
-
-          {/* Показываем ошибку */}
-          {hhError && showHHInternships && (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 dark:bg-red-800/10 dark:text-red-400">
-                <X className="w-5 h-5 mr-2" />
-                <span>
-                  {language === 'ru' ? 'Ошибка загрузки вакансий' : 
-                   language === 'kz' ? 'Вакансияларды жүктеу қатесі' : 
-                   'Error loading vacancies'}
-                </span>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => fetchHeadHunterData(1)}
-                className="mt-4"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                {language === 'ru' ? 'Попробовать снова' : 
-                 language === 'kz' ? 'Қайталап көру' : 
-                 'Try Again'}
-              </Button>
-            </div>
-          )}
-          
-          {/* Основной блок с фильтрацией и карточками */}
-          {(() => {
-            // Состояния для пагинации и фильтрации
-            const [currentPage, setCurrentPage] = useState(1);
-            const internshipsPerPage = 6;
-            const [categoryFilter, setCategoryFilter] = useState<string>("all");
-            const [locationFilter, setLocationFilter] = useState<string>("all");
-            const [durationFilter, setDurationFilter] = useState<string>("all");
-            const [paymentFilter, setPaymentFilter] = useState<string>("all");
-            const [levelFilter, setLevelFilter] = useState<string>("all");
-            
-            // Функция фильтрации стажировок с учетом всех фильтров
-            const getFilteredInternships = () => {
-              return (showHHInternships ? allInternships : dummyInternships).filter(internship => {
-                // Поиск по тексту с учетом переводов
-                const matchesSearch = searchTerm === "" || 
-                  // Поиск в заголовке
-                  internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (internship.titleRu && internship.titleRu.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                  (internship.titleKz && internship.titleKz.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                  // Поиск в описании
-                  internship.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (internship.descriptionRu && internship.descriptionRu.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                  (internship.descriptionKz && internship.descriptionKz.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                  // Поиск в компании
-                  internship.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  // Поиск в локации
-                  internship.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  // Поиск в категории
-                  internship.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  getCategoryRu(internship.category).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  getCategoryKz(internship.category).toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  // Поиск в навыках
-                  internship.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
-                
-                // Фильтр по категории
-                const matchesCategory = categoryFilter === "all" || internship.category === categoryFilter;
-                
-                // Фильтр по локации
-                const matchesLocation = locationFilter === "all" || internship.locationType === locationFilter;
-                
-                // Фильтр по длительности
-                let matchesDuration = true;
-                if (durationFilter !== "all") {
-                  const monthMatch = internship.duration.match(/(\d+)/);
-                  const months = monthMatch ? parseInt(monthMatch[0]) : 0;
-                  
-                  if (durationFilter === "short" && months > 3) matchesDuration = false;
-                  if (durationFilter === "medium" && (months < 3 || months > 6)) matchesDuration = false;
-                  if (durationFilter === "long" && months < 6) matchesDuration = false;
-                }
-                
-                // Фильтр по оплате
-                const matchesPayment = paymentFilter === "all" || 
-                  (paymentFilter === "paid" && internship.isPaid) || 
-                  (paymentFilter === "unpaid" && !internship.isPaid);
-                
-                // Фильтр по уровню
-                const matchesLevel = levelFilter === "all" || 
-                  (internship.level && internship.level === levelFilter);
-                
-                return matchesSearch && matchesCategory && matchesLocation && matchesDuration && matchesPayment && matchesLevel;
-              });
-            };
-            
-            // Функция сортировки стажировок
-            const getSortedInternships = (internships: Internship[]): Internship[] => {
-              if (sortBy === "popularity") {
-                return [...internships].sort((a, b) => (b.appliedCount || 0) - (a.appliedCount || 0));
-              } else if (sortBy === "newest") {
-                // Для демонстрации - используем обратный порядок ID как "новизну"
-                return [...internships].sort((a, b) => b.id - a.id);
-              }
-              return internships;
-            };
-            
-            // Получаем отфильтрованные и отсортированные стажировки
-            const filteredInternships = getFilteredInternships();
-            
-            // Убедимся, что у нас нет дубликатов стажировок по ID
-            const uniqueInternships = filteredInternships.reduce((unique: Internship[], internship) => {
-              // Проверим, есть ли стажировка с таким ID уже в массиве
-              const exists = unique.some(item => item.id === internship.id);
-              // Добавляем стажировку только если ее ID еще не встречался
-              if (!exists) {
-                unique.push(internship);
-              }
-              return unique;
-            }, []);
-            
-            // Сортируем уже уникальные стажировки
-            const sortedInternships = getSortedInternships(uniqueInternships);
-            
-            // Получаем стажировки для текущей страницы
-            const indexOfLastInternship = currentPage * internshipsPerPage;
-            const indexOfFirstInternship = indexOfLastInternship - internshipsPerPage;
-            const currentInternships = sortedInternships.slice(indexOfFirstInternship, indexOfLastInternship);
-            
-            // Рассчитываем общее количество страниц
-            const totalPages = Math.ceil(sortedInternships.length / internshipsPerPage);
-            
-            // Функция для очистки всех фильтров
-            const clearAllFilters = () => {
-              setSearchTerm("");
-              setCategoryFilter("all");
-              setLocationFilter("all");
-              setDurationFilter("all");
-              setPaymentFilter("all");
-              setLevelFilter("all");
-              setSortBy("newest");
-              setCurrentPage(1);
-            };
-            
-            return (
-              <div className="bg-card/40 backdrop-blur-sm border border-border/20 rounded-xl p-6 md:p-8 shadow-sm">
-                {/* Секция фильтров */}
-                <div className="mb-8">
-                  {/* Основной поиск и кнопка расширенных фильтров */}
-                  <div className="flex flex-col md:flex-row gap-4 items-center mb-4">
-                    <div className="flex-1 relative w-full">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/50" size={18} />
-                  <Input
-                        placeholder={
-                          language === 'ru' ? (showHHInternships ? 'Поиск по названию вакансии или компании...' : 'Поиск по названию, компании или навыкам...') : 
-                          language === 'kz' ? (showHHInternships ? 'Вакансия немесе компания атауы бойынша іздеу...' : 'Атау, компания немесе дағдылар бойынша іздеу...') : 
-                          (showHHInternships ? 'Search by job title or company...' : 'Search by title, company or skills...')
-                        }
-                        className="pl-10 py-6 text-base"
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setCurrentPage(1);
-                        }}
-                  />
-                </div>
-                    
-                    <Button 
-                      variant="outline"
-                      className="min-w-[180px] gap-2 border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50"
-                      onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                    >
-                      <Filter size={16} />
-                      {language === 'ru' ? (showHHInternships ? 'Расширенный поиск' : 'Расширенные фильтры') : 
-                       language === 'kz' ? (showHHInternships ? 'Кеңейтілген іздеу' : 'Кеңейтілген сүзгілер') : 
-                       (showHHInternships ? 'Advanced Search' : 'Advanced Filters')}
-                    </Button>
-              </div>
-              
-                  {/* Расширенные фильтры */}
-                  {showAdvancedFilters && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="bg-background/60 backdrop-blur-sm border border-border/10 rounded-xl p-5 mt-4"
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        {/* Фильтр по категории */}
-              <div>
-                          <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? (showHHInternships ? 'Сфера деятельности' : 'Категория') : 
-                             language === 'kz' ? (showHHInternships ? 'Қызмет саласы' : 'Санат') : 
-                             (showHHInternships ? 'Field' : 'Category')}
-                          </Label>
-                          <Select 
-                            value={categoryFilter}
-                            onValueChange={(value) => {
-                              setCategoryFilter(value);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">
-                                {language === 'ru' ? (showHHInternships ? 'Все сферы' : 'Все категории') : 
-                                 language === 'kz' ? (showHHInternships ? 'Барлық салалар' : 'Барлық санаттар') : 
-                                 (showHHInternships ? 'All Fields' : 'All Categories')}
-                              </SelectItem>
-                              <SelectItem value="Technology">
-                                {language === 'ru' ? 'Технологии' : 
-                                language === 'kz' ? 'Технологиялар' : 
-                                'Technology'}
-                              </SelectItem>
-                              <SelectItem value="Marketing">
-                                {language === 'ru' ? 'Маркетинг' : 
-                                language === 'kz' ? 'Маркетинг' : 
-                                'Marketing'}
-                              </SelectItem>
-                              <SelectItem value="Data Science">
-                                {language === 'ru' ? 'Наука о данных' : 
-                                language === 'kz' ? 'Деректер ғылымы' : 
-                                'Data Science'}
-                              </SelectItem>
-                              <SelectItem value="Design">
-                                {language === 'ru' ? 'Дизайн' : 
-                                language === 'kz' ? 'Дизайн' : 
-                                'Design'}
-                              </SelectItem>
-                              <SelectItem value="Finance">
-                                {language === 'ru' ? 'Финансы' : 
-                                language === 'kz' ? 'Қаржы' : 
-                                'Finance'}
-                              </SelectItem>
-                              <SelectItem value="Media">
-                                {language === 'ru' ? 'Медиа' : 
-                                language === 'kz' ? 'Медиа' : 
-                                'Media'}
-                              </SelectItem>
-                              <SelectItem value="Management">
-                                {language === 'ru' ? 'Управление' : 
-                                language === 'kz' ? 'Басқару' : 
-                                'Management'}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                </div>
-                        
-                        {/* Фильтр по типу локации */}
-                        <div>
-                          <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? (showHHInternships ? 'Формат работы' : 'Тип работы') : 
-                             language === 'kz' ? (showHHInternships ? 'Жұмыс форматы' : 'Жұмыс түрі') : 
-                             (showHHInternships ? 'Work Format' : 'Work Type')}
-                          </Label>
-                          <Select 
-                            value={locationFilter}
-                            onValueChange={(value) => {
-                              setLocationFilter(value);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">
-                                {language === 'ru' ? (showHHInternships ? 'Все форматы' : 'Все типы') : 
-                                 language === 'kz' ? (showHHInternships ? 'Барлық форматтар' : 'Барлық түрлері') : 
-                                 (showHHInternships ? 'All Formats' : 'All Types')}
-                              </SelectItem>
-                              <SelectItem value="remote">
-                                {language === 'ru' ? 'Удаленно' : 
-                                language === 'kz' ? 'Қашықтан' : 
-                                'Remote'}
-                              </SelectItem>
-                              <SelectItem value="onsite">
-                                {language === 'ru' ? 'В офисе' : 
-                                language === 'kz' ? 'Офисте' : 
-                                'Onsite'}
-                              </SelectItem>
-                              <SelectItem value="hybrid">
-                                {language === 'ru' ? 'Гибридный' : 
-                                language === 'kz' ? 'Гибридті' : 
-                                'Hybrid'}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-              </div>
-              
-                        {/* Фильтр по длительности */}
-              <div>
-                          <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? (showHHInternships ? 'Опыт работы' : 'Длительность') : 
-                             language === 'kz' ? (showHHInternships ? 'Жұмыс тәжірибесі' : 'Ұзақтығы') : 
-                             (showHHInternships ? 'Experience' : 'Duration')}
-                          </Label>
-                          <Select 
-                            value={durationFilter}
-                            onValueChange={(value) => {
-                              setDurationFilter(value);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">
-                                {language === 'ru' ? (showHHInternships ? 'Любой опыт' : 'Любая длительность') : 
-                                 language === 'kz' ? (showHHInternships ? 'Кез келген тәжірибе' : 'Кез келген ұзақтық') : 
-                                 (showHHInternships ? 'Any Experience' : 'Any Duration')}
-                              </SelectItem>
-                              <SelectItem value="short">
-                                {language === 'ru' ? 'Короткая (до 3 месяцев)' : 
-                                language === 'kz' ? 'Қысқа (3 айға дейін)' : 
-                                'Short (up to 3 months)'}
-                              </SelectItem>
-                              <SelectItem value="medium">
-                                {language === 'ru' ? 'Средняя (3-6 месяцев)' : 
-                                language === 'kz' ? 'Орташа (3-6 ай)' : 
-                                'Medium (3-6 months)'}
-                              </SelectItem>
-                              <SelectItem value="long">
-                                {language === 'ru' ? 'Длинная (от 6 месяцев)' : 
-                                language === 'kz' ? 'Ұзақ (6 айдан астам)' : 
-                                'Long (6+ months)'}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                </div>
-                        
-                        {/* Фильтр по оплате */}
-                        <div>
-                          <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? (showHHInternships ? 'Зарплата' : 'Оплата') : 
-                             language === 'kz' ? (showHHInternships ? 'Жалақы' : 'Төлем') : 
-                             (showHHInternships ? 'Salary' : 'Payment')}
-                          </Label>
-                          <Select 
-                            value={paymentFilter}
-                            onValueChange={(value) => {
-                              setPaymentFilter(value);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">
-                                {language === 'ru' ? (showHHInternships ? 'Любая зарплата' : 'Все типы') : 
-                                 language === 'kz' ? (showHHInternships ? 'Кез келген жалақы' : 'Барлық түрлері') : 
-                                 (showHHInternships ? 'Any Salary' : 'All Types')}
-                              </SelectItem>
-                              <SelectItem value="paid">
-                                {language === 'ru' ? 'Оплачиваемые' : 
-                                language === 'kz' ? 'Ақылы' : 
-                                'Paid'}
-                              </SelectItem>
-                              <SelectItem value="unpaid">
-                                {language === 'ru' ? 'Неоплачиваемые' : 
-                                language === 'kz' ? 'Ақысыз' : 
-                                'Unpaid'}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-              </div>
-                        
-                        {/* Фильтр по уровню */}
-                        <div>
-                          <Label className="text-sm font-medium mb-2 block">
-                            {language === 'ru' ? (showHHInternships ? 'Уровень позиции' : 'Уровень') : 
-                             language === 'kz' ? (showHHInternships ? 'Позиция деңгейі' : 'Деңгей') : 
-                             (showHHInternships ? 'Position Level' : 'Level')}
-                          </Label>
-                          <Select 
-                            value={levelFilter}
-                            onValueChange={(value) => {
-                              setLevelFilter(value);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="all">
-                                {language === 'ru' ? (showHHInternships ? 'Все уровни' : 'Все уровни') : 
-                                 language === 'kz' ? (showHHInternships ? 'Барлық деңгейлер' : 'Барлық деңгейлер') : 
-                                 (showHHInternships ? 'All Levels' : 'All Levels')}
-                              </SelectItem>
-                              <SelectItem value="Beginner">
-                                {language === 'ru' ? 'Начинающий' : 
-                                language === 'kz' ? 'Бастаушы' : 
-                                'Beginner'}
-                              </SelectItem>
-                              <SelectItem value="Intermediate">
-                                {language === 'ru' ? 'Средний' : 
-                                language === 'kz' ? 'Орташа' : 
-                                'Intermediate'}
-                              </SelectItem>
-                              <SelectItem value="Advanced">
-                                {language === 'ru' ? 'Продвинутый' : 
-                                language === 'kz' ? 'Жоғары' : 
-                                'Advanced'}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
             </div>
           </div>
           
-                      {/* Кнопка сброса фильтров */}
-                      <div className="mt-4 flex justify-end">
-                        <Button 
-                          variant="outline" 
-                          onClick={clearAllFilters}
-                          className="text-sm"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 mr-2" />
-                          {language === 'ru' ? (showHHInternships ? 'Сбросить все фильтры' : 'Сбросить все фильтры') : 
-                           language === 'kz' ? (showHHInternships ? 'Барлық сүзгілерді қалпына келтіру' : 'Барлық сүзгілерді қалпына келтіру') : 
-                           (showHHInternships ? 'Reset All Filters' : 'Reset All Filters')}
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
-            </div>
-            
-                {/* Заголовок с количеством найденных стажировок и сортировкой */}
-                <div className="border-t border-border/20 pt-8">
-                  <div className="flex justify-between items-center mb-6">
-                    <p className="text-foreground/70">
-                      {language === 'ru' ? (showHHInternships ? 'Найдено вакансий: ' : 'Найдено стажировок: ') : 
-                       language === 'kz' ? (showHHInternships ? 'Табылған вакансиялар: ' : 'Табылған тағылымдамалар: ') : 
-                       (showHHInternships ? 'Vacancies found: ' : 'Internships found: ')}
-                      <span className="font-semibold text-foreground">{sortedInternships.length}</span>
-                    </p>
-                    
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-foreground/60">
-                        {language === 'ru' ? 'Сортировка:' : 
-                        language === 'kz' ? 'Сұрыптау:' : 
-                        'Sort by:'}
-                      </p>
-                      <Select 
-                        value={sortBy}
-                        onValueChange={(value) => {
-                          setSortBy(value);
-                          setCurrentPage(1);
-                        }}
-                      >
-                        <SelectTrigger className="h-8 pl-3 pr-7 py-0 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="popularity">
-                            {language === 'ru' ? (showHHInternships ? 'Популярность вакансии' : 'Популярность') : 
-                             language === 'kz' ? (showHHInternships ? 'Вакансия танымалдылығы' : 'Танымалдылық') : 
-                             (showHHInternships ? 'Vacancy Popularity' : 'Popularity')}
-                          </SelectItem>
-                          <SelectItem value="newest">
-                            {language === 'ru' ? (showHHInternships ? 'Сначала новые вакансии' : 'Сначала новые') : 
-                             language === 'kz' ? (showHHInternships ? 'Жаңа вакансиялар алдымен' : 'Жаңалары алдымен') : 
-                             (showHHInternships ? 'Newest Vacancies First' : 'Newest First')}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                  </div>
-              </div>
-                  
-                  {/* Сетка карточек */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {currentInternships.length > 0 ? (
-                      currentInternships.map((internship, index) => (
-                        <InternshipCard 
-                          key={internship.id} 
-                          internship={internship}
-                          index={index}
-                          onClick={() => handleInternshipClick(internship)}
-                          language={language}
-                      />
-                    ))
-                ) : (
-                      <div className="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col items-center justify-center py-16 text-center">
-                        <FolderX className="w-16 h-16 text-muted-foreground mb-4" />
-                        <h3 className="text-xl font-bold mb-2">
-                          {language === 'ru' ? (showHHInternships ? 'Вакансии не найдены' : 'Стажировки не найдены') : 
-                           language === 'kz' ? (showHHInternships ? 'Вакансиялар табылмады' : 'Тағылымдамалар табылмады') : 
-                           (showHHInternships ? 'No Vacancies Found' : 'No Internships Found')}
-                        </h3>
-                        <p className="text-foreground/70 max-w-md">
-                          {language === 'ru' ? (showHHInternships ? 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.' : 'Попробуйте изменить критерии поиска или фильтры для получения лучших результатов.') : 
-                           language === 'kz' ? (showHHInternships ? 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.' : 'Жақсы нәтижелер алу үшін іздеу критерийлері мен сүзгілерді өзгертіп көріңіз.') : 
-                           (showHHInternships ? 'Try changing your search criteria or filters for better results.' : 'Try changing your search criteria or filters for better results.')}
-                        </p>
-                        <Button 
-                          className="mt-6"
-                          variant="outline"
-                          onClick={clearAllFilters}
-                        >
-                          <RotateCcw className="w-4 h-4 mr-2" />
-                          {language === 'ru' ? (showHHInternships ? 'Сбросить фильтры' : 'Сбросить фильтры') : 
-                           language === 'kz' ? (showHHInternships ? 'Сүзгілерді қалпына келтіру' : 'Сүзгілерді қалпына келтіру') : 
-                           (showHHInternships ? 'Reset Filters' : 'Reset Filters')}
-                        </Button>
-                  </div>
-                )}
-              </div>
-                  
-                  {/* Пагинация */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-center mt-8">
-                      <div className="flex space-x-2">
-            <Button 
-                          variant="outline"
-                          onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
-                          disabled={currentPage === 1}
-            >
-                          <ChevronLeft className="h-4 w-4" />
-            </Button>
-                        
-                        {/* Номера страниц */}
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                          if (
-                            page === 1 ||
-                            page === totalPages ||
-                            (page >= currentPage - 1 && page <= currentPage + 1)
-                          ) {
-  return (
-                              <Button
-                                key={page}
-                                variant={currentPage === page ? "default" : "outline"}
-                                onClick={() => setCurrentPage(page)}
-                                className={`w-10 h-10 p-0 ${
-                                  currentPage === page ? "bg-primary text-white" : ""
-                                }`}
-                              >
-                                {page}
-                              </Button>
-                            );
-                          }
-                          
-                          if (
-                            (page === currentPage - 2 && currentPage > 3) ||
-                            (page === currentPage + 2 && currentPage < totalPages - 2)
-                          ) {
-  return (
-                              <Button
-                                key={page}
-                                variant="outline"
-                                disabled
-                                className="w-10 h-10 p-0"
-                              >
-                                ...
-                              </Button>
-                            );
-                          }
-                          
-                          return null;
-                        })}
-                        
-                        <Button
-                          variant="outline"
-                          onClick={() => setCurrentPage(currentPage < totalPages ? currentPage + 1 : totalPages)}
-                          disabled={currentPage === totalPages}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-              )}
-            </div>
-              </div>
-            );
-          })()}
+          {/* Add competitions content section */}
+          {renderInternshipsContent()}
         </div>
       </section>  
       

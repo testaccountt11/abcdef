@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import AppLayout from "@/components/layout/AppLayout";
+import AppLayout from "../components/layout/AppLayout";
 import StatCard from "@/components/dashboard/StatCard";
 import CourseCard from "@/components/dashboard/CourseCard";
 import OpportunityCard from "@/components/dashboard/OpportunityCard";
@@ -22,6 +22,8 @@ import {
 import { Link } from "wouter";
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Stats {
   coursesInProgress: number;
@@ -72,57 +74,56 @@ const tabVariants = {
 export default function Dashboard() {
   const { language } = useTranslations();
   const [activeTab, setActiveTab] = useState("courses");
+  const { user, isAuthenticated } = useAuthContext();
+  const { toast } = useToast();
 
   const { data: stats, isLoading: statsLoading } = useQuery<Stats>({
     queryKey: ["stats"],
     queryFn: () => fetch(api.stats.get()).then((res) => res.json()),
   });
 
-  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
-    queryKey: ["courses"],
+  const { data: coursesData, isLoading: isCoursesLoading, error: coursesError } = useQuery({
+    queryKey: ['courses'],
     queryFn: async () => {
-      console.log('Fetching courses and enrollments...');
       try {
-        const [coursesResponse, enrollmentsResponse] = await Promise.all([
-          fetch(api.courses.list()).then(async (res) => {
-            if (!res.ok) {
-              throw new Error(`Failed to fetch courses: ${res.statusText}`);
-            }
-            return res.json();
-          }),
-          fetch(api.courses.getEnrollments()).then(async (res) => {
-            if (!res.ok) {
-              throw new Error(`Failed to fetch enrollments: ${res.statusText}`);
-            }
-            return res.json();
-          })
-        ]);
-        
-        console.log('Courses response:', coursesResponse);
-        console.log('Enrollments response:', enrollmentsResponse);
-        
-        // Merge courses with enrollment data
-        const mergedCourses = coursesResponse.map((course: any) => {
-          const enrollment = enrollmentsResponse.find((e: any) => String(e.course_id) === String(course.id));
-          return {
-            ...course,
-            progress: enrollment?.progress || 0,
-            isEnrolled: !!enrollment
-          };
+        if (!isAuthenticated) {
+          throw new Error('Authentication required');
+        }
+
+        const response = await fetch(api.courses.list(), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Important for cookies
         });
 
-        // Filter only enrolled courses for the dashboard
-        const enrolledCourses = mergedCourses.filter((course: any) => course.isEnrolled);
-        
-        console.log('Merged courses:', mergedCourses);
-        console.log('Enrolled courses:', enrolledCourses);
-        
-        return enrolledCourses;
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Please login to view courses');
+          }
+          throw new Error(`Failed to fetch courses: ${response.statusText}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Invalid response format from server');
+        }
+
+        const data = await response.json();
+        return data;
       } catch (error) {
-        console.error('Error fetching courses data:', error);
+        console.error('Error fetching courses:', error);
+        toast({
+          title: 'Error loading courses',
+          description: error instanceof Error ? error.message : 'Failed to load courses',
+          variant: 'destructive',
+        });
         throw error;
       }
     },
+    enabled: isAuthenticated, // Only run query when authenticated
+    retry: 1, // Limit retries
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
   });
 
   const { data: opportunities, isLoading: opportunitiesLoading } = useQuery({
@@ -139,6 +140,37 @@ export default function Dashboard() {
     queryKey: ["articles"],
     queryFn: () => fetch(api.articles.list()).then((res) => res.json()),
   });
+
+  // Handle loading state
+  if (isCoursesLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (coursesError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Unable to load courses
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300">
+            {coursesError instanceof Error ? coursesError.message : 'Please try again later'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppLayout>
@@ -338,15 +370,15 @@ export default function Dashboard() {
                       exit="exit"
                     >
                       <TabsContent value="courses" className="mt-0">
-            {isLoadingCourses ? (
+            {isCoursesLoading ? (
                           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {[...Array(3)].map((_, i) => (
                               <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
                             ))}
                   </div>
-                        ) : courses?.length ? (
+                        ) : coursesData?.length ? (
                           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {courses.map((course: any) => (
+                            {coursesData.map((course: any) => (
                               <CourseCard 
                                 key={course.id} 
                                 course={course} 

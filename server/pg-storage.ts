@@ -44,7 +44,7 @@ import {
 } from "@shared/schema";
 import { IStorage } from "./storage";
 import { eq, and, sql } from "drizzle-orm";
-import { db } from "./db.js";
+import { db, pool } from "./db.js";
 import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import type { AnyPgColumn, PgTableWithColumns } from "drizzle-orm/pg-core";
 
@@ -91,7 +91,6 @@ const enrollmentsTable = addIsDrizzleTable(pgTable("enrollments", {
   userId: integer("user_id").notNull(),
   courseId: integer("course_id").notNull(),
   progress: integer("progress").notNull(),
-  enrollmentDate: timestamp("enrollment_date").notNull(),
   completed: boolean("completed").notNull().default(false)
 }));
 
@@ -335,7 +334,105 @@ function stringToArray(value: string | null): string[] {
   return value.split(',').map(s => s.trim()).filter(Boolean);
 }
 
+// Add retry wrapper function
+async function withRetry<T>(operation: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+        console.error(`Database operation failed (attempt ${i + 1}/${retries}):`, error.message);
+        if (i < retries - 1) {
+          console.log(`Retrying in ${delay/1000} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+      }
+      throw error;
+    }
+  }
+  throw new Error('Operation failed after all retries');
+}
+
+// Add at the top of the file
+const VALID_LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2", "Native"] as const;
+type LanguageLevel = typeof VALID_LANGUAGE_LEVELS[number];
+
+function isValidLanguageLevel(level: string): level is LanguageLevel {
+  return VALID_LANGUAGE_LEVELS.includes(level as LanguageLevel);
+}
+
 export class PgStorage implements IStorage {
+  createCourse(course: InsertCourse): Promise<Course> {
+    throw new Error("Method not implemented.");
+  }
+  async getUserCourses(userId: number): Promise<Course[]> {
+    try {
+      const result = await db
+        .select({
+          id: coursesTable.id,
+          title: coursesTable.title,
+          description: coursesTable.description,
+          imageUrl: coursesTable.imageUrl,
+          category: coursesTable.category,
+          provider: coursesTable.provider,
+          isPartnerCourse: coursesTable.isPartnerCourse,
+          contactInfo: coursesTable.contactInfo,
+          progress: enrollmentsTable.progress,
+          completed: enrollmentsTable.completed
+        })
+        .from(coursesTable)
+        .innerJoin(
+          enrollmentsTable,
+          eq(coursesTable.id, enrollmentsTable.courseId)
+        )
+        .where(eq(enrollmentsTable.userId, userId));
+
+      return result.map(row => ({
+        ...row,
+        progress: row.progress || 0
+      }));
+    } catch (error) {
+      console.error('Error in getUserCourses:', error);
+      return [];
+    }
+  }
+  getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    throw new Error("Method not implemented.");
+  }
+  updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<UserAchievement | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  getBadges(): Promise<Badge[]> {
+    throw new Error("Method not implemented.");
+  }
+  getBadge(id: number): Promise<Badge | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  getBadgeByName(name: string): Promise<Badge | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  createBadge(badge: InsertBadge): Promise<Badge> {
+    throw new Error("Method not implemented.");
+  }
+  getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge; })[]> {
+    throw new Error("Method not implemented.");
+  }
+  awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge> {
+    throw new Error("Method not implemented.");
+  }
+  updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined> {
+    throw new Error("Method not implemented.");
+  }
+  checkAndAwardBadges(userId: number): Promise<Badge[]> {
+    throw new Error("Method not implemented.");
+  }
   [x: string]: any;
 
   async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
@@ -373,46 +470,55 @@ export class PgStorage implements IStorage {
   }
 
   // Users
-  async getUser(id: number): Promise<(User & {
-    skills?: UserSkill[];
-    education?: UserEducation[];
-    languages?: UserLanguage[];
-    projects?: UserProject[];
-  }) | undefined> {
-    const user = await db.select().from(usersTable).where(eq(usersTable.id, id)).limit(1);
-    if (!user.length) return undefined;
+  async getUser(id: number): Promise<User | undefined> {
+    const result = await db.select({
+      id: usersTable.id,
+      username: usersTable.username,
+      password: usersTable.password,
+      firstName: usersTable.firstName,
+      lastName: usersTable.lastName,
+      email: usersTable.email,
+      profileImage: usersTable.profileImage,
+      phone: sql`NULL`.as<string | null>(),  // Add the missing phone field
+      company: sql`NULL`.as<string | null>(),
+      location: sql`NULL`.as<string | null>(),
+      website: sql`NULL`.as<string | null>(),
+      linkedin: sql`NULL`.as<string | null>(),
+      github: sql`NULL`.as<string | null>(),
+      telegram: sql`NULL`.as<string | null>(),
+      whatsapp: sql`NULL`.as<string | null>(),
+      bio: sql`NULL`.as<string | null>(),
+      position: sql`NULL`.as<string | null>(),
+      createdAt: sql`CURRENT_TIMESTAMP`.as<Date>(),
+      updatedAt: sql`CURRENT_TIMESTAMP`.as<Date>()
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, id))
+    .limit(1);
 
-    const [userResult] = user;
-    const skills = await this.getUserSkills(id);
-    const education = await this.getUserEducation(id);
-    const languages = await this.getUserLanguages(id);
-    const projects = await this.getUserProjects(id);
-
-    return {
-      ...userResult,
-      skills,
-      education,
-      languages,
-      projects,
-    };
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.username, username))
-      .limit(1);
-    return result[0] as User;
+    return await withRetry(async () => {
+      const result = await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.username, username))
+        .limit(1);
+      return result[0] as User;
+    });
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.email, email))
-      .limit(1);
-    return result[0] as User;
+    return await withRetry(async () => {
+      const result = await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.email, email))
+        .limit(1);
+      return result[0] as User;
+    });
   }
 
   async createUser(user: InsertUser): Promise<User> {
@@ -473,23 +579,39 @@ export class PgStorage implements IStorage {
   }
 
   async createEnrollment(enrollment: InsertEnrollment): Promise<Enrollment> {
-    const result = await db.insert(enrollmentsTable as any).values({
-      userId: enrollment.userId,
-      courseId: enrollment.courseId,
-      progress: enrollment.progress || 0,
-      enrollmentDate: new Date(),
-      completed: enrollment.completed || false
-    }).returning();
+    try {
+      // Проверяем существующую запись
+      const existing = await db
+        .select()
+        .from(enrollmentsTable)
+        .where(
+          and(
+            eq(enrollmentsTable.userId, enrollment.userId),
+            eq(enrollmentsTable.courseId, enrollment.courseId)
+          )
+        )
+        .limit(1);
 
-    const enrollmentResult = {
-      id: result[0].id,
-      userId: result[0].userId,
-      courseId: result[0].courseId,
-      progress: result[0].progress,
-      completed: result[0].completed
-    };
+      if (existing.length > 0) {
+        throw new Error('Already enrolled in this course');
+      }
 
-    return enrollmentResult as Enrollment;
+      const result = await db.insert(enrollmentsTable).values({
+        userId: enrollment.userId,
+        courseId: enrollment.courseId,
+        progress: 0,
+        completed: false
+      }).returning();
+
+      if (!result.length) {
+        throw new Error('Failed to create enrollment');
+      }
+
+      return result[0] as Enrollment;
+    } catch (error) {
+      console.error('Error in createEnrollment:', error);
+      throw error;
+    }
   }
 
   async updateEnrollmentProgress(userId: number, courseId: number, progress: number): Promise<Enrollment | undefined> {
@@ -502,7 +624,17 @@ export class PgStorage implements IStorage {
           eq(enrollmentsTable.courseId, courseId)
         )
       )
-      .returning();
+      .returning({
+        id: enrollmentsTable.id,
+        userId: enrollmentsTable.userId,
+        courseId: enrollmentsTable.courseId,
+        progress: enrollmentsTable.progress,
+        completed: enrollmentsTable.completed
+      });
+    
+    if (!result.length) {
+      return undefined;
+    }
     
     return result[0] as Enrollment;
   }
@@ -574,18 +706,23 @@ export class PgStorage implements IStorage {
       logoUrl: opportunity.logoUrl,
       location: opportunity.location,
       deadline: opportunity.deadline
-    }).returning();
-    return {
-      id: result[0].id,
-      title: result[0].title,
-      description: result[0].description,
-      duration: result[0].duration,
-      type: result[0].type,
-      company: result[0].company,
-      logoUrl: result[0].logoUrl,
-      location: result[0].location,
-      deadline: result[0].deadline
-    };
+    }).returning({
+      id: opportunitiesTable.id,
+      title: opportunitiesTable.title,
+      description: opportunitiesTable.description,
+      duration: opportunitiesTable.duration,
+      type: opportunitiesTable.type,
+      company: opportunitiesTable.company,
+      logoUrl: opportunitiesTable.logoUrl,
+      location: opportunitiesTable.location,
+      deadline: opportunitiesTable.deadline
+    });
+
+    if (!result.length) {
+      throw new Error('Failed to create opportunity');
+    }
+
+    return result[0];
   }
   
   // Mentors
@@ -773,594 +910,73 @@ export class PgStorage implements IStorage {
           createdAt: achievementsTable.createdAt
         }
       })
-      .from(userAchievementsTable as any)
-      .leftJoin(
-        achievementsTable as any,
-        eq(userAchievementsTable.achievementId as any, achievementsTable.id as any)
-      )
-      .where(eq(userAchievementsTable.userId as any, userId));
-
-    const achievements = result.map(row => ({
-      id: row.id,
-      userId: row.userId,
-      achievementId: row.achievementId,
-      progress: row.progress,
-      completedValue: row.completedValue,
-      earnedAt: row.completedAt,
-      isComplete: row.completedAt !== null,
-      achievement: row.achievement
-    }));
-
-    return achievements as (UserAchievement & { achievement: Achievement })[];
-  }
-  
-  async getUserAchievementProgress(userId: number, achievementId: number): Promise<UserAchievement | undefined> {
-    const [result] = await db
-      .select()
       .from(userAchievementsTable)
-      .where(sql`${userAchievementsTable.userId} = ${userId} AND ${userAchievementsTable.achievementId} = ${achievementId}`)
-      .limit(1);
-    
-    if (!result) return undefined;
-    
-    return {
-      id: result.id,
-      userId: result.userId,
-      achievementId: result.achievementId,
-      progress: result.progress,
-      completedValue: result.completedValue,
-      earnedAt: result.completedAt,
-      isComplete: result.completedAt !== null
-    };
-  }
-  
-  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement & { achievement: Achievement }> {
-    const result = await db.insert(userAchievementsTable).values({
-      userId: userAchievement.userId,
-      achievementId: userAchievement.achievementId,
-      progress: userAchievement.progress || 0,
-      completedValue: userAchievement.completedValue,
-      completedAt: userAchievement.isComplete ? new Date() : null
-    }).returning();
-
-    const achievement = await this.getAchievement(userAchievement.achievementId);
-    
-    if (!achievement) {
-      throw new Error(`Achievement with id ${userAchievement.achievementId} not found`);
-    }
-
-    return {
-      ...result[0],
-      isComplete: result[0].completedAt !== null,
-      earnedAt: result[0].completedAt,
-      achievement
-    } as UserAchievement & { achievement: Achievement };
-  }
-  
-  async updateUserAchievement(userId: number, achievementId: number, progress: number): Promise<(UserAchievement & { achievement: Achievement }) | undefined> {
-    const result = await db
-      .update(userAchievementsTable)
-      .set({
-        progress,
-        completedAt: progress >= 100 ? new Date() : null
-      })
-      .where(
-        and(
-          eq(userAchievementsTable.userId, userId),
-          eq(userAchievementsTable.achievementId, achievementId)
-        )
-      )
-      .returning();
-
-    if (!result[0]) {
-      return undefined;
-    }
-
-    const achievement = await this.getAchievement(achievementId);
-    
-    if (!achievement) {
-      return undefined;
-    }
-
-    return {
-      ...result[0],
-      isComplete: result[0].completedAt !== null,
-      earnedAt: result[0].completedAt,
-      achievement
-    } as UserAchievement & { achievement: Achievement };
-  }
-  
-  async completeUserAchievement(userId: number, achievementId: number, completedValue: number): Promise<UserAchievement | undefined> {
-    const [result] = await db
-      .update(userAchievementsTable)
-      .set({
-        progress: completedValue,
-        completedAt: new Date()
-      })
-      .where(sql`${userAchievementsTable.userId} = ${userId} AND ${userAchievementsTable.achievementId} = ${achievementId}`)
-      .returning();
-    
-    if (!result) return undefined;
-    
-    return {
-      id: result.id,
-      userId: result.userId,
-      achievementId: result.achievementId,
-      progress: result.progress,
-      completedValue: result.completedValue,
-      earnedAt: result.completedAt,
-      isComplete: result.completedAt !== null
-    };
-  }
-  
-  // Badge methods
-  async getBadges(): Promise<Badge[]> {
-    return await db.select().from(badgesTable);
-  }
-  
-  async getBadge(id: number): Promise<Badge | undefined> {
-    const result = await db.select().from(badgesTable).where(eq(badgesTable.id, id)).limit(1);
-    return result[0];
-  }
-  
-  async getBadgeByName(name: string): Promise<Badge | undefined> {
-    const result = await db.select().from(badgesTable).where(eq(badgesTable.name, name)).limit(1);
-    return result[0];
-  }
-  
-  async createBadge(badge: InsertBadge): Promise<Badge> {
-    const result = await db.insert(badgesTable).values(badge).returning();
-    return result[0];
-  }
-  
-  async getUserBadges(userId: number): Promise<(UserBadge & { badge: Badge })[]> {
-    const result = await db
-      .select({
-        id: userBadgesTable.id,
-        userId: userBadgesTable.userId,
-        badgeId: userBadgesTable.badgeId,
-        earnedAt: userBadgesTable.earnedAt,
-        displayOnProfile: userBadgesTable.displayOnProfile,
-        badge: badgesTable
-      })
-      .from(userBadgesTable)
-      .innerJoin(
-        badgesTable,
-        eq(userBadgesTable.badgeId, badgesTable.id)
-      )
-      .where(eq(userBadgesTable.userId, userId));
-    
-    return result.map(r => ({
-      id: r.id,
-      userId: r.userId,
-      badgeId: r.badgeId,
-      earnedAt: r.earnedAt || null,
-      displayOnProfile: r.displayOnProfile,
-      badge: r.badge
-    }));
-  }
-  
-  async awardBadgeToUser(userId: number, badgeId: number): Promise<UserBadge> {
-    // Check if user already has this badge
-    const [existing] = await db
-      .select()
-      .from(userBadgesTable)
-      .where(eq(userBadgesTable.userId, userId))
-      .where(eq(userBadgesTable.badgeId, badgeId))
-      .limit(1);
-    
-    if (existing) {
-      return {
-        id: existing.id,
-        userId: existing.userId,
-        badgeId: existing.badgeId,
-        earnedAt: existing.earnedAt || null,
-        displayOnProfile: existing.displayOnProfile
-      };
-    }
-    
-    const [result] = await db
-      .insert(userBadgesTable)
-      .values({
-        userId,
-        badgeId,
-        earnedAt: new Date(),
-        displayOnProfile: true
-      })
-      .returning();
-    
-    return {
-      id: result.id,
-      userId: result.userId,
-      badgeId: result.badgeId,
-      earnedAt: result.earnedAt || null,
-      displayOnProfile: result.displayOnProfile
-    };
-  }
-  
-  async updateUserBadgeDisplay(userId: number, badgeId: number, displayOnProfile: boolean): Promise<UserBadge | undefined> {
-    const [result] = await db
-      .update(userBadgesTable)
-      .set({ displayOnProfile })
-      .where(eq(userBadgesTable.userId, userId))
-      .where(eq(userBadgesTable.badgeId, badgeId))
-      .returning();
-    
-    if (!result) return undefined;
-
-    return {
-      id: result.id,
-      userId: result.userId,
-      badgeId: result.badgeId,
-      earnedAt: result.earnedAt || null,
-      displayOnProfile: result.displayOnProfile
-    };
-  }
-  
-  async checkAndAwardBadges(userId: number): Promise<Badge[]> {
-    // Calculate user's total points from completed achievements
-    const userAchievements = await this.getUserAchievements(userId);
-    const completedAchievements = userAchievements.filter(ua => ua.isComplete);
-    
-    let totalPoints = 0;
-    completedAchievements.forEach(ua => {
-      totalPoints += ua.achievement.points ?? 0;
-    });
-    
-    // Get all badges the user doesn't have yet
-    const userBadges = await this.getUserBadges(userId);
-    const userBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
-    
-    // Find badges the user qualifies for
-    const allBadges = await this.getBadges();
-    const eligibleBadges = allBadges.filter(badge => 
-      !userBadgeIds.has(badge.id) && 
-      totalPoints >= (badge.requiredPoints ?? 0)
-    );
-    
-    // Award new badges
-    const newlyAwardedBadges: Badge[] = [];
-    
-    for (const badge of eligibleBadges) {
-      await this.awardBadgeToUser(userId, badge.id);
-      newlyAwardedBadges.push(badge);
-    }
-    
-    return newlyAwardedBadges;
-  }
-
-  async createContactRequest(contactRequest: InsertContactRequest): Promise<ContactRequest> {
-    const [result] = await db
-      .insert(contactRequestsTable)
-      .values({
-        ...contactRequest,
-        createdAt: new Date()
-      })
-      .returning();
-    
-    return {
-      id: result.id,
-      name: result.name,
-      email: result.email,
-      subject: result.subject,
-      message: result.message,
-      phone: result.phone,
-      status: result.status,
-      createdAt: result.createdAt
-    };
-  }
-
-  async createMentorApplication(application: InsertMentorApplication): Promise<MentorApplication> {
-    try {
-      const [result] = await db
-        .insert(mentorApplicationsTable)
-        .values({
-          first_name: application.first_name,
-          last_name: application.last_name,
-          email: application.email,
-          phone: application.phone,
-          title: application.title,
-          company: application.company,
-          skills: application.skills,
-          bio: application.bio,
-          availability: application.availability,
-          mentorship_goals: application.mentorship_goals,
-          experience: application.experience,
-          expertise: application.expertise,
-          languages: application.languages,
-          specialization: application.specialization,
-          motivation: application.motivation,
-          preferred_students: application.preferred_students,
-          additional_info: application.additional_info,
-          linkedin_profile: application.linkedin_profile,
-          resume_url: application.resume_url || null,
-          status: 'pending',
-          created_at: new Date()
-        })
-        .returning();
-      
-      return {
-        id: result.id,
-        first_name: result.first_name,
-        last_name: result.last_name,
-        email: result.email,
-        phone: result.phone,
-        title: result.title,
-        company: result.company,
-        skills: result.skills,
-        bio: result.bio,
-        availability: result.availability,
-        mentorship_goals: result.mentorship_goals,
-        experience: result.experience,
-        expertise: result.expertise,
-        languages: result.languages as string[],
-        specialization: result.specialization as string[],
-        motivation: result.motivation,
-        preferred_students: result.preferred_students,
-        additional_info: result.additional_info,
-        linkedin_profile: result.linkedin_profile,
-        resume_url: result.resume_url,
-        status: result.status,
-        created_at: result.created_at
-      };
-    } catch (error) {
-      console.error("Error creating mentor application:", error);
-      throw error;
-    }
-  }
-
-  async getMentorApplicationByEmail(email: string): Promise<MentorApplication | null> {
-    try {
-      const [result] = await db
-        .select()
-        .from(mentorApplicationsTable)
-        .where(eq(mentorApplicationsTable.email, email))
-        .limit(1);
-
-      if (!result) return null;
-
-      return {
-        id: result.id,
-        first_name: result.first_name,
-        last_name: result.last_name,
-        email: result.email,
-        phone: result.phone,
-        title: result.title,
-        company: result.company,
-        skills: result.skills,
-        bio: result.bio,
-        availability: result.availability,
-        mentorship_goals: result.mentorship_goals,
-        experience: result.experience,
-        expertise: result.expertise,
-        languages: result.languages as string[],
-        specialization: result.specialization as string[],
-        motivation: result.motivation,
-        preferred_students: result.preferred_students,
-        additional_info: result.additional_info,
-        linkedin_profile: result.linkedin_profile,
-        resume_url: result.resume_url,
-        status: result.status,
-        created_at: result.created_at
-      };
-    } catch (error) {
-      console.error("Error getting mentor application:", error);
-      return null;
-    }
-  }
-
-  async getAllMentorApplications(): Promise<MentorApplication[]> {
-    try {
-      const results = await db.select().from(mentorApplicationsTable);
-      return results.map(result => ({
-        id: result.id,
-        first_name: result.first_name,
-        last_name: result.last_name,
-        email: result.email,
-        phone: result.phone,
-        title: result.title,
-        company: result.company,
-        skills: result.skills,
-        bio: result.bio,
-        availability: result.availability,
-        mentorship_goals: result.mentorship_goals,
-        experience: result.experience,
-        expertise: result.expertise,
-        languages: result.languages as string[],
-        specialization: result.specialization as string[],
-        motivation: result.motivation,
-        preferred_students: result.preferred_students,
-        additional_info: result.additional_info,
-        linkedin_profile: result.linkedin_profile,
-        resume_url: result.resume_url,
-        status: result.status,
-        created_at: result.created_at
-      }));
-    } catch (error) {
-      console.error("Error getting all mentor applications:", error);
-      return [];
-    }
-  }
-
-  async updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication | null> {
-    try {
-      const [result] = await db
-        .update(mentorApplicationsTable)
-        .set({ status })
-        .where(eq(mentorApplicationsTable.id, id))
-        .returning();
-
-      if (!result) return null;
-
-      return {
-        id: result.id,
-        first_name: result.first_name,
-        last_name: result.last_name,
-        email: result.email,
-        phone: result.phone,
-        title: result.title,
-        company: result.company,
-        skills: result.skills,
-        bio: result.bio,
-        availability: result.availability,
-        mentorship_goals: result.mentorship_goals,
-        experience: result.experience,
-        expertise: result.expertise,
-        languages: result.languages as string[],
-        specialization: result.specialization as string[],
-        motivation: result.motivation,
-        preferred_students: result.preferred_students,
-        additional_info: result.additional_info,
-        linkedin_profile: result.linkedin_profile,
-        resume_url: result.resume_url,
-        status: result.status,
-        created_at: result.created_at
-      };
-    } catch (error) {
-      console.error("Error updating mentor application status:", error);
-      return null;
-    }
-  }
-
-  // Add missing methods
-  async createCourse(course: InsertCourse): Promise<Course> {
-    const result = await db.insert(coursesTable).values({
-      title: course.title,
-      description: course.description,
-      imageUrl: course.imageUrl,
-      category: course.category,
-      provider: course.provider,
-      isPartnerCourse: course.isPartnerCourse || false,
-      contactInfo: course.contactInfo
-    }).returning();
-    return result[0] as Course;
-  }
-
-  async getUserCourses(userId: number): Promise<Course[]> {
-    const result = await db
-      .select({
-        id: coursesTable.id,
-        title: coursesTable.title,
-        description: coursesTable.description,
-        imageUrl: coursesTable.imageUrl,
-        category: coursesTable.category,
-        provider: coursesTable.provider,
-        isPartnerCourse: coursesTable.isPartnerCourse,
-        contactInfo: coursesTable.contactInfo,
-        progress: enrollmentsTable.progress,
-        completed: enrollmentsTable.completed
-      })
-      .from(coursesTable)
       .leftJoin(
-        enrollmentsTable,
-        eq(coursesTable.id, enrollmentsTable.courseId)
+        achievementsTable,
+        eq(userAchievementsTable.achievementId, achievementsTable.id)
       )
-      .where(eq(enrollmentsTable.userId, userId));
+      .where(eq(userAchievementsTable.userId, userId));
 
-    return result.map(row => ({
-      id: row.id,
-      title: row.title,
-      description: row.description,
-      imageUrl: row.imageUrl,
-      category: row.category,
-      provider: row.provider,
-      isPartnerCourse: row.isPartnerCourse || false,
-      contactInfo: row.contactInfo,
-      progress: row.progress || 0,
-      completed: row.completed || false
-    })) as Course[];
-  }
-
-  async updateUserAchievementProgress(userId: number, achievementId: number, progress: number): Promise<(UserAchievement & { achievement: Achievement }) | undefined> {
-    const result = await db
-      .update(userAchievementsTable as any)
-      .set({
-        progress,
-        completedAt: progress >= 100 ? new Date() : null
-      })
-      .where(
-        and(
-          eq(userAchievementsTable.userId as any, userId),
-          eq(userAchievementsTable.achievementId as any, achievementId)
-        )
-      )
-      .returning();
-
-    if (!result[0]) {
-      return undefined;
-    }
-
-    const achievement = await this.getAchievement(achievementId);
-    
-    if (!achievement) {
-      return undefined;
-    }
-
-    const userAchievement = {
-      id: result[0].id,
-      userId: result[0].userId,
-      achievementId: result[0].achievementId,
-      progress: result[0].progress,
-      completedValue: result[0].completedValue,
-      earnedAt: result[0].completedAt,
-      isComplete: result[0].completedAt !== null,
-      achievement
-    };
-
-    return userAchievement as UserAchievement & { achievement: Achievement };
-  }
-
-  // User Skills methods
-  async getUserSkills(userId: number): Promise<UserSkill[]> {
-    return await db.select().from(userSkillsTable).where(eq(userSkillsTable.userId, userId));
-  }
-
-  async createUserSkill(skill: InsertUserSkill): Promise<UserSkill> {
-    const [result] = await db.insert(userSkillsTable).values(skill).returning();
-    return result;
-  }
-
-  async updateUserSkill(id: number, skill: Partial<InsertUserSkill>): Promise<UserSkill | undefined> {
-    const [result] = await db.update(userSkillsTable).set(skill).where(eq(userSkillsTable.id, id)).returning();
-    return result;
-  }
-
-  async deleteUserSkill(id: number): Promise<void> {
-    await db.delete(userSkillsTable).where(eq(userSkillsTable.id, id));
-  }
-
-  // User Education methods
-  async getUserEducation(userId: number): Promise<UserEducation[]> {
-    return await db.select().from(userEducationTable).where(eq(userEducationTable.userId, userId));
-  }
-
-  async createUserEducation(education: InsertUserEducation): Promise<UserEducation> {
-    const [result] = await db.insert(userEducationTable).values(education).returning();
-    return result;
-  }
-
-  async updateUserEducation(id: number, education: Partial<InsertUserEducation>): Promise<UserEducation | undefined> {
-    const [result] = await db.update(userEducationTable).set(education).where(eq(userEducationTable.id, id)).returning();
-    return result;
-  }
-
-  async deleteUserEducation(id: number): Promise<void> {
-    await db.delete(userEducationTable).where(eq(userEducationTable.id, id));
-  }
-
-  // User Languages methods
-  async getUserLanguages(userId: number): Promise<UserLanguage[]> {
-    return await db.select().from(userLanguagesTable).where(eq(userLanguagesTable.userId, userId));
+    return result.map(row => {
+      if (!row.achievement) {
+        throw new Error(`Achievement not found for user achievement ID ${row.id}`);
+      }
+      return {
+        id: row.id,
+        userId: row.userId,
+        achievementId: row.achievementId,
+        progress: row.progress,
+        completedValue: row.completedValue,
+        completedAt: row.completedAt,
+        achievement: row.achievement
+      };
+    });
   }
 
   async createUserLanguage(language: InsertUserLanguage): Promise<UserLanguage> {
-    const [result] = await db.insert(userLanguagesTable).values(language).returning();
-    return result;
+    const validLevels = ["A1", "A2", "B1", "B2", "C1", "C2", "Native"] as const;
+    if (!validLevels.includes(language.level as any)) {
+      throw new Error(`Invalid language level: ${language.level}. Must be one of: ${validLevels.join(', ')}`);
+    }
+
+    const result = await db.insert(userLanguagesTable).values({
+      userId: language.userId,
+      name: language.name,
+      level: language.level as "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | "Native",
+      certificate: language.certificate || null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }).returning();
+
+    if (!result.length) {
+      throw new Error('Failed to create user language');
+    }
+
+    const row = result[0];
+    if (!isValidLanguageLevel(row.level)) {
+      throw new Error(`Invalid language level: ${row.level}`);
+    }
+
+    return {
+      id: row.id,
+      userId: row.userId,
+      name: row.name,
+      level: row.level,
+      certificate: row.certificate,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt
+    };
   }
 
   async updateUserLanguage(id: number, language: Partial<InsertUserLanguage>): Promise<UserLanguage | undefined> {
-    const [result] = await db.update(userLanguagesTable).set(language).where(eq(userLanguagesTable.id, id)).returning();
-    return result;
+    if (language.level) {
+      language.level = language.level as "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | "Native";
+    }
+    const result = await db.update(userLanguagesTable)
+      .set(language)
+      .where(eq(userLanguagesTable.id, id))
+      .returning();
+    return result[0] as UserLanguage;
   }
 
   async deleteUserLanguage(id: number): Promise<void> {
@@ -1384,6 +1000,76 @@ export class PgStorage implements IStorage {
 
   async deleteUserProject(id: number): Promise<void> {
     await db.delete(userProjectsTable).where(eq(userProjectsTable.id, id));
+  }
+
+  // User Languages methods
+  async getUserLanguages(userId: number): Promise<UserLanguage[]> {
+    const result = await db
+      .select({
+        id: userLanguagesTable.id,
+        userId: userLanguagesTable.userId,
+        name: userLanguagesTable.name,
+        level: userLanguagesTable.level,
+        certificate: userLanguagesTable.certificate,
+        createdAt: userLanguagesTable.createdAt,
+        updatedAt: userLanguagesTable.updatedAt
+      })
+      .from(userLanguagesTable)
+      .where(eq(userLanguagesTable.userId, userId));
+
+    return result.map(row => {
+      if (!isValidLanguageLevel(row.level)) {
+        throw new Error(`Invalid language level found in database: ${row.level}`);
+      }
+
+      return {
+        id: row.id,
+        userId: row.userId,
+        name: row.name,
+        level: row.level,
+        certificate: row.certificate,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt
+      };
+    });
+  }
+
+  async getUserLanguage(userId: number, languageId: number): Promise<UserLanguage | undefined> {
+    const result = await db
+      .select({
+        id: userLanguagesTable.id,
+        userId: userLanguagesTable.userId,
+        name: userLanguagesTable.name,
+        level: userLanguagesTable.level,
+        certificate: userLanguagesTable.certificate,
+        createdAt: userLanguagesTable.createdAt,
+        updatedAt: userLanguagesTable.updatedAt
+      })
+      .from(userLanguagesTable)
+      .where(and(
+        eq(userLanguagesTable.userId, userId),
+        eq(userLanguagesTable.id, languageId)
+      ))
+      .limit(1);
+
+    if (!result.length) {
+      return undefined;
+    }
+
+    const row = result[0];
+    if (!isValidLanguageLevel(row.level)) {
+      throw new Error(`Invalid language level: ${row.level}`);
+    }
+
+    return {
+      id: row.id,
+      userId: row.userId,
+      name: row.name,
+      level: row.level,
+      certificate: row.certificate,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt
+    };
   }
 }
 

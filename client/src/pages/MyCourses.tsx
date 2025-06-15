@@ -4,8 +4,9 @@ import CourseCard from "@/components/dashboard/CourseCard";
 import { useTranslations } from "@/hooks/use-translations";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "wouter";
+import { Course } from "@shared/schema";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,9 +32,22 @@ const itemVariants = {
 export default function MyCourses() {
   const { t, language } = useTranslations();
 
-  const { data: enrollments, isLoading } = useQuery({
-    queryKey: ["enrollments"],
-    queryFn: () => fetch("/api/enrollments").then((res) => res.json()),
+  const { data: courses, isLoading } = useQuery<Course[]>({
+    queryKey: ["userCourses"],
+    queryFn: async () => {
+      const response = await fetch("/api/user/courses", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
+      
+      return response.json();
+    }
   });
 
   return (
@@ -71,13 +85,13 @@ export default function MyCourses() {
                   <div key={i} className="h-[300px] animate-pulse bg-muted rounded-lg" />
                 ))}
               </div>
-            ) : enrollments?.length ? (
+            ) : courses?.length ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {enrollments.map((enrollment: any) => (
+                {courses.map((course) => (
                   <CourseCard 
-                    key={enrollment.id} 
-                    course={enrollment.course} 
-                    progress={enrollment.progress}
+                    key={course.id} 
+                    course={course} 
+                    progress={course.progress || 0}
                   />
                 ))}
               </div>

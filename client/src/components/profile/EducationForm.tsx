@@ -1,172 +1,145 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useTranslation } from '@/hooks/useTranslation';
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useTranslations } from "@/hooks/use-translations"
 
-interface Education {
-  id?: number;
-  institution: string;
-  degree: string;
-  fieldOfStudy: string;
-  startDate: string;
-  endDate?: string;
-  isPresent: boolean;
-  gpa?: string;
-  activities?: string;
-  description?: string;
-}
+const educationFormSchema = z.object({
+  institution: z.string().min(1, "Institution is required"),
+  degree: z.string().min(1, "Degree is required"),
+  fieldOfStudy: z.string().min(1, "Field of study is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().optional(),
+  isPresent: z.boolean().default(false),
+})
+
+type EducationFormValues = z.infer<typeof educationFormSchema>
 
 interface EducationFormProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (education: Education) => void;
-  initialData?: Education;
+  onSubmit: (data: EducationFormValues) => void
+  onClose: () => void
+  initialData?: EducationFormValues
+  open: boolean
 }
 
-export default function EducationForm({ open, onClose, onSubmit, initialData }: EducationFormProps) {
-  const t = useTranslation();
-  const [education, setEducation] = useState<Education>(
-    initialData || {
-      institution: '',
-      degree: '',
-      fieldOfStudy: '',
-      startDate: '',
-      endDate: '',
+export default function EducationForm({ onSubmit, onClose, initialData, open }: EducationFormProps) {
+  const { t } = useTranslations();
+  const form = useForm<EducationFormValues>({
+    resolver: zodResolver(educationFormSchema),
+    defaultValues: initialData || {
+      institution: "",
+      degree: "",
+      fieldOfStudy: "",
+      startDate: "",
+      endDate: "",
       isPresent: false,
-      gpa: '',
-      activities: '',
-      description: '',
-    }
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(education);
-    onClose();
-  };
+    },
+  })
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {initialData ? t('profile.editEducation') : t('profile.addEducation')}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="institution">{t('profile.institution')}</Label>
-            <Input
-              id="institution"
-              value={education.institution}
-              onChange={(e) => setEducation({ ...education, institution: e.target.value })}
-              required
-            />
-          </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="institution"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('profile.education.institution')}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="degree">{t('profile.degree')}</Label>
-            <Input
-              id="degree"
-              value={education.degree}
-              onChange={(e) => setEducation({ ...education, degree: e.target.value })}
-              required
-            />
-          </div>
+        <FormField
+          control={form.control}
+          name="degree"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('profile.education.degree')}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="fieldOfStudy">{t('profile.fieldOfStudy')}</Label>
-            <Input
-              id="fieldOfStudy"
-              value={education.fieldOfStudy}
-              onChange={(e) => setEducation({ ...education, fieldOfStudy: e.target.value })}
-              required
-            />
-          </div>
+        <FormField
+          control={form.control}
+          name="fieldOfStudy"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('profile.education.fieldOfStudy')}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">{t('profile.startDate')}</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={education.startDate}
-                onChange={(e) => setEducation({ ...education, startDate: e.target.value })}
-                required
-              />
-            </div>
+        <FormField
+          control={form.control}
+          name="startDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('profile.education.startDate')}</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder={t('profile.education.startDate.placeholder')} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-            <div className="space-y-2">
-              <Label htmlFor="endDate">{t('profile.endDate')}</Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={education.endDate}
-                onChange={(e) => setEducation({ ...education, endDate: e.target.value })}
-                disabled={education.isPresent}
-                required={!education.isPresent}
-              />
-            </div>
-          </div>
+        <FormField
+          control={form.control}
+          name="isPresent"
+          render={({ field }) => (
+            <FormItem className="flex items-center gap-2">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel>{t('profile.education.currentlyStudying')}</FormLabel>
+            </FormItem>
+          )}
+        />
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="isPresent"
-              checked={education.isPresent}
-              onCheckedChange={(checked) => {
-                setEducation({
-                  ...education,
-                  isPresent: checked as boolean,
-                  endDate: checked ? undefined : education.endDate,
-                });
-              }}
-            />
-            <Label htmlFor="isPresent">{t('profile.present')}</Label>
-          </div>
+        {!form.watch('isPresent') && (
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('profile.education.endDate')}</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={t('profile.education.endDate.placeholder')} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
 
-          <div className="space-y-2">
-            <Label htmlFor="gpa">{t('profile.gpa')}</Label>
-            <Input
-              id="gpa"
-              value={education.gpa || ''}
-              onChange={(e) => setEducation({ ...education, gpa: e.target.value })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="activities">{t('profile.activities')}</Label>
-            <Textarea
-              id="activities"
-              value={education.activities || ''}
-              onChange={(e) => setEducation({ ...education, activities: e.target.value })}
-              rows={3}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">{t('profile.description')}</Label>
-            <Textarea
-              id="description"
-              value={education.description || ''}
-              onChange={(e) => setEducation({ ...education, description: e.target.value })}
-              rows={3}
-            />
-          </div>
-
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" type="button" onClick={onClose}>
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit">
-              {initialData ? t('common.save') : t('common.add')}
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
+        <Button type="submit" className="w-full">
+          {t('profile.education.save')}
+        </Button>
+      </form>
+    </Form>
+  )
 } 

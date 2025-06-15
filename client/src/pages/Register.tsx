@@ -39,7 +39,7 @@ const Register: React.FC = () => {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { t } = useTranslations();
-  const { login } = useAuthContext();
+  const { register } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -59,32 +59,12 @@ const Register: React.FC = () => {
   const onSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/register/direct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-          firstName: values.firstName,
-          lastName: values.lastName,
-          username: values.username,
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      login(data.user);
+      await register(values.email, values.password, values.username);
       setLocation('/dashboard');
       
       toast({
         title: t('auth.success'),
-        description: data.message || t('auth.accountCreated'),
+        description: t('auth.accountCreated'),
         variant: 'default',
       });
     } catch (error) {

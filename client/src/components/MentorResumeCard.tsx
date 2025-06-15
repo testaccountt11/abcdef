@@ -41,7 +41,7 @@ export const MentorResumeCard: React.FC<MentorResumeCardProps> = ({
       <div className="h-64 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
         <img 
-          src={resume.photo?.medium || 'https://via.placeholder.com/400x300'} 
+          src={resume.photo?.medium || 'https://placehold.co/400x300'} 
           alt={`${resume.first_name} ${resume.last_name}`}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />

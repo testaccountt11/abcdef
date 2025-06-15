@@ -5,40 +5,25 @@ export type TranslationKey =
   | 'nav.mentors'
   | 'nav.studyAdvice'
   | 'nav.login'
-  | 'hero.title'
-  | 'hero.subtitle'
-  | 'hero.start'
-  | 'hero.learnMore'
-  | 'features.personalPath.title'
-  | 'features.personalPath.desc'
-  | 'features.topCourses.title'
-  | 'features.topCourses.desc'
-  | 'features.competitions.title'
-  | 'features.competitions.desc'
-  | 'features.mentorship.title'
-  | 'features.mentorship.desc'
-  | 'about.title'
-  | 'about.subtitle'
-  | 'about.mission'
-  | 'about.vision'
-  | 'partners.title'
-  | 'partners.subtitle'
-  | 'testimonials.title'
-  | 'testimonials.subtitle'
-  | 'contact.title'
-  | 'contact.subtitle'
-  | 'contact.email'
-  | 'contact.message'
-  | 'contact.send'
-  | 'newsletter.title'
-  | 'newsletter.subtitle'
-  | 'newsletter.placeholder'
-  | 'newsletter.subscribe'
-  | 'footer.rights'
   | 'auth.signin'
+  | 'auth.signingIn'
   | 'auth.signin.desc'
   | 'auth.signin.button'
   | 'auth.signin.alternative'
+  | 'about.title'
+  | 'about.mission.title'
+  | 'about.mission.description'
+  | 'about.whatWeDo.title'
+  | 'about.whatWeDo.courses'
+  | 'about.whatWeDo.mentorship'
+  | 'about.whatWeDo.opportunities'
+  | 'about.whatWeDo.resources'
+  | 'about.team.title'
+  | 'about.team.description'
+  | 'about.contact.title'
+  | 'about.contact.description'
+  | 'about.cta.joinNow'
+  | 'about.cta.becomeMentor'
   | 'auth.register'
   | 'auth.register.desc'
   | 'auth.register.button'
@@ -144,6 +129,7 @@ export type TranslationKey =
   | 'dashboard.terms'
   | 'dashboard.privacy'
   | 'dashboard.cookies'
+  
   | 'dashboard.accessibility'
   | 'dashboard.language'
   | 'dashboard.theme'
@@ -356,7 +342,81 @@ export type TranslationKey =
   | 'profile.achievements.polyglotDesc'
   | 'profile.viewMore'
   | 'profile.share'
-  | 'profile.edit';
+  | 'profile.edit'
+  | 'dashboard.mainPage'
+  | 'profile.about'
+  | 'profile.noBio'
+  | 'profile.viewProject'
+  | 'profile.viewCertificate'
+  | 'profile.noProjects'
+  | 'profile.noCertificates'
+  | 'profile.achievements.pioneer'
+  | 'profile.achievements.pioneerDesc'
+  | 'profile.achievements.skillMaster'
+  | 'profile.achievements.skillMasterDesc'
+  | 'profile.achievements.polyglot'
+  | 'profile.achievements.polyglotDesc'
+  | 'profile.viewMore'
+  | 'profile.share'
+  | 'profile.edit'
+  | 'dashboard.mainPage'
+  | 'hero.title'
+  | 'hero.subtitle'
+  | 'hero.start'
+  | 'hero.learnMore'
+  | 'features.personalPath.title'
+  | 'features.personalPath.desc'
+  | 'features.topCourses.title'
+  | 'features.topCourses.desc'
+  | 'features.competitions.title'
+  | 'features.competitions.desc'
+  | 'features.mentorship.title'
+  | 'features.mentorship.desc'
+  | 'partners.title'
+  | 'partners.subtitle'
+  | 'testimonials.title'
+  | 'testimonials.subtitle'
+  | 'newsletter.title'
+  | 'newsletter.subtitle'
+  | 'newsletter.placeholder'
+  | 'newsletter.subscribe'
+  | 'footer.rights'
+  | 'about.title'
+  | 'about.mission.title'
+  | 'about.mission.description'
+  | 'about.whatWeDo.title'
+  | 'about.whatWeDo.courses'
+  | 'about.whatWeDo.mentorship'
+  | 'about.whatWeDo.opportunities'
+  | 'about.whatWeDo.resources'
+  | 'about.team.title'
+  | 'about.team.description'
+  | 'about.contact.title'
+  | 'about.contact.description'
+  | 'about.cta.joinNow'
+  | 'about.cta.becomeMentor'
+  | 'about.vision'
+  | 'partners.title'
+  | 'partners.subtitle'
+  | 'testimonials.title'
+  | 'testimonials.subtitle'
+  | 'contact.title'
+  | 'contact.subtitle'
+  | 'contact.email'
+  | 'contact.message'
+  | 'contact.send'
+  | 'newsletter.title'
+  | 'newsletter.subtitle'
+  | 'newsletter.placeholder'
+  | 'newsletter.subscribe'
+  | 'footer.rights'
+  | 'profile.A1'
+  | 'profile.A2'
+  | 'profile.B1'
+  | 'profile.B2'
+  | 'profile.C1'
+  | 'profile.C2'
+  | 'profile.Native';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -379,9 +439,20 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.competitions.desc': 'Participate and win scholarships',
     'features.mentorship.title': 'Mentorship',
     'features.mentorship.desc': 'Support from professionals',
-    'about.title': 'About Portfol.IO',
-    'about.subtitle': 'We help students build their future',
-    'about.mission': 'Our mission is to empower students with the tools and opportunities they need to showcase their talents and achievements in a professional portfolio.',
+    'about.title': 'About Us',
+    'about.mission.title': 'Our Mission',
+    'about.mission.description': 'We aim to empower students with the tools and opportunities they need to succeed in their careers.',
+    'about.whatWeDo.title': 'What We Do',
+    'about.whatWeDo.courses': 'Provide high-quality online courses',
+    'about.whatWeDo.mentorship': 'Connect students with experienced mentors',
+    'about.whatWeDo.opportunities': 'Share internship and job opportunities',
+    'about.whatWeDo.resources': 'Offer career development resources',
+    'about.team.title': 'Our Team',
+    'about.team.description': 'We are a dedicated team of educators and industry professionals.',
+    'about.contact.title': 'Get in Touch',
+    'about.contact.description': 'Have questions? We\'d love to hear from you.',
+    'about.cta.joinNow': 'Join Now',
+    'about.cta.becomeMentor': 'Become a Mentor',
     'about.vision': 'We envision a world where every student has equal access to educational resources and career opportunities.',
     'partners.title': 'Our Partners',
     'partners.subtitle': 'Working with leading educational institutions',
@@ -715,7 +786,31 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.achievements.polyglotDesc': 'Add your language proficiencies',
     'profile.viewMore': 'View More',
     'profile.share': 'Share Profile',
-    'profile.edit': 'Edit Profile'
+    'profile.edit': 'Edit Profile',
+    'dashboard.mainPage': 'Main Page',
+    'auth.signingIn': 'Signing in...',
+    'profile.about': 'О себе',
+    'profile.noBio': 'Информация о себе не добавлена',
+    'profile.viewProject': 'Посмотреть проект',
+    'profile.viewCertificate': 'Посмотреть сертификат',
+    'profile.noProjects': 'Проекты не добавлены',
+    'profile.noCertificates': 'Сертификаты не добавлены',
+    // 'profile.achievements.pioneer': 'Пионер профиля',
+    // 'profile.achievements.pioneerDesc': 'Заполните информацию о себе',
+    // 'profile.achievements.skillMaster': 'Мастер навыков',
+    // 'profile.achievements.skillMasterDesc': 'Добавьте свои профессиональные навыки',
+    // 'profile.achievements.polyglot': 'Полиглот',
+    // 'profile.achievements.polyglotDesc': 'Добавьте владение языками',
+    // 'profile.viewMore': 'Показать больше',
+    // 'profile.share': 'Поделиться',
+    // 'profile.edit': 'Редактировать',
+    'profile.A1': 'A1 - Beginner',
+    'profile.A2': 'A2 - Elementary',
+    'profile.B1': 'B1 - Intermediate',
+    'profile.B2': 'B2 - Upper Intermediate',
+    'profile.C1': 'C1 - Advanced',
+    'profile.C2': 'C2 - Mastery',
+    'profile.Native': 'Native',
   },
   ru: {
     'auth.haveAccount': 'Уже есть аккаунт?',
@@ -737,9 +832,20 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.competitions.desc': 'Участвуйте и выигрывайте стипендии',
     'features.mentorship.title': 'Наставничество',
     'features.mentorship.desc': 'Поддержка от профессионалов',
-    'about.title': 'О Portfol.IO',
-    'about.subtitle': 'Наша миссия - дать студентам возможность строить своё будущее',
-    'about.mission': 'Наша миссия — предоставить студентам инструменты и возможности, необходимые для демонстрации их талантов и достижений в профессиональном портфолио.',
+    'about.title': 'О нас',
+    'about.mission.title': 'Наша миссия',
+    'about.mission.description': 'Мы стремимся предоставить студентам инструменты и возможности, необходимые для успеха в карьере.',
+    'about.whatWeDo.title': 'Что мы делаем',
+    'about.whatWeDo.courses': 'Предоставляем качественные онлайн-курсы',
+    'about.whatWeDo.mentorship': 'Связываем студентов с опытными наставниками',
+    'about.whatWeDo.opportunities': 'Делимся возможностями стажировок и работы',
+    'about.whatWeDo.resources': 'Предлагаем ресурсы для развития карьеры',
+    'about.team.title': 'Наша команда',
+    'about.team.description': 'Мы - преданная команда педагогов и профессионалов отрасли.',
+    'about.contact.title': 'Свяжитесь с нами',
+    'about.contact.description': 'Есть вопросы? Мы будем рады вам помочь.',
+    'about.cta.joinNow': 'Присоединиться',
+    'about.cta.becomeMentor': 'Стать наставником',
     'about.vision': 'Мы представляем мир, где каждый студент имеет равный доступ к образовательным ресурсам и карьерным возможностям.',
     'partners.title': 'Наши партнеры',
     'partners.subtitle': 'Работаем с ведущими образовательными учреждениями',
@@ -945,6 +1051,7 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.subtitle': 'Узнайте, что делает нас уникальными',
     'auth.noAccount': 'Аккаунтыңыз жоқ па?',
     'auth.accountNotFound': 'Аккаунт табылмады',
+    // 'auth.haveAccount': 'Аккаунтыңыз бар ма?',
     'aboutUs.title': 'Біз туралы',
     'aboutUs.subtitle': 'Portfol.IO артындағы біздің компания, миссиямыз және командамыз туралы көбірек біліңіз',
     'aboutUs.mission.title': 'Біздің миссиямыз',
@@ -1073,7 +1180,22 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.achievements.polyglotDesc': 'Add your language proficiencies',
     'profile.viewMore': 'View More',
     'profile.share': 'Share Profile',
-    'profile.edit': 'Edit Profile'
+    'profile.edit': 'Edit Profile',
+    'dashboard.mainPage': 'Главная страница',
+    'auth.signingIn': 'Вход в систему...',
+    'profile.about': 'О себе',
+    'profile.noBio': 'Информация о себе не добавлена',
+    'profile.viewProject': 'Посмотреть проект',
+    'profile.viewCertificate': 'Посмотреть сертификат',
+    'profile.noProjects': 'Проекты не добавлены',
+    'profile.noCertificates': 'Сертификаты не добавлены',
+    "profile.A1": "",
+    "profile.A2": "",
+    "profile.B1": "",
+    "profile.B2": "",
+    "profile.C1": "",
+    "profile.C2": "",
+    "profile.Native": ""
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -1095,8 +1217,19 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.mentorship.title': 'Тәлімгерлік',
     'features.mentorship.desc': 'Кәсіпқойлардан қолдау',
     'about.title': 'Portfol.IO туралы',
-    'about.subtitle': 'Біз студенттерге болашақтарын құруға көмектесеміз',
-    'about.mission': 'Біздің миссиямыз - студенттерге өз таланттары мен жетістіктерін кәсіби портфолиода көрсету үшін қажетті құралдар мен мүмкіндіктер беру.',
+    'about.mission.title': 'Біздің миссиямыз',
+    'about.mission.description': 'Біз студенттерге мансапта табысқа жету үшін қажетті құралдар мен мүмкіндіктер беруге тырысамыз.',
+    'about.whatWeDo.title': 'Біз не істейміз',
+    'about.whatWeDo.courses': 'Сапалы онлайн курстар ұсынамыз',
+    'about.whatWeDo.mentorship': 'Студенттерді тәжірибелі тәлімгерлермен байланыстырамыз',
+    'about.whatWeDo.opportunities': 'Тәжірибеден өту және жұмыс мүмкіндіктерімен бөлісеміз',
+    'about.whatWeDo.resources': 'Мансапты дамыту ресурстарын ұсынамыз',
+    'about.team.title': 'Біздің команда',
+    'about.team.description': 'Біз - педагогтар мен сала мамандарының арнайы командасы.',
+    'about.contact.title': 'Бізбен байланысыңыз',
+    'about.contact.description': 'Сұрақтарыңыз бар ма? Біз сізге көмектесуге қуаныштымыз.',
+    'about.cta.joinNow': 'Қазір қосылу',
+    'about.cta.becomeMentor': 'Тәлімгер болу',
     'about.vision': 'Біз әрбір студенттің білім беру ресурстары мен мансаптық мүмкіндіктерге тең қол жеткізетін әлемді елестетеміз.',
     'partners.title': 'Біздің серіктестер',
     'partners.subtitle': 'Жетекші білім беру мекемелерімен жұмыс жасаймыз',
@@ -1423,15 +1556,30 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.achievements.title': 'Достижения',
     'profile.achievements.unlockedAt': 'Получено',
     'profile.achievements.progress': 'Прогресс',
-    'profile.achievements.pioneer': 'Пионер профиля',
-    'profile.achievements.pioneerDesc': 'Complete your profile information',
-    'profile.achievements.skillMaster': 'Skill Master',
-    'profile.achievements.skillMasterDesc': 'Add your professional skills',
-    'profile.achievements.polyglot': 'Language Enthusiast',
-    'profile.achievements.polyglotDesc': 'Add your language proficiencies',
-    'profile.viewMore': 'Показать больше',
-    'profile.share': 'Поделиться профилем',
-    'profile.edit': 'Редактировать профиль'
+    'profile.achievements.pioneer': 'Профиль пионері',
+    'profile.achievements.pioneerDesc': 'Өзіңіз туралы ақпаратты толтырыңыз',
+    'profile.achievements.skillMaster': 'Дағдылар шебері',
+    'profile.achievements.skillMasterDesc': 'Кәсіби дағдыларыңызды қосыңыз',
+    'profile.achievements.polyglot': 'Полиглот',
+    'profile.achievements.polyglotDesc': 'Тілдерді білу деңгейін қосыңыз',
+    'profile.viewMore': 'Көбірек көрсету',
+    'profile.share': 'Бөлісу',
+    'profile.edit': 'Өңдеу',
+    'dashboard.mainPage': 'Басты бет',
+    'auth.signingIn': 'Жүйеге кіру...',
+    'profile.about': 'Өзім туралы',
+    'profile.noBio': 'Өзіңіз туралы ақпарат қосылмаған',
+    'profile.viewProject': 'Жобаны қарау',
+    'profile.viewCertificate': 'Сертификатты қарау',
+    'profile.noProjects': 'Жобалар қосылмаған',
+    'profile.noCertificates': 'Сертификаттар қосылмаған',
+    "profile.A1": "",
+    "profile.A2": "",
+    "profile.B1": "",
+    "profile.B2": "",
+    "profile.C1": "",
+    "profile.C2": "",
+    "profile.Native": ""
   }
 };
 

@@ -162,12 +162,15 @@ export const userEducation = pgTable("user_education", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Language level enum
+export const languageLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Native'] as const;
+
 // User languages schema
 export const userLanguages = pgTable("user_languages", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
   name: text("name").notNull(),
-  level: text("level").notNull(), // basic, intermediate, advanced, native
+  level: text("level").notNull().$type<(typeof languageLevels)[number]>(), // A1, A2, B1, B2, C1, C2, Native
   certificate: text("certificate"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -248,40 +251,78 @@ export const userStats = pgTable('user_stats', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const achievements = pgTable('achievements', {
-  id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id).notNull(),
-  name: text('name').notNull(),
-  description: text('description'),
-  progress: integer('progress').default(0),
-  maxProgress: integer('max_progress').notNull(),
-  icon: text('icon').notNull(),
-  unlockedAt: timestamp('unlocked_at'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  requirement: text("requirement").notNull(),
+  requiredValue: integer("required_value"),
+  points: integer("points"),
+  isHidden: boolean("is_hidden"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Relations
-export const userStatsRelations = relations(userStats, ({ one }) => ({
-  user: one(users, {
-    fields: [userStats.userId],
-    references: [users.id],
-  }),
-}));
+export const userAchievements = pgTable("user_achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  achievementId: integer("achievement_id").notNull(),
+  progress: integer("progress").notNull(),
+  completedValue: integer("completed_value"),
+  completedAt: timestamp("completed_at"),
+});
 
-export const achievementsRelations = relations(achievements, ({ one }) => ({
-  user: one(users, {
-    fields: [achievements.userId],
-    references: [users.id],
-  }),
-}));
+// Badge schema
+export const badges = pgTable("badges", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  iconUrl: text("icon_url").notNull(),
+  level: integer("level"),
+  requiredPoints: integer("required_points"),
+  isRare: boolean("is_rare"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
-// Schemas
+export const userBadges = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  badgeId: integer("badge_id").notNull(),
+  earnedAt: timestamp("earned_at"),
+  displayOnProfile: boolean("display_on_profile").default(true),
+});
+
+// Contact request schema
+export const contactRequests = pgTable("contact_requests", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull().default('pending'),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Create schemas for the new tables
 export const insertUserStatsSchema = createInsertSchema(userStats);
 export const selectUserStatsSchema = createSelectSchema(userStats);
 
 export const insertAchievementSchema = createInsertSchema(achievements);
 export const selectAchievementSchema = createSelectSchema(achievements);
+
+export const insertUserAchievementSchema = createInsertSchema(userAchievements);
+export const selectUserAchievementSchema = createSelectSchema(userAchievements);
+
+export const insertBadgeSchema = createInsertSchema(badges);
+export const selectBadgeSchema = createSelectSchema(badges);
+
+export const insertUserBadgeSchema = createInsertSchema(userBadges);
+export const selectUserBadgeSchema = createSelectSchema(userBadges);
+
+export const insertContactRequestSchema = createInsertSchema(contactRequests);
+export const selectContactRequestSchema = createSelectSchema(contactRequests);
 
 // Types
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
@@ -289,6 +330,18 @@ export type SelectUserStats = z.infer<typeof selectUserStatsSchema>;
 
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 export type SelectAchievement = z.infer<typeof selectAchievementSchema>;
+
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+export type SelectUserAchievement = z.infer<typeof selectUserAchievementSchema>;
+
+export type Badge = typeof badges.$inferSelect;
+export type InsertBadge = z.infer<typeof insertBadgeSchema>;
+export type SelectBadge = z.infer<typeof selectBadgeSchema>;
+
+export type ContactRequest = typeof contactRequests.$inferSelect;
+export type InsertContactRequest = z.infer<typeof insertContactRequestSchema>;
+export type SelectContactRequest = z.infer<typeof selectContactRequestSchema>;
 
 // Export all types
 export type User = typeof users.$inferSelect;
@@ -623,3 +676,12 @@ export type SelectUserLanguage = z.infer<typeof selectUserLanguageSchema>;
 export type UserProject = typeof userProjects.$inferSelect;
 export type InsertUserProject = z.infer<typeof insertUserProjectSchema>;
 export type SelectUserProject = z.infer<typeof selectUserProjectSchema>;
+
+// Add this type export
+export type Achievement = typeof achievements.$inferSelect;
+
+// Add this type export
+export type UserBadge = typeof userBadges.$inferSelect;
+
+// Add this type export
+export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;

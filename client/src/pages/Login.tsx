@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslations } from "@/hooks/use-translations";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext.tsx";
 import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 const loginFormSchema = z.object({
@@ -41,26 +41,12 @@ const Login: React.FC = () => {
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/login/direct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Invalid credentials');
-      }
-
-      login(data.user);
+      await login(values.email, values.password);
       setLocation('/dashboard');
       
       toast({
         title: t('auth.success'),
-        description: data.message || t('auth.welcomeBack'),
+        description: t('auth.welcomeBack'),
         variant: 'default',
       });
     } catch (error) {
@@ -127,11 +113,11 @@ const Login: React.FC = () => {
                       <FormLabel>{t('auth.password')}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                        <Input 
+                          <Input 
                             type={showPassword ? "text" : "password"}
-                          placeholder="••••••••" 
-                          {...field} 
-                          disabled={isLoading}
+                            placeholder="••••••••" 
+                            {...field} 
+                            disabled={isLoading}
                             autoComplete="current-password"
                             className="bg-background pr-10"
                           />
@@ -155,27 +141,16 @@ const Login: React.FC = () => {
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end">
-                  <Button 
-                    variant="link" 
-                    className="p-0 h-auto text-sm" 
-                    onClick={() => setLocation('/forgot-password')}
-                    type="button"
-                    disabled={isLoading}
-                  >
-                    {t('auth.forgotPassword')}
-                  </Button>
-                </div>
                 <Button 
                   type="submit" 
                   className="w-full" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <>
+                    <div className="flex items-center justify-center">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('auth.signingIn')}
-                    </>
+                      <span>Кіру...</span>
+                    </div>
                   ) : (
                     t('auth.signin.button')
                   )}

@@ -1,107 +1,123 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User } from "@shared/schema";
-import { apiRequest, ApiError } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { checkAuth, type AuthUser } from '@/services/auth.service';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { User } from '@/types/user';
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (user: User) => void;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 interface AuthProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuthContext = () => useContext(AuthContext);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is logged in on mount
+    checkAuth();
+  }, []);
 
   const checkAuth = async () => {
     try {
       const response = await fetch('/api/user', {
         credentials: 'include'
       });
-      
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
-      } else {
-        setUser(null);
       }
     } catch (error) {
-      console.error("Session auth check failed:", error);
-      setUser(null);
+      console.error('Auth check failed:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Check if user is authenticated on page load
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        await checkAuth();
-      } catch (error) {
-        console.error('Failed to check auth status:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initAuth();
-  }, []);
-
-  const login = (user: User) => {
-    setUser(user);
-  };
-
-  const logout = async () => {
+  const login = async (email: string, password: string) => {
     try {
-      await apiRequest('POST', '/api/logout', {});
-      setUser(null);
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out",
+      const response = await fetch('/api/login/direct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
       });
-    } catch (error) {
-      console.error("Logout error:", error);
-      if (error instanceof ApiError) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred during logout",
-          variant: "destructive",
-        });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
       }
+
+      const data = await response.json();
+      setUser(data.user);
+    } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   };
 
-  // Set up an interval to periodically check authentication status
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (user) {
-        await checkAuth();
-      }
-    }, 5 * 60 * 1000); // Check every 5 minutes
+  const register = async (email: string, password: string, name: string) => {
+    try {
+      const response = await fetch('/api/register/direct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, name }),
+      });
 
-    return () => clearInterval(interval);
-  }, [user]);
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      isAuthenticated: !!user,
+      login, 
+      register, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
+  }
+  return context;
+};

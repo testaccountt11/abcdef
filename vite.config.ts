@@ -33,6 +33,17 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "./client/src/assets")
     }
   },
+  optimizeDeps: {
+    exclude: [
+      'chunk-CQOXCJX6',
+      'chunk-WHWXNVRM',
+      'chunk-ZSO26C7X',
+      'chunk-6AEK6X72',
+      'chunk-6Q367BFU',
+      'chunk-547GWMLU',
+      'chunk-TOWQQC2Y'
+    ]
+  },
   root: path.resolve(__dirname, "client"),
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
@@ -47,5 +58,19 @@ export default defineConfig({
         secure: false,
       },
     },
+    fs: {
+      strict: true,
+      allow: [
+        path.resolve(__dirname),
+        path.resolve(__dirname, 'node_modules'),
+        path.resolve(__dirname, '../node_modules'),
+      ],
+    },
+    watch: {
+      usePolling: true,
+      interval: 100
+    }
   },
+  cacheDir: path.resolve(__dirname, 'node_modules/.vite'),
+  clearScreen: false
 });

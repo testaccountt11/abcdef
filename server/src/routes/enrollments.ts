@@ -48,7 +48,7 @@ pool.connect()
 
 // Schema for enrollment
 const enrollmentSchema = z.object({
-  courseId: z.string(),
+  courseId: z.number(),
   progress: z.number().optional(),
   completed: z.boolean().optional()
 });

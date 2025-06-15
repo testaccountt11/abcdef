@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext.tsx';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getTranslation } from '@/lib/translations';
 import { apiRequest } from '@/lib/queryClient';
@@ -17,6 +17,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
+import { useLocation } from 'wouter';
+import { ArrowLeft } from 'lucide-react';
 
 // Form validation schemas
 const profileFormSchema = z.object({
@@ -43,6 +45,7 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(user?.profileImage || '');
+  const [, setLocation] = useLocation();
 
   const passwordForm = useForm<PasswordFormValues>({
     defaultValues: {
@@ -211,6 +214,15 @@ export default function Settings() {
     <Layout>
       <div className="container py-10">
         <div className="max-w-3xl mx-auto">
+          <Button
+            variant="ghost"
+            className="mb-6"
+            onClick={() => setLocation('/dashboard')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            {t('common.back')}
+          </Button>
+
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="profile">{getTranslation('settings.profile', language)}</TabsTrigger>

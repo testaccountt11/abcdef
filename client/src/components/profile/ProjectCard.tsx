@@ -1,51 +1,57 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit, Trash, ExternalLink } from "lucide-react";
-import { Project } from "@/types";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
-export interface ProjectCardProps {
-  project: Project;
-  onEdit: () => void;
-  onDelete: () => void;
-  isOwner: boolean;
+interface ProjectCardProps {
+  title: string
+  description: string
+  technologies: string[]
+  startDate: string
+  endDate?: string
+  isPresent?: boolean
+  projectUrl?: string
+  githubUrl?: string
 }
 
-export default function ProjectCard({ project, onEdit, onDelete, isOwner }: ProjectCardProps) {
+export default function ProjectCard({
+  title,
+  description,
+  technologies,
+  startDate,
+  endDate,
+  isPresent,
+  projectUrl,
+  githubUrl
+}: ProjectCardProps) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <div>
-          <CardTitle className="text-base">{project.title}</CardTitle>
-          <CardDescription>{project.description}</CardDescription>
-        </div>
-        <div className="flex space-x-2">
-          {project.url && (
-            <Button variant="ghost" size="sm" asChild>
-              <a href={project.url} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
-          )}
-          {isOwner && (
-            <>
-              <Button variant="ghost" size="sm" onClick={onEdit}>
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onDelete}>
-                <Trash className="h-4 w-4" />
-              </Button>
-            </>
-          )}
-        </div>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {project.technologies.map((tech, index) => (
-            <Badge key={index} variant="secondary">{tech}</Badge>
+        <p className="text-sm text-muted-foreground mb-4">{description}</p>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {technologies.map((tech) => (
+            <Badge key={tech} variant="secondary">{tech}</Badge>
           ))}
+        </div>
+        <p className="text-sm">
+          {startDate} - {isPresent ? 'Present' : endDate}
+        </p>
+        <div className="flex gap-2 mt-2">
+          {projectUrl && (
+            <a href={projectUrl} target="_blank" rel="noopener noreferrer" 
+               className="text-sm text-primary hover:underline">
+              View Project
+            </a>
+          )}
+          {githubUrl && (
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer"
+               className="text-sm text-primary hover:underline">
+              GitHub
+            </a>
+          )}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 } 

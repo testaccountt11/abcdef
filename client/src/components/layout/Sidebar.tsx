@@ -5,7 +5,7 @@ import SettingsPanel from "./SettingsPanel";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useEffect } from "react";
 import { useTranslations } from "@/hooks/use-translations";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home } from "lucide-react";
 import logoLight from '../../img/light_version.svg';
 import logoDark from '../../img/dark_version.svg';
 
@@ -58,12 +58,10 @@ export default function Sidebar({ isOpen, onClose, onToggle, isCollapsed }: Side
   }, [location, onClose]);
 
   const links = [
+    { path: "/", icon: "ri-home-line", labelKey: "dashboard.mainPage" },
     { path: "/dashboard", icon: "ri-dashboard-line", labelKey: "dashboard.home" },
     { path: "/courses", icon: "ri-book-open-line", labelKey: "dashboard.courses" },
-    { path: "/opportunities", icon: "ri-briefcase-line", labelKey: "dashboard.opportunities" },
     { path: "/mentors", icon: "ri-user-star-line", labelKey: "dashboard.mentors" },
-    { path: "/advice", icon: "ri-article-line", labelKey: "dashboard.advice" },
-    { path: "/achievements", icon: "ri-award-line", labelKey: "dashboard.achievements" },
     { path: "/certificates", icon: "ri-medal-line", labelKey: "dashboard.certificates" },
   ];
 

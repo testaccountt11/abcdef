@@ -1,6 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, BookOpen, Award, Star } from "lucide-react";
-import { getTranslation } from "@/lib/translations";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslations } from '@/hooks/use-translations';
+import { BookOpen, Award, Users, Bookmark } from 'lucide-react';
+
+interface StatItemProps {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  description: string;
+}
 
 interface ProfileStatsProps {
   stats: {
@@ -9,64 +16,57 @@ interface ProfileStatsProps {
     mentorSessions: number;
     opportunitiesSaved: number;
   };
-  language: string;
 }
 
-export default function ProfileStats({ stats, language }: ProfileStatsProps) {
-  const statItems = [
-    {
-      title: 'profile.stats.courses',
-      value: stats.coursesInProgress,
-      icon: BookOpen,
-      description: 'profile.stats.coursesDesc'
-    },
-    {
-      title: 'profile.stats.certificates',
-      value: stats.certificatesEarned,
-      icon: Award,
-      description: 'profile.stats.certificatesDesc'
-    },
-    {
-      title: 'profile.stats.mentoring',
-      value: stats.mentorSessions,
-      icon: Star,
-      description: 'profile.stats.mentoringDesc'
-    },
-    {
-      title: 'profile.stats.opportunities',
-      value: stats.opportunitiesSaved,
-      icon: Trophy,
-      description: 'profile.stats.opportunitiesDesc'
-    }
-  ];
+function StatItem({ icon, label, value, description }: StatItemProps) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-primary/10 rounded-lg">
+        {icon}
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-xl font-semibold">{value}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function ProfileStats({ stats }: ProfileStatsProps) {
+  const { t } = useTranslations();
 
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader>
-        <CardTitle className="text-sm font-medium">
-          {getTranslation('profile.stats.title', language)}
-        </CardTitle>
+        <CardTitle>{t('profile.stats.title')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          {statItems.map((item, index) => (
-            <div key={index} className="flex flex-col space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <item.icon className="h-4 w-4 text-primary" />
-                </div>
-                <span className="text-sm font-medium">
-                  {getTranslation(item.title, language)}
-                </span>
-              </div>
-              <div className="flex items-baseline space-x-2">
-                <span className="text-2xl font-bold tracking-tight">{item.value}</span>
-                <span className="text-xs text-muted-foreground">
-                  {getTranslation(item.description, language)}
-                </span>
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <StatItem
+            icon={<BookOpen className="w-5 h-5 text-primary" />}
+            label={t('profile.stats.courses')}
+            value={stats.coursesInProgress}
+            description={t('profile.stats.coursesDesc')}
+          />
+          <StatItem
+            icon={<Award className="w-5 h-5 text-primary" />}
+            label={t('profile.stats.certificates')}
+            value={stats.certificatesEarned}
+            description={t('profile.stats.certificatesDesc')}
+          />
+          <StatItem
+            icon={<Users className="w-5 h-5 text-primary" />}
+            label={t('profile.stats.mentoring')}
+            value={stats.mentorSessions}
+            description={t('profile.stats.mentoringDesc')}
+          />
+          <StatItem
+            icon={<Bookmark className="w-5 h-5 text-primary" />}
+            label={t('profile.stats.opportunities')}
+            value={stats.opportunitiesSaved}
+            description={t('profile.stats.opportunitiesDesc')}
+          />
         </div>
       </CardContent>
     </Card>

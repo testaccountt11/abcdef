@@ -375,167 +375,89 @@ export default function BecomeMentor() {
   const onSubmit = async (values: MentorFormValues) => {
     setIsSubmitting(true);
 
-    // Show immediate feedback toast
-    toast({
-      title: language === 'ru' 
-        ? 'Отправка заявки...' 
-        : language === 'kz' 
-          ? 'Өтінім жіберілуде...' 
-          : 'Submitting application...',
-      description: language === 'ru'
-        ? 'Пожалуйста, подождите'
-        : language === 'kz'
-          ? 'Күте тұрыңыз'
-          : 'Please wait',
-    });
-    
     try {
-      console.log("Submitting form with values:", values);
-      
-      // Ensure motivation is not empty
-      if (!values.motivation || values.motivation.trim() === '') {
-        throw new Error("Motivation is required. Please provide your motivation for becoming a mentor.");
-      }
+      // Show immediate feedback toast
+      toast({
+        title: language === 'ru' 
+          ? 'Отправка заявки...' 
+          : language === 'kz' 
+            ? 'Өтінім жіберілуде...' 
+            : 'Submitting application...',
+        description: language === 'ru'
+          ? 'Пожалуйста, подождите'
+          : language === 'kz'
+            ? 'Күте тұрыңыз'
+            : 'Please wait',
+      });
       
       // Prepare FormData for submission
       const formData = new FormData();
       
-      // Add all form fields directly
-      formData.append('firstName', values.firstName);
-      formData.append('lastName', values.lastName);
-      formData.append('email', values.email);
-      formData.append('phone', values.phone || '');
-      formData.append('education', values.title || '');
-      formData.append('company', values.company || 'Independent');
-      formData.append('experience', values.experience || '');
-      formData.append('specialization', values.specialization);
-      formData.append('bio', values.bio || '');
-      formData.append('message', values.motivation);
-      formData.append('motivation', values.motivation);
-      formData.append('availability', values.availability);
-      
-      // Process languages
-      if (Array.isArray(values.languages)) {
-        values.languages.forEach(lang => {
-          formData.append('languages', lang);
-        });
-      } else if (values.languages) {
-        formData.append('languages', values.languages);
-      }
-      
-      // Process skills
-      if (typeof values.skills === 'string') {
-        const skillsArray = values.skills.split(',').map(skill => skill.trim());
-        skillsArray.forEach(skill => {
-          formData.append('skills', skill);
-        });
-      }
+      // Add all form fields
+      Object.entries(values).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          if (Array.isArray(value)) {
+            value.forEach(item => formData.append(key, item));
+          } else if (key === 'skills' && typeof value === 'string') {
+            value.split(',').forEach(skill => formData.append('skills', skill.trim()));
+          } else {
+            formData.append(key, value.toString());
+          }
+        }
+      });
       
       // Add resume if available
       if (uploadedFile) {
         formData.append('resume', uploadedFile);
       }
       
-      console.log("Sending form data to /api/become-mentor");
-      console.log("Form data contents:");
-      // Логируем содержимое формы (безопасный способ для TypeScript)
-      console.log("FormData values:");
-      console.log("firstName:", formData.get('firstName'));
-      console.log("lastName:", formData.get('lastName'));
-      console.log("email:", formData.get('email'));
-      console.log("phone:", formData.get('phone'));
-      console.log("education:", formData.get('education'));
-      console.log("company:", formData.get('company'));
-      console.log("experience:", formData.get('experience'));
-      console.log("specialization:", formData.get('specialization'));
-      console.log("bio:", formData.get('bio'));
-      console.log("message:", formData.get('message'));
-      console.log("motivation:", formData.get('motivation'));
-      console.log("availability:", formData.get('availability'));
-      
       // Submit the form
-      try {
-        const response = await fetch(`/api/become-mentor`, {
-        method: "POST",
-          body: formData
-        });
-        
-        let responseData;
-        let responseText;
-        
-        try {
-          // Сначала получаем текст ответа
-          responseText = await response.text();
-          console.log("Raw server response:", responseText);
-          
-          // Затем пробуем разобрать как JSON, если возможно
-          try {
-            responseData = JSON.parse(responseText);
-            console.log("Server response parsed as JSON:", responseData);
-          } catch (jsonError) {
-            console.error("Error parsing JSON response:", jsonError);
-            responseData = { error: "Invalid JSON response" };
-          }
-        } catch (textError) {
-          console.error("Error getting response text:", textError);
-          responseText = "Error getting response";
-        }
-        
-        if (!response.ok) {
-          console.error("Server response error:", {
-            status: response.status,
-            statusText: response.statusText,
-            text: responseText,
-            data: responseData
-          });
-          
-          // Даже в случае ошибки, показываем сообщение об успехе
-          console.log("Showing success message despite API error");
-        }
-      } catch (fetchError) {
-        console.error("Fetch error:", fetchError);
-        // Даже в случае ошибки сети, показываем сообщение об успехе
-        console.log("Showing success message despite fetch error");
+      const response = await fetch('/api/become-mentor', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        // Try to parse error message
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Failed to submit application');
       }
-      
-      // Всегда показываем сообщение об успехе для улучшения UX
-      console.log("Form submission complete - showing success message");
-      
-      // Сохраняем данные для всплывающего уведомления
+
+      // Handle success
+      setIsSuccess(true);
       setSubmittedFormData({
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email
       });
-      setIsSuccess(true);
-      
-      // Заменяем форму на красивое сообщение об успешной отправке
+
+      // Replace form with success message
       const formElement = document.getElementById('mentor-application-form');
       if (formElement) {
-        // Создаем контейнер для успешного сообщения
+        // Create success message container
         const successElement = document.createElement('div');
         successElement.className = 'bg-white dark:bg-gray-900 shadow-lg rounded-xl p-8 text-center max-w-xl mx-auto animate-fade-in';
         
-        // Определяем сообщение на основе языка
+        // Define messages based on language
         const successTitle = language === 'ru' 
           ? 'Заявка успешно отправлена!' 
           : language === 'kz' 
             ? 'Өтініш сәтті жіберілді!' 
             : 'Application Successfully Submitted!';
-            
+          
         const successDescription = language === 'ru'
           ? `Спасибо, ${values.firstName} ${values.lastName}! Мы получили вашу заявку на роль ментора. Наша команда рассмотрит ее и свяжется с вами в ближайшее время по указанному email: ${values.email}`
           : language === 'kz'
             ? `Рахмет, ${values.firstName} ${values.lastName}! Біз сіздің тәлімгер ретіндегі өтінішіңізді алдық. Біздің команда оны қарастырып, жақын арада сізбен көрсетілген email арқылы байланысады: ${values.email}`
             : `Thank you, ${values.firstName} ${values.lastName}! We have received your application to become a mentor. Our team will review it and contact you soon at the email address you provided: ${values.email}`;
-            
+          
         const buttonText = language === 'ru'
           ? 'Перейти к списку менторов'
           : language === 'kz'
             ? 'Тәлімгерлер тізіміне өту'
             : 'Go to Mentors List';
         
-        // Создаем HTML для успешного сообщения с анимацией
+        // Create HTML for success message with animation
         successElement.innerHTML = `
           <div class="flex flex-col items-center">
             <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-bounce">
@@ -553,12 +475,12 @@ export default function BecomeMentor() {
           </div>
         `;
         
-        // Полностью заменяем форму на элемент успеха
+        // Replace form with success element
         const formParent = formElement.parentNode;
         if (formParent) {
           formParent.replaceChild(successElement, formElement);
           
-          // Добавляем обработчик события для кнопки
+          // Add event listener for navigation button
           const navigateBtn = document.getElementById("go-to-mentors-btn");
           if (navigateBtn) {
             navigateBtn.addEventListener("click", () => {
@@ -567,29 +489,32 @@ export default function BecomeMentor() {
           }
         }
       }
-      
+
       // Reset form
       form.reset();
       setUploadedFile(null);
-      
-      // Автоматически скрываем всплывающее уведомление через 5 секунд
+
+      // Redirect to mentors page after 5 seconds if user hasn't clicked the button
       setTimeout(() => {
-        setIsSuccess(false);
-      }, 5000);
-      
-      // Redirect to mentors page after submission (если пользователь не нажал кнопку сам)
-      console.log("Will redirect to /publicmentors in 5 seconds if user doesn't click the button");
-      setTimeout(() => {
-        console.log("Redirecting to /publicmentors now");
         navigate("/publicmentors");
       }, 5000);
-      
+
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error('Form submission error:', error);
+      
+      // Show error toast
       toast({
-        title: t_local.errorTitle,
-        description: typeof error === 'object' && error !== null ? (error as Error).message : t_local.errorMessage,
-        variant: "destructive",
+        title: language === 'ru'
+          ? 'Ошибка при отправке заявки'
+          : language === 'kz'
+            ? 'Өтінішті жіберу кезінде қате'
+            : 'Error Submitting Application',
+        description: language === 'ru'
+          ? 'Пожалуйста, проверьте введенные данные и попробуйте снова'
+          : language === 'kz'
+            ? 'Енгізілген деректерді тексеріп, қайталап көріңіз'
+            : 'Please check your input and try again',
+        variant: 'destructive'
       });
     } finally {
       setIsSubmitting(false);

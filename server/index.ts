@@ -6,9 +6,9 @@ import path from "path";
 import fs from "fs";
 import cors from 'cors';
 import chatRouter from './routes/chat';
-import session from 'express-session';
+import session, { SessionOptions } from 'express-session';
 import SessionStore from 'connect-pg-simple';
-import { db } from './db';
+import { pool } from './db';
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'uploads');
@@ -25,40 +25,55 @@ const app = express();
 
 // Basic middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: true, // This allows requests from any origin
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
-const pgSession = SessionStore(session);
+// Session configuration
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
-app.use(
-  session({
-    store: new pgSession({
-      pool: db.$client,
-      tableName: 'sessions',
-      createTableIfMissing: true,
-      pruneSessionInterval: 60 * 15 // Prune expired sessions every 15 minutes
-    }),
-    secret: process.env.SESSION_SECRET || "your-secret-key",
-    name: 'sessionId', // Change session cookie name from default 'connect.sid'
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      path: '/',
-      domain: process.env.COOKIE_DOMAIN || undefined
-    },
-    rolling: true // Reset maxAge on every response
-  })
-);
+// Use memory store in development, PostgreSQL in production
+const sessionConfig: SessionOptions = {
+  secret: process.env.SESSION_SECRET || "your-secret-key",
+  name: 'sessionId',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: !isDevelopment,
+    httpOnly: true,
+    sameSite: isDevelopment ? 'lax' : 'none',
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    path: '/',
+    domain: process.env.COOKIE_DOMAIN || undefined
+  },
+  rolling: true // Reset maxAge on every response
+};
+
+// Only add PostgreSQL session store in production
+if (!isDevelopment) {
+  const pgSession = SessionStore(session);
+  const sessionStore = new pgSession({
+    pool,
+    tableName: 'sessions',
+    createTableIfMissing: true,
+    pruneSessionInterval: 60 * 15 // Prune expired sessions every 15 minutes
+  });
+
+  sessionStore.on('error', (error) => {
+    console.error('Session store error:', error);
+    if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT') {
+      console.log('Attempting to reconnect to session store...');
+    }
+  });
+
+  sessionConfig.store = sessionStore;
+}
+
+app.use(session(sessionConfig));
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -107,7 +122,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     app.use('/api/chat', chatRouter);
 
     // Development setup with Vite
-    if (process.env.NODE_ENV === 'development') {
+    if (isDevelopment) {
       await setupVite(app, server);
     } else {
       serveStatic(app);
@@ -119,7 +134,12 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       port,
       host: "0.0.0.0"
     }, () => {
-      log(`Server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
+      log(`Server running on port ${port} in ${isDevelopment ? 'development' : 'production'} mode`);
+      if (isDevelopment) {
+        log('Using in-memory session store');
+      } else {
+        log('Using PostgreSQL session store');
+      }
     });
   } catch (error) {
     console.error('Server startup error:', error);

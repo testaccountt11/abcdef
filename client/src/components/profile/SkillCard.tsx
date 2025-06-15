@@ -1,42 +1,53 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Edit, Trash } from 'lucide-react';
-import { Skill } from '@/types';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Edit2, Trash2 } from "lucide-react";
 
 export interface SkillCardProps {
-  skill: Skill;
+  skill: {
+    id: string;
+    name: string;
+    level: string;
+    yearsOfExperience?: number;
+  };
   onEdit: () => void;
   onDelete: () => void;
-  isOwner: boolean;
+  isOwner?: boolean;
 }
 
-export default function SkillCard({ skill, onEdit, onDelete, isOwner }: SkillCardProps) {
+export default function SkillCard({ skill, onEdit, onDelete, isOwner = false }: SkillCardProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <div>
-          <CardTitle className="text-base">{skill.name}</CardTitle>
-          <CardDescription>{skill.category}</CardDescription>
+    <Card className="w-full">
+      <CardContent className="p-4 flex justify-between items-center">
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">{skill.name}</h3>
+          <div className="text-sm text-muted-foreground">
+            <p>Level: {skill.level}</p>
+            {skill.yearsOfExperience && (
+              <p>Experience: {skill.yearsOfExperience} years</p>
+            )}
+          </div>
         </div>
+        
         {isOwner && (
-          <div className="flex space-x-2">
-            <Button variant="ghost" size="sm" onClick={onEdit}>
-              <Edit className="h-4 w-4" />
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8"
+            >
+              <Edit2 className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={onDelete}>
-              <Trash className="h-4 w-4" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className="h-8 w-8 text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         )}
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Level: {skill.level}</span>
-          <span className="text-sm text-muted-foreground">{skill.yearsOfExperience} years</span>
-        </div>
-        <Progress value={skill.level * 20} className="mt-2" />
       </CardContent>
     </Card>
   );

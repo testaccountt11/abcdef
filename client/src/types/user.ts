@@ -49,7 +49,7 @@ export interface Education {
 export interface Language {
   id: number;
   name: string;
-  level: 'basic' | 'intermediate' | 'advanced' | 'native';
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'Native';
   certificate?: string;
 }
 

@@ -1,18 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage-config.js";
-import { 
-  insertUserSchema, 
-  insertCourseSchema, 
-  insertEnrollmentSchema,
-  insertOpportunitySchema,
-  insertMentorSchema,
-  articles,
-  insertCertificateSchema,
-  insertStatsSchema,
-  contactRequests,
-  newsletterSubscriptions
-} from "@shared/index.js";
 import { ZodError, z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import session from "express-session";
@@ -463,7 +451,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       
+      console.log("Login attempt for email:", email);
+      
       if (!email || !password) {
+        console.log("Missing email or password");
         return res.status(400).json({ message: "Missing email or password" });
       }
       
@@ -471,6 +462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByEmail(email);
       
       if (!user) {
+        console.log("User not found for email:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
       
@@ -478,6 +470,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isValidPassword = await bcrypt.compare(password, user.password);
       
       if (!isValidPassword) {
+        console.log("Invalid password for email:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
       
@@ -494,6 +487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           password: undefined
         };
         
+        console.log("Login successful for email:", email);
         return res.json({ 
           user: safeUser,
           message: "Login successful"
@@ -534,11 +528,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
-  app.get("/api/user", (req, res) => {
-    if (!req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    
+  app.get("/api/user", isAuthenticated, (req, res) => {
     // Return user data without sensitive information
     const safeUser = {
       ...req.user,
@@ -576,14 +566,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = (req.user as any).id;
       const courseId = Number(req.params.id);
       
-      // Check if already enrolled
-      const existingEnrollment = await storage.getEnrollment(userId, courseId);
+      if (!userId || !courseId) {
+        return res.status(400).json({ message: "Invalid user ID or course ID" });
+      }
+
+      // Проверяем существование курса
+      const course = await storage.getCourse(courseId);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
       
+      // Проверяем существующую запись
+      const existingEnrollment = await storage.getEnrollment(userId, courseId);
       if (existingEnrollment) {
         return res.status(400).json({ message: "Already enrolled in this course" });
       }
       
-      // Create enrollment
+      // Создаем запись
       const enrollment = await storage.createEnrollment({
         userId,
         courseId,
@@ -591,17 +590,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completed: false
       });
       
-      // Update user stats
-      const stats = await storage.getUserStats(userId);
-      if (stats) {
-        await storage.updateUserStats(userId, {
-          coursesInProgress: (stats.coursesInProgress || 0) + 1
-        });
+      // Обновляем статистику пользователя
+      try {
+        const stats = await storage.getUserStats(userId);
+        if (stats) {
+          await storage.updateUserStats(userId, {
+            coursesInProgress: (stats.coursesInProgress || 0) + 1
+          });
+        }
+      } catch (statsError) {
+        console.error('Error updating user stats:', statsError);
+        // Не прерываем процесс записи на курс из-за ошибки статистики
       }
       
       res.status(201).json(enrollment);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      console.error('Error in course enrollment:', error);
+      res.status(400).json({ message: error.message || "Failed to enroll in course" });
     }
   });
   

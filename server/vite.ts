@@ -27,6 +27,14 @@ export async function setupVite(app: Express, server: Server) {
     middlewareMode: true,
     hmr: { server },
     appType: "custom",
+    fs: {
+      strict: false, // Disable strict file serving
+      allow: [
+        // Allow serving files from project root and its parent
+        path.resolve(__dirname, '..'),
+        path.resolve(__dirname, '../..'),
+      ]
+    }
   };
 
   const vite = await createViteServer({
@@ -35,11 +43,22 @@ export async function setupVite(app: Express, server: Server) {
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
+        // Don't exit on dependency serving errors
+        if (msg.includes('outside of Vite serving allow list')) {
+          viteLogger.warn(msg, options);
+          return;
+        }
         viteLogger.error(msg, options);
         process.exit(1);
       },
     },
-    server: serverOptions,
+    server: {
+      ...serverOptions,
+      watch: {
+        usePolling: true,
+        interval: 100
+      }
+    },
   });
 
   app.use(vite.middlewares);

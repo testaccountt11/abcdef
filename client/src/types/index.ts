@@ -5,6 +5,7 @@ export interface User {
   lastName?: string;
   email?: string;
   profilePicture?: string;
+  role: 'user' | 'admin' | 'mentor';
 }
 
 export interface Badge {
@@ -23,6 +24,7 @@ export interface UserBadge {
 }
 
 export interface UserStats {
+  userId: number;
   coursesInProgress: number;
   certificatesEarned: number;
   mentorSessions: number;
@@ -39,12 +41,12 @@ export interface AchievementDetails {
 }
 
 export interface Achievement {
-  id: string;
-  achievementId: string;
-  achievement: AchievementDetails;
-  progress: number;
-  isCompleted: boolean;
-  completedAt?: string;
+  id: number;
+  title: string;
+  description: string;
+  unlockedAt: string;
+  icon: string;
+  userId: number;
 }
 
 export interface Certificate {
@@ -74,6 +76,7 @@ export interface Skill {
   category: string;
   level: number;
   yearsOfExperience?: number;
+  userId: number;
 }
 
 export interface Education {
@@ -87,30 +90,28 @@ export interface Education {
   gpa?: string;
   activities?: string;
   description?: string;
+  userId: number;
 }
 
 export interface Language {
   id: number;
   name: string;
-  level: 'basic' | 'intermediate' | 'advanced' | 'native';
-  proficiency: number;
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'Native';
+  certificate?: string;
   userId: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface Project {
   id: number;
   title: string;
   description: string;
-  url?: string;
-  projectUrl?: string;
-  githubUrl?: string;
-  technologies: string[];
-  imageUrl?: string;
   startDate: string;
   endDate?: string;
   isPresent: boolean;
+  technologies: string[];
+  projectUrl?: string;
+  githubUrl?: string;
+  userId: number;
 }
 
 export interface NewSkill extends Omit<Skill, 'id'> {}

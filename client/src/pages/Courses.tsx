@@ -955,6 +955,14 @@ const PaginationControls = ({
   );
 };
 
+// Добавим новый интерфейс для отслеживания записанных курсов
+interface EnrolledCourse {
+  userId: string;
+  courseId: number;
+  progress: number;
+  completed: boolean;
+}
+
 export default function Courses() {
   const { user } = useAuthContext();
   const { language } = useTranslations();
@@ -1058,62 +1066,73 @@ export default function Courses() {
   // Use mock data if API returns empty array
   const allCourses = apiCourses.length > 0 ? apiCourses : mockCourses;
 
-  // Handle course enrollment
-  const handleEnroll = async (courseId: number) => {
-    if (!user) {
-      toast({
-        title: language === 'ru' ? 'Требуется авторизация' : 'Authentication required',
-        description: language === 'ru' ? 'Пожалуйста, войдите в систему для записи на курсы' : 'Please log in to enroll in courses',
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const course = allCourses.find(c => c.id === courseId);
-    if (!course) return;
-
-    // If course is paid, show payment modal
-    if (course.isPaid) {
-      setSelectedCourse(course);
-      setShowPaymentModal(true);
-      return;
-    }
-
-    // For free courses, proceed with enrollment
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Not authenticated');
+  // Исправляем URL для получения записанных курсов
+  const { data: enrolledCourses = [] } = useQuery<EnrolledCourse[]>({
+    queryKey: ['enrolledCourses', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      try {
+        const response = await fetch('/api/user/courses', { // Изменили URL на правильный
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch enrolled courses');
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Invalid response format');
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching enrolled courses:', error);
+        return [];
       }
+    },
+    enabled: !!user,
+  });
 
-      const response = await fetch(api.courses.enroll(), {
+  // Исправляем функцию записи на курс
+  const handleEnroll = async (courseId: number) => {
+    try {
+      const response = await fetch(`/api/courses/${courseId}/enroll`, { // Изменили URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ courseId }),
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+        // Убираем body, так как courseId передается в URL
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Failed to enroll in course');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to enroll in course');
       }
-      
-      toast({
-        title: language === 'ru' ? 'Успешно' : 'Success',
-        description: language === 'ru' ? 'Вы успешно записались на курс' : 'You have been enrolled in the course',
-      });
 
-      // Refresh the courses list
-      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      const data = await response.json();
+      
+      // Обновляем кэш после успешной записи
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-    } catch (error) {
-      console.error('Enrollment error:', error);
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["enrolledCourses"] });
+
       toast({
-        title: language === 'ru' ? 'Ошибка' : 'Error',
-        description: error instanceof Error ? error.message : (language === 'ru' ? 'Не удалось записаться на курс' : 'Failed to enroll in course'),
+        title: language === 'ru' ? 'Успешно!' : 'Success!',
+        description: language === 'ru' 
+          ? 'Вы успешно записались на курс' 
+          : 'You have successfully enrolled in the course'
+      });
+    } catch (error) {
+      console.error('Error enrolling in course:', error);
+      toast({
         variant: "destructive",
+        title: language === 'ru' ? 'Ошибка' : 'Error',
+        description: error instanceof Error ? error.message : 'Failed to enroll in course'
       });
     }
   };
@@ -1144,7 +1163,7 @@ export default function Courses() {
     // Filter by tab
     let matchesTab = true;
     if (currentTab === "enrolled" && user) {
-      matchesTab = course.progress !== undefined && course.progress > 0;
+      matchesTab = enrolledCourses.some(enrolled => enrolled.courseId === course.id);
     } else if (currentTab === "recommended") {
       matchesTab = (course.rating || 0) >= 4.5;
     }
@@ -1223,6 +1242,11 @@ export default function Courses() {
     setPriceFilter("all");
     setSortBy("popularity");
     setShowAdvancedFilters(false);
+  };
+
+  // В компоненте EnhancedCourseCard добавляем проверку записан ли пользователь на курс
+  const isEnrolled = (courseId: number) => {
+    return enrolledCourses.some(enrolled => enrolled.courseId === courseId);
   };
 
   return (
@@ -1459,8 +1483,8 @@ export default function Courses() {
                     key={course.id} 
                     course={course} 
                     onEnroll={() => handleEnroll(course.id)}
-                      showEnrollButton={currentTab === "all"}
-                      showProgress={currentTab === "enrolled"}
+                    showEnrollButton={!isEnrolled(course.id)}
+                    showProgress={isEnrolled(course.id)}
                     onClick={() => {
                       setSelectedCourse(course);
                       setShowCourseModal(true);
