@@ -126,3 +126,12 @@ export default function Sidebar({ isOpen, onClose, onToggle, isCollapsed }: Side
     </>
   );
 }
+
+export function SidebarWithProvider(props: SidebarProps) {
+  const { AuthProvider } = require('@/contexts/AuthContext');
+  return (
+    <AuthProvider>
+      <Sidebar {...props} />
+    </AuthProvider>
+  );
+}

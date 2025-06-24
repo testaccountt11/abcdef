@@ -6,7 +6,7 @@ export interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
+  register: (email: string, password: string, username: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -64,7 +64,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const register = async (email: string, password: string, name: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    username: string,
+    firstName: string,
+    lastName: string
+  ) => {
     try {
       const response = await fetch('/api/register/direct', {
         method: 'POST',
@@ -72,7 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, username, firstName, lastName }),
       });
 
       if (!response.ok) {
