@@ -416,7 +416,29 @@ export type TranslationKey =
   | 'profile.B2'
   | 'profile.C1'
   | 'profile.C2'
-  | 'profile.Native';
+  | 'profile.Native'
+  | 'myCertificates.title'
+  | 'myCertificates.subtitle'
+  | 'myCertificates.add'
+  | 'myCertificates.addTitle'
+  | 'myCertificates.addDesc'
+  | 'myCertificates.certificateTitle'
+  | 'myCertificates.issuer'
+  | 'myCertificates.issueDate'
+  | 'myCertificates.file'
+  | 'myCertificates.success'
+  | 'myCertificates.error'
+  | 'myCertificates.noCertificates'
+  | 'myCertificates.download'
+  | 'myCertificates.view'
+  | 'myCertificates.delete'
+  | 'myCertificates.confirmDelete'
+  | 'myCertificates.emptyTitle'
+  | 'myCertificates.emptyDesc'
+  | 'myCertificates.emptyAdd'
+  | 'myCertificates.emptyTitle_kk'
+  | 'myCertificates.emptyDesc_kk'
+  | 'myCertificates.emptyAdd_kk';
 
 export const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -795,22 +817,35 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.viewCertificate': 'Посмотреть сертификат',
     'profile.noProjects': 'Проекты не добавлены',
     'profile.noCertificates': 'Сертификаты не добавлены',
-    // 'profile.achievements.pioneer': 'Пионер профиля',
-    // 'profile.achievements.pioneerDesc': 'Заполните информацию о себе',
-    // 'profile.achievements.skillMaster': 'Мастер навыков',
-    // 'profile.achievements.skillMasterDesc': 'Добавьте свои профессиональные навыки',
-    // 'profile.achievements.polyglot': 'Полиглот',
-    // 'profile.achievements.polyglotDesc': 'Добавьте владение языками',
-    // 'profile.viewMore': 'Показать больше',
-    // 'profile.share': 'Поделиться',
-    // 'profile.edit': 'Редактировать',
-    'profile.A1': 'A1 - Beginner',
-    'profile.A2': 'A2 - Elementary',
-    'profile.B1': 'B1 - Intermediate',
-    'profile.B2': 'B2 - Upper Intermediate',
-    'profile.C1': 'C1 - Advanced',
-    'profile.C2': 'C2 - Mastery',
-    'profile.Native': 'Native',
+    'myCertificates.title': 'My Certificates',
+    'myCertificates.subtitle': 'Store and showcase your achievements',
+    'myCertificates.add': 'Add Certificate',
+    'myCertificates.addTitle': 'Add New Certificate',
+    'myCertificates.addDesc': 'Enter the details of your certificate to add it to your portfolio.',
+    'myCertificates.certificateTitle': 'Certificate Title',
+    'myCertificates.issuer': 'Issuing Organization',
+    'myCertificates.issueDate': 'Issue Date',
+    'myCertificates.file': 'Certificate File',
+    'myCertificates.success': 'Certificate added successfully',
+    'myCertificates.error': 'Failed to add certificate',
+    'myCertificates.noCertificates': 'No certificates',
+    'myCertificates.download': 'Download',
+    'myCertificates.view': 'View',
+    'myCertificates.delete': 'Delete',
+    'myCertificates.confirmDelete': 'Are you sure you want to delete this certificate?',
+    'myCertificates.emptyTitle': 'No certificates yet',
+    'myCertificates.emptyDesc': 'Complete courses on Portfol.IO or add certificates from other platforms to showcase your achievements.',
+    'myCertificates.emptyAdd': 'Add your first certificate',
+    'profile.A1': '',
+    'profile.A2': '',
+    'profile.B1': '',
+    'profile.B2': '',
+    'profile.C1': '',
+    'profile.C2': '',
+    'profile.Native': '',
+    "myCertificates.emptyTitle_kk": "",
+    "myCertificates.emptyDesc_kk": "",
+    "myCertificates.emptyAdd_kk": ""
   },
   ru: {
     'auth.haveAccount': 'Уже есть аккаунт?',
@@ -1051,7 +1086,6 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'features.subtitle': 'Узнайте, что делает нас уникальными',
     'auth.noAccount': 'Аккаунтыңыз жоқ па?',
     'auth.accountNotFound': 'Аккаунт табылмады',
-    // 'auth.haveAccount': 'Аккаунтыңыз бар ма?',
     'aboutUs.title': 'Біз туралы',
     'aboutUs.subtitle': 'Portfol.IO артындағы біздің компания, миссиямыз және командамыз туралы көбірек біліңіз',
     'aboutUs.mission.title': 'Біздің миссиямыз',
@@ -1189,22 +1223,35 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.viewCertificate': 'Посмотреть сертификат',
     'profile.noProjects': 'Проекты не добавлены',
     'profile.noCertificates': 'Сертификаты не добавлены',
-    // 'profile.achievements.pioneer': 'Пионер профиля',
-    // 'profile.achievements.pioneerDesc': 'Заполните информацию о себе',
-    // 'profile.achievements.skillMaster': 'Мастер навыков',
-    // 'profile.achievements.skillMasterDesc': 'Добавьте свои профессиональные навыки',
-    // 'profile.achievements.polyglot': 'Полиглот',
-    // 'profile.achievements.polyglotDesc': 'Добавьте владение языками',
-    // 'profile.viewMore': 'Показать больше',
-    // 'profile.share': 'Поделиться',
-    // 'profile.edit': 'Редактировать',
-    'profile.A1': 'A1 - Beginner',
-    'profile.A2': 'A2 - Elementary',
-    'profile.B1': 'B1 - Intermediate',
-    'profile.B2': 'B2 - Upper Intermediate',
-    'profile.C1': 'C1 - Advanced',
-    'profile.C2': 'C2 - Mastery',
-    'profile.Native': 'Native',
+    'myCertificates.title': 'Мои сертификаты',
+    'myCertificates.subtitle': 'Храните и демонстрируйте свои достижения',
+    'myCertificates.add': 'Добавить сертификат',
+    'myCertificates.addTitle': 'Добавить новый сертификат',
+    'myCertificates.addDesc': 'Введите данные сертификата для добавления в портфолио.',
+    'myCertificates.certificateTitle': 'Название сертификата',
+    'myCertificates.issuer': 'Организация',
+    'myCertificates.issueDate': 'Дата выдачи',
+    'myCertificates.file': 'Файл сертификата',
+    'myCertificates.success': 'Сертификат успешно добавлен',
+    'myCertificates.error': 'Ошибка при добавлении сертификата',
+    'myCertificates.noCertificates': 'Нет сертификатов',
+    'myCertificates.download': 'Скачать',
+    'myCertificates.view': 'Посмотреть',
+    'myCertificates.delete': 'Удалить',
+    'myCertificates.confirmDelete': 'Вы уверены, что хотите удалить сертификат?',
+    'myCertificates.emptyTitle': 'Сертификатов пока нет',
+    'myCertificates.emptyDesc': 'Пройдите курсы на Portfol.IO или добавьте сертификаты с других платформ, чтобы продемонстрировать свои достижения.',
+    'myCertificates.emptyAdd': 'Добавить первый сертификат',
+    'profile.A1': '',
+    'profile.A2': '',
+    'profile.B1': '',
+    'profile.B2': '',
+    'profile.C1': '',
+    'profile.C2': '',
+    'profile.Native': '',
+    "myCertificates.emptyTitle_kk": "",
+    "myCertificates.emptyDesc_kk": "",
+    "myCertificates.emptyAdd_kk": ""
   },
   kz: {
     'nav.about': 'Біз туралы',
@@ -1582,13 +1629,35 @@ export const translations: Record<string, Record<TranslationKey, string>> = {
     'profile.viewCertificate': 'Сертификатты қарау',
     'profile.noProjects': 'Жобалар қосылмаған',
     'profile.noCertificates': 'Сертификаттар қосылмаған',
-    "profile.A1": "",
-    "profile.A2": "",
-    "profile.B1": "",
-    "profile.B2": "",
-    "profile.C1": "",
-    "profile.C2": "",
-    "profile.Native": ""
+    'myCertificates.title': 'Менің сертификаттарым',
+    'myCertificates.subtitle': 'Жетістіктеріңізді сақтаңыз және көрсетіңіз',
+    'myCertificates.add': 'Сертификат қосу',
+    'myCertificates.addTitle': 'Жаңа сертификат қосу',
+    'myCertificates.addDesc': 'Портфолиоға қосу үшін сертификат мәліметтерін енгізіңіз.',
+    'myCertificates.certificateTitle': 'Сертификат атауы',
+    'myCertificates.issuer': 'Ұйым',
+    'myCertificates.issueDate': 'Берілген күні',
+    'myCertificates.file': 'Сертификат файлы',
+    'myCertificates.success': 'Сертификат сәтті қосылды',
+    'myCertificates.error': 'Сертификатты қосу кезінде қате',
+    'myCertificates.noCertificates': 'Сертификаттар жоқ',
+    'myCertificates.download': 'Жүктеу',
+    'myCertificates.view': 'Көру',
+    'myCertificates.delete': 'Жою',
+    'myCertificates.confirmDelete': 'Сертификатты жоюға сенімдісіз бе?',
+    'myCertificates.emptyTitle': 'Сертификаттар әлі жоқ',
+    'myCertificates.emptyDesc': 'Portfol.IO-да курстарды аяқтаңыз немесе басқа платформалардан сертификаттарды қосыңыз, жетістіктеріңізді көрсету үшін.',
+    'myCertificates.emptyAdd': 'Алғашқы сертификатты қосу',
+    'profile.A1': '',
+    'profile.A2': '',
+    'profile.B1': '',
+    'profile.B2': '',
+    'profile.C1': '',
+    'profile.C2': '',
+    'profile.Native': '',
+    "myCertificates.emptyTitle_kk": "",
+    "myCertificates.emptyDesc_kk": "",
+    "myCertificates.emptyAdd_kk": ""
   }
 };
 

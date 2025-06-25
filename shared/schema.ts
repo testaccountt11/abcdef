@@ -299,10 +299,12 @@ export const contactRequests = pgTable("contact_requests", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
+  phone: text("phone"),
   subject: text("subject").notNull(),
   message: text("message").notNull(),
-  status: text("status").notNull().default('pending'),
+  status: text("status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Create schemas for the new tables
@@ -685,3 +687,13 @@ export type UserBadge = typeof userBadges.$inferSelect;
 
 // Add this type export
 export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
+
+// Update the IStorage interface to include contact request methods
+export interface IStorage {
+  // ... existing methods ...
+  
+  createContactRequest(request: InsertContactRequest): Promise<ContactRequest>;
+  getContactRequest(id: number): Promise<ContactRequest | undefined>;
+  getContactRequests(): Promise<ContactRequest[]>;
+  updateContactRequestStatus(id: number, status: string): Promise<ContactRequest | undefined>;
+}

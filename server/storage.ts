@@ -11,7 +11,8 @@ import {
   userAchievements, type UserAchievement, type InsertUserAchievement,
   badges, type Badge, type InsertBadge,
   userBadges, type UserBadge, type InsertUserBadge,
-  NewsletterSubscription, InsertNewsletterSubscription
+  NewsletterSubscription, InsertNewsletterSubscription,
+  contactRequests, type ContactRequest, type InsertContactRequest
 } from "@shared/schema";
 
 export interface IStorage {
@@ -82,6 +83,12 @@ export interface IStorage {
   createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
   getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | null>;
   getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
+  
+  // Contact requests
+  createContactRequest(request: InsertContactRequest): Promise<ContactRequest>;
+  getContactRequest(id: number): Promise<ContactRequest | undefined>;
+  getContactRequests(): Promise<ContactRequest[]>;
+  updateContactRequestStatus(id: number, status: string): Promise<ContactRequest | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -98,6 +105,7 @@ export class MemStorage implements IStorage {
   private badges: Map<number, Badge>;
   private userBadges: Map<string, UserBadge>; // key = userId-badgeId
   private newsletterSubscriptions: Map<number, NewsletterSubscription>;
+  private contactRequests: Map<number, ContactRequest>;
   
   private currentIds: {
     users: number;
@@ -113,6 +121,7 @@ export class MemStorage implements IStorage {
     badges: number;
     userBadges: number;
     newsletterSubscriptions: number;
+    contactRequests: number;
   };
 
   constructor() {
@@ -129,6 +138,7 @@ export class MemStorage implements IStorage {
     this.badges = new Map();
     this.userBadges = new Map();
     this.newsletterSubscriptions = new Map();
+    this.contactRequests = new Map();
     
     this.currentIds = {
       users: 1,
@@ -143,7 +153,8 @@ export class MemStorage implements IStorage {
       userAchievements: 1,
       badges: 1,
       userBadges: 1,
-      newsletterSubscriptions: 1
+      newsletterSubscriptions: 1,
+      contactRequests: 1
     };
     
     // Initialize with sample data
@@ -747,17 +758,14 @@ export class MemStorage implements IStorage {
     const userAchievement: UserAchievement = { 
       ...insertUserAchievement, 
       id,
-      earnedAt: insertUserAchievement.isComplete ? new Date() : null,
+      completedAt: insertUserAchievement.completedAt ? new Date() : null,
       progress: insertUserAchievement.progress || 0,
-      isComplete: insertUserAchievement.isComplete || false,
       completedValue: insertUserAchievement.completedValue || 0
     };
-    
     const key = `${userAchievement.userId}-${userAchievement.achievementId}`;
     this.userAchievements.set(key, userAchievement);
-    
     // Check for badge qualification if achievement is complete
-    if (userAchievement.isComplete) {
+    if (userAchievement.completedAt) {
       await this.checkAndAwardBadges(userAchievement.userId);
     }
     
@@ -777,13 +785,10 @@ export class MemStorage implements IStorage {
       ...userAchievement,
       progress
     };
-
     // Check if achievement is completed
-    if (achievement.requiredValue !== null && progress >= achievement.requiredValue && !userAchievement.isComplete) {
-      updatedUA.isComplete = true;
+    if (achievement.requiredValue !== null && progress >= achievement.requiredValue && userAchievement.completedAt === null) {
+      updatedUA.completedAt = new Date();
       updatedUA.completedValue = progress;
-      updatedUA.earnedAt = new Date();
-      
       // Check for badge qualification
       await this.checkAndAwardBadges(userId);
     }
@@ -805,9 +810,8 @@ export class MemStorage implements IStorage {
     if (completedValue >= achievement.requiredValue) {
       const updatedUA: UserAchievement = {
         ...userAchievement,
-        isComplete: true,
         completedValue,
-        earnedAt: new Date()
+        completedAt: new Date()
       };
       this.userAchievements.set(key, updatedUA);
       
@@ -910,7 +914,7 @@ export class MemStorage implements IStorage {
 
     // Calculate total points from completed achievements
     const totalPoints = userAchievements.reduce((sum, ua) => {
-      if (ua.isComplete && ua.achievement.points !== null) {
+      if (ua.completedAt && ua.achievement.points !== null) {
         return sum + ua.achievement.points;
       }
       return sum;
@@ -955,6 +959,49 @@ export class MemStorage implements IStorage {
   
   async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
     return Array.from(this.newsletterSubscriptions.values());
+  }
+
+  // Contact request methods
+  async createContactRequest(request: InsertContactRequest): Promise<ContactRequest> {
+    const id = this.currentIds.contactRequests++;
+    const now = new Date();
+    
+    const contactRequest: ContactRequest = {
+      id,
+      name: request.name,
+      email: request.email,
+      phone: request.phone || null,
+      subject: request.subject,
+      message: request.message,
+      status: request.status || "pending",
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.contactRequests.set(id, contactRequest);
+    return contactRequest;
+  }
+
+  async getContactRequest(id: number): Promise<ContactRequest | undefined> {
+    return this.contactRequests.get(id);
+  }
+
+  async getContactRequests(): Promise<ContactRequest[]> {
+    return Array.from(this.contactRequests.values());
+  }
+
+  async updateContactRequestStatus(id: number, status: string): Promise<ContactRequest | undefined> {
+    const request = this.contactRequests.get(id);
+    if (!request) return undefined;
+
+    const updated = {
+      ...request,
+      status,
+      updatedAt: new Date(),
+    };
+    
+    this.contactRequests.set(id, updated);
+    return updated;
   }
 }
 

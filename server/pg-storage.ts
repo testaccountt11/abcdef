@@ -15,23 +15,6 @@ import {
   UserEducation, InsertUserEducation,
   UserLanguage, InsertUserLanguage,
   UserProject, InsertUserProject,
-  users,
-  courses,
-  enrollments,
-  opportunities,
-  mentors,
-  articles,
-  certificates,
-  stats,
-  achievements,
-  userAchievements,
-  badges,
-  userBadges,
-  userSkills,
-  userEducation,
-  userLanguages,
-  userProjects,
-  contactRequests,
   insertContactRequestSchema,
   ContactRequest,
   InsertContactRequest,
@@ -1070,6 +1053,24 @@ export class PgStorage implements IStorage {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt
     };
+  }
+
+  async createContactRequest(request: InsertContactRequest): Promise<ContactRequest> {
+    try {
+      const result = await db.insert(contactRequestsTable).values({
+        name: request.name,
+        email: request.email,
+        phone: request.phone || null,
+        subject: request.subject,
+        message: request.message,
+        status: request.status || 'pending',
+      }).returning();
+
+      return result[0];
+    } catch (error) {
+      console.error('Error creating contact request:', error);
+      throw error;
+    }
   }
 }
 
